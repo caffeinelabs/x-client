@@ -3,7 +3,7 @@ moc = "1.4.1"
 
 [package]
 name = "x-client"
-version = "0.1.0"
+version = "0.1.1"
 description = "Generated Motoko client for X API v2"
 repository = "https://github.com/caffeinelabs/x-client"
 license = "Apache-2.0"
