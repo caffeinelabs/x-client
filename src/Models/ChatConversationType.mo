@@ -1,6 +1,6 @@
+/// The type of conversation: 'direct' or 'group'.
 
 // ChatConversationType.mo
-/// The type of conversation: 'direct' or 'group'.
 /// Enum values: #direct, #group
 
 module {

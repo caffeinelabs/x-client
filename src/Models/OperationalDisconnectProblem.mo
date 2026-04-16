@@ -1,10 +1,10 @@
+/// You have been disconnected for operational reasons.
 
 import { type OperationalDisconnectProblemAllOfDisconnectType; JSON = OperationalDisconnectProblemAllOfDisconnectType } "./OperationalDisconnectProblemAllOfDisconnectType";
 
 import { type Problem; JSON = Problem } "./Problem";
 
 // OperationalDisconnectProblem.mo
-/// You have been disconnected for operational reasons.
 
 module {
     // User-facing type: what application code uses

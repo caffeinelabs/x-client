@@ -1,3 +1,4 @@
+/// A response from modifying user-specified stream filtering rules.
 
 import { type Problem; JSON = Problem } "./Problem";
 
@@ -6,7 +7,6 @@ import { type Rule; JSON = Rule } "./Rule";
 import { type RulesResponseMetadata; JSON = RulesResponseMetadata } "./RulesResponseMetadata";
 
 // AddOrDeleteRulesResponse.mo
-/// A response from modifying user-specified stream filtering rules.
 
 module {
     // User-facing type: what application code uses

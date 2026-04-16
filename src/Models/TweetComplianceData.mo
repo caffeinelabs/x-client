@@ -1,3 +1,4 @@
+/// Tweet compliance data.
 
 import { type TweetComplianceSchema; JSON = TweetComplianceSchema } "./TweetComplianceSchema";
 
@@ -16,7 +17,6 @@ import { type TweetUndropComplianceSchema; JSON = TweetUndropComplianceSchema } 
 import { type TweetWithheldComplianceSchema; JSON = TweetWithheldComplianceSchema } "./TweetWithheldComplianceSchema";
 
 // TweetComplianceData.mo
-/// Tweet compliance data.
 import Runtime "mo:core/Runtime";
 
 module {

@@ -1,8 +1,8 @@
+/// An Chat message event with extracted envelope fields and the original encoded event.
 
 import { type ChatMessageEventSignature; JSON = ChatMessageEventSignature } "./ChatMessageEventSignature";
 
 // ChatMessageEvent.mo
-/// An Chat message event with extracted envelope fields and the original encoded event.
 
 module {
     // User-facing type: what application code uses

@@ -1,8 +1,8 @@
+/// Your client has gone away.
 
 import { type Problem; JSON = Problem } "./Problem";
 
 // ClientDisconnectedProblem.mo
-/// Your client has gone away.
 
 module {
     // User-facing type: what application code uses

@@ -1,6 +1,6 @@
+/// Represents the data for Usage
 
 // UsageFields.mo
-/// Represents the data for Usage
 
 module {
     // User-facing type: what application code uses

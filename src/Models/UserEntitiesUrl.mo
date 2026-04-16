@@ -1,8 +1,8 @@
+/// Expanded details for the URL specified in the User's profile, with start and end indices.
 
 import { type UrlEntity; JSON = UrlEntity } "./UrlEntity";
 
 // UserEntitiesUrl.mo
-/// Expanded details for the URL specified in the User's profile, with start and end indices.
 
 module {
     // User-facing type: what application code uses

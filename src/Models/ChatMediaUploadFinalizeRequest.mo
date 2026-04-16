@@ -1,6 +1,6 @@
+/// Request body for finalizing a Chat media upload.
 
 // ChatMediaUploadFinalizeRequest.mo
-/// Request body for finalizing a Chat media upload.
 
 module {
     // User-facing type: what application code uses

@@ -1,6 +1,6 @@
+/// Specifies the type of attachments (if any) present in this Tweet.
 
 // TweetAttachments.mo
-/// Specifies the type of attachments (if any) present in this Tweet.
 
 module {
     // User-facing type: what application code uses

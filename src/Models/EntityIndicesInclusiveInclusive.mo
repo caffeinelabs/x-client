@@ -1,8 +1,8 @@
+/// Represent a boundary range (start and end index) for a recognized entity (for example a hashtag or a mention). `start` must be smaller than `end`.  The start index is inclusive, the end index is inclusive.
 
 import Int "mo:core/Int";
 
 // EntityIndicesInclusiveInclusive.mo
-/// Represent a boundary range (start and end index) for a recognized entity (for example a hashtag or a mention). `start` must be smaller than `end`.  The start index is inclusive, the end index is inclusive.
 
 module {
     // User-facing type: what application code uses

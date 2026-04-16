@@ -1,3 +1,4 @@
+/// A problem that indicates you are not allowed to see a particular Tweet, User, etc.
 
 import { type DisallowedResourceProblemAllOfResourceType; JSON = DisallowedResourceProblemAllOfResourceType } "./DisallowedResourceProblemAllOfResourceType";
 
@@ -6,7 +7,6 @@ import { type DisallowedResourceProblemAllOfSection; JSON = DisallowedResourcePr
 import { type Problem; JSON = Problem } "./Problem";
 
 // ResourceUnauthorizedProblem.mo
-/// A problem that indicates you are not allowed to see a particular Tweet, User, etc.
 
 module {
     // User-facing type: what application code uses

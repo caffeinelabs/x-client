@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type ActivityStreamingResponse; JSON = ActivityStreamingResponse } "../Models/ActivityStreamingResponse";
 import { type ActivitySubscriptionCreateRequest; JSON = ActivitySubscriptionCreateRequest } "../Models/ActivitySubscriptionCreateRequest";
 import { type ActivitySubscriptionCreateResponse; JSON = ActivitySubscriptionCreateResponse } "../Models/ActivitySubscriptionCreateResponse";
@@ -20,7 +20,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -57,6 +57,7 @@ module {
 
 
     /// Activity Stream
+    ///
     /// Stream of X Activities
     public func activityStream(config : Config, backfillMinutes : Nat, startTime : Text, endTime : Text) : async* ActivityStreamingResponse {
         let {baseUrl; cycles} = config;
@@ -160,6 +161,7 @@ module {
     };
 
     /// Create X activity subscription
+    ///
     /// Creates a subscription for an X activity event
     public func createActivitySubscription(config : Config, activitySubscriptionCreateRequest : ActivitySubscriptionCreateRequest) : async* ActivitySubscriptionCreateResponse {
         let {baseUrl; cycles} = config;
@@ -202,7 +204,7 @@ module {
             body = do ? {
                 let jsonValue = ActivitySubscriptionCreateRequest.toJSON(activitySubscriptionCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["event_type", "filter", "tag", "webhook_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -267,6 +269,7 @@ module {
     };
 
     /// Deletes X activity subscription
+    ///
     /// Deletes a subscription for an X activity event
     public func deleteActivitySubscription(config : Config, subscriptionId : Text) : async* ActivitySubscriptionDeleteResponse {
         let {baseUrl; cycles} = config;
@@ -370,6 +373,7 @@ module {
     };
 
     /// Get X activity subscriptions
+    ///
     /// Get a list of active subscriptions for XAA
     public func getActivitySubscriptions(config : Config, maxResults : Nat, paginationToken : Text) : async* ActivitySubscriptionGetResponse {
         let {baseUrl; cycles} = config;
@@ -473,6 +477,7 @@ module {
     };
 
     /// Update X activity subscription
+    ///
     /// Updates a subscription for an X activity event
     public func updateActivitySubscription(config : Config, subscriptionId : Text, activitySubscriptionUpdateRequest : ActivitySubscriptionUpdateRequest) : async* ActivitySubscriptionUpdateResponse {
         let {baseUrl; cycles} = config;
@@ -516,7 +521,7 @@ module {
             body = do ? {
                 let jsonValue = ActivitySubscriptionUpdateRequest.toJSON(activitySubscriptionUpdateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["tag", "webhook_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -591,30 +596,35 @@ module {
 
     public module class ActivityApi(config : Config) {
         /// Activity Stream
+        ///
         /// Stream of X Activities
         public func activityStream(backfillMinutes : Nat, startTime : Text, endTime : Text) : async ActivityStreamingResponse {
             await* operations__.activityStream(config, backfillMinutes, startTime, endTime)
         };
 
         /// Create X activity subscription
+        ///
         /// Creates a subscription for an X activity event
         public func createActivitySubscription(activitySubscriptionCreateRequest : ActivitySubscriptionCreateRequest) : async ActivitySubscriptionCreateResponse {
             await* operations__.createActivitySubscription(config, activitySubscriptionCreateRequest)
         };
 
         /// Deletes X activity subscription
+        ///
         /// Deletes a subscription for an X activity event
         public func deleteActivitySubscription(subscriptionId : Text) : async ActivitySubscriptionDeleteResponse {
             await* operations__.deleteActivitySubscription(config, subscriptionId)
         };
 
         /// Get X activity subscriptions
+        ///
         /// Get a list of active subscriptions for XAA
         public func getActivitySubscriptions(maxResults : Nat, paginationToken : Text) : async ActivitySubscriptionGetResponse {
             await* operations__.getActivitySubscriptions(config, maxResults, paginationToken)
         };
 
         /// Update X activity subscription
+        ///
         /// Updates a subscription for an X activity event
         public func updateActivitySubscription(subscriptionId : Text, activitySubscriptionUpdateRequest : ActivitySubscriptionUpdateRequest) : async ActivitySubscriptionUpdateResponse {
             await* operations__.updateActivitySubscription(config, subscriptionId, activitySubscriptionUpdateRequest)

@@ -1,8 +1,8 @@
+/// The list of active subscriptions for a specified webhook
 
 import { type SubscriptionsListGetResponseDataSubscriptionsInner; JSON = SubscriptionsListGetResponseDataSubscriptionsInner } "./SubscriptionsListGetResponseDataSubscriptionsInner";
 
 // SubscriptionsListGetResponseData.mo
-/// The list of active subscriptions for a specified webhook
 
 module {
     // User-facing type: what application code uses

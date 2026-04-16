@@ -1,3 +1,4 @@
+/// Contact information associated with a Plaid account.
 
 import { type PlaidAddress; JSON = PlaidAddress } "./PlaidAddress";
 
@@ -6,7 +7,6 @@ import { type PlaidName; JSON = PlaidName } "./PlaidName";
 import { type PlaidTelephone; JSON = PlaidTelephone } "./PlaidTelephone";
 
 // PlaidAccountContact.mo
-/// Contact information associated with a Plaid account.
 
 module {
     // User-facing type: what application code uses

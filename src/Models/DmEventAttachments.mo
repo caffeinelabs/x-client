@@ -1,6 +1,6 @@
+/// Specifies the type of attachments (if any) present in this DM.
 
 // DmEventAttachments.mo
-/// Specifies the type of attachments (if any) present in this DM.
 
 module {
     // User-facing type: what application code uses

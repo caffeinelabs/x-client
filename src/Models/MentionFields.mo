@@ -1,6 +1,6 @@
+/// Represent the portion of text recognized as a User mention, and its start and end position within the text.
 
 // MentionFields.mo
-/// Represent the portion of text recognized as a User mention, and its start and end position within the text.
 
 module {
     // User-facing type: what application code uses

@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type ChatAddGroupMembersRequest; JSON = ChatAddGroupMembersRequest } "../Models/ChatAddGroupMembersRequest";
 import { type ChatAddGroupMembersResponse; JSON = ChatAddGroupMembersResponse } "../Models/ChatAddGroupMembersResponse";
 import { type ChatAddPublicKeyRequest; JSON = ChatAddPublicKeyRequest } "../Models/ChatAddPublicKeyRequest";
@@ -42,7 +42,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -79,6 +79,7 @@ module {
 
 
     /// Add members to a Chat group conversation
+    ///
     /// Adds one or more members to an existing encrypted Chat group conversation, rotating the conversation key.
     public func addChatGroupMembers(config : Config, id : Text, chatAddGroupMembersRequest : ChatAddGroupMembersRequest) : async* ChatAddGroupMembersResponse {
         let {baseUrl; cycles} = config;
@@ -122,7 +123,7 @@ module {
             body = do ? {
                 let jsonValue = ChatAddGroupMembersRequest.toJSON(chatAddGroupMembersRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["action_signatures", "conversation_key_version", "conversation_participant_keys", "encrypted_avatar_url", "encrypted_title", "user_ids"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -187,6 +188,7 @@ module {
     };
 
     /// Add public key
+    ///
     /// Registers a user's public key for X Chat encryption.
     public func addUserPublicKey(config : Config, id : Text, chatAddPublicKeyRequest : ChatAddPublicKeyRequest) : async* ChatAddPublicKeyResponse {
         let {baseUrl; cycles} = config;
@@ -230,7 +232,7 @@ module {
             body = do ? {
                 let jsonValue = ChatAddPublicKeyRequest.toJSON(chatAddPublicKeyRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["generate_version", "public_key", "version"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -295,6 +297,7 @@ module {
     };
 
     /// Download Chat Media
+    ///
     /// Downloads encrypted media bytes from an XChat conversation. The response body contains raw binary bytes. For 1:1 conversations, provide the recipient's user ID; the server constructs the canonical conversation ID from the authenticated user and recipient.
     public func chatMediaDownload(config : Config, id : Text, mediaHashKey : Text) : async* Blob {
         let {baseUrl; cycles} = config;
@@ -394,6 +397,7 @@ module {
     };
 
     /// Append Chat Media Upload
+    ///
     /// Appends media data to an XChat upload session.
     public func chatMediaUploadAppend(config : Config, id : Text, chatMediaUploadAppendRequest : ChatMediaUploadAppendRequest) : async* MediaUploadAppendResponse {
         let {baseUrl; cycles} = config;
@@ -437,7 +441,7 @@ module {
             body = do ? {
                 let jsonValue = ChatMediaUploadAppendRequest.toJSON(chatMediaUploadAppendRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["conversation_id", "media", "media_hash_key", "segment_index"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -502,6 +506,7 @@ module {
     };
 
     /// Finalize Chat Media Upload
+    ///
     /// Finalizes an XChat media upload session.
     public func chatMediaUploadFinalize(config : Config, id : Text, chatMediaUploadFinalizeRequest : ChatMediaUploadFinalizeRequest) : async* ChatMediaUploadFinalizeResponse {
         let {baseUrl; cycles} = config;
@@ -545,7 +550,7 @@ module {
             body = do ? {
                 let jsonValue = ChatMediaUploadFinalizeRequest.toJSON(chatMediaUploadFinalizeRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["conversation_id", "media_hash_key", "message_id", "num_parts", "ttl_msec"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -610,6 +615,7 @@ module {
     };
 
     /// Initialize Chat Media Upload
+    ///
     /// Initializes an XChat media upload session.
     public func chatMediaUploadInitialize(config : Config, chatMediaUploadInitializeRequest : ChatMediaUploadInitializeRequest) : async* ChatMediaUploadInitializeResponse {
         let {baseUrl; cycles} = config;
@@ -652,7 +658,7 @@ module {
             body = do ? {
                 let jsonValue = ChatMediaUploadInitializeRequest.toJSON(chatMediaUploadInitializeRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["conversation_id", "total_bytes"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -717,6 +723,7 @@ module {
     };
 
     /// Create Chat Group Conversation
+    ///
     /// Creates a new encrypted Chat group conversation on behalf of the authenticated user.
     public func createChatConversation(config : Config, chatCreateConversationRequest : ChatCreateConversationRequest) : async* ChatCreateConversationResponse {
         let {baseUrl; cycles} = config;
@@ -759,7 +766,7 @@ module {
             body = do ? {
                 let jsonValue = ChatCreateConversationRequest.toJSON(chatCreateConversationRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["action_signatures", "base64_encoded_key_rotation", "conversation_id", "conversation_key_version", "conversation_participant_keys", "group_admins", "group_avatar_url", "group_description", "group_members", "group_name", "ttl_msec"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -824,6 +831,7 @@ module {
     };
 
     /// Get Chat Conversation
+    ///
     /// Retrieves messages and key change events for a specific Chat conversation with pagination support. For 1:1 conversations, provide the recipient's user ID; the server constructs the canonical conversation ID from the authenticated user and recipient.
     public func getChatConversation(config : Config, id : Text, maxResults : Nat, paginationToken : Text, chatMessageEventPeriodfields : [GetChatConversationChatMessageEventFieldsParameterInner]) : async* ChatGetConversationResponse {
         let {baseUrl; cycles} = config;
@@ -928,6 +936,7 @@ module {
     };
 
     /// Get Chat Conversations
+    ///
     /// Retrieves a list of Chat conversations for the authenticated user's inbox.
     public func getChatConversations(config : Config, maxResults : Nat, paginationToken : Text, chatConversationPeriodfields : [GetChatConversationsChatConversationFieldsParameterInner], expansions : [GetChatConversationsExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async* ChatGetConversationsResponse {
         let {baseUrl; cycles} = config;
@@ -1031,6 +1040,7 @@ module {
     };
 
     /// Get user public keys
+    ///
     /// Returns the public keys and Juicebox configuration for the specified user.
     public func getUsersPublicKey(config : Config, id : Text, publicKeyPeriodfields : [GetUsersPublicKeysPublicKeyFieldsParameterInner]) : async* Get2UsersIdPublicKeysResponse {
         let {baseUrl; cycles} = config;
@@ -1135,6 +1145,7 @@ module {
     };
 
     /// Get public keys for multiple users
+    ///
     /// Returns the public keys and Juicebox configuration for the specified users.
     public func getUsersPublicKeys(config : Config, ids : [Text], publicKeyPeriodfields : [GetUsersPublicKeysPublicKeyFieldsParameterInner]) : async* Get2UsersPublicKeysResponse {
         let {baseUrl; cycles} = config;
@@ -1238,6 +1249,7 @@ module {
     };
 
     /// Initialize Conversation Keys
+    ///
     /// Initializes encryption keys for a Chat conversation. This is the first step before sending messages in a new 1:1 conversation.  For 1:1 conversations, provide the recipient's user ID as the conversation_id. The server constructs the canonical conversation ID from the authenticated user and recipient.  The request body must contain the conversation key version and participant keys (the conversation key encrypted for each participant using their public key).  **Workflow (1:1 conversation):** 1. Generate a conversation key using the SDK 2. Encrypt the key for both participants using their public keys 3. Call this endpoint to register the keys 4. Send messages using `POST /chat/conversations/{id}/messages`  **Authentication:** - Requires OAuth 1.0a User Context or OAuth 2.0 User Context - Required scopes: `tweet.read`, `users.read`, `dm.write` 
     public func initializeChatConversationKeys(config : Config, id : Text, chatInitializeConversationKeysRequest : ChatInitializeConversationKeysRequest) : async* ChatInitializeConversationKeysResponse {
         let {baseUrl; cycles} = config;
@@ -1281,7 +1293,7 @@ module {
             body = do ? {
                 let jsonValue = ChatInitializeConversationKeysRequest.toJSON(chatInitializeConversationKeysRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["action_signatures", "base64_encoded_key_rotation", "conversation_key_version", "conversation_participant_keys"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -1346,6 +1358,7 @@ module {
     };
 
     /// Initialize Chat Group
+    ///
     /// Initializes a new XChat group conversation and returns a unique conversation ID.  This endpoint is the first step in creating a group chat. The returned conversation_id  should be used in subsequent calls to POST /chat/conversations/group to fully create and  configure the group with members, admins, encryption keys, and other settings.  **Workflow:** 1. Call this endpoint to get a `conversation_id` 2. Use that `conversation_id` when calling `POST /chat/conversations/group` to create the group  **Authentication:** - Requires OAuth 1.0a User Context or OAuth 2.0 User Context - Required scope: `dm.write` 
     public func initializeChatGroup(config : Config) : async* ChatInitializeGroupResponse {
         let {baseUrl; cycles} = config;
@@ -1448,6 +1461,7 @@ module {
     };
 
     /// Mark Conversation as Read
+    ///
     /// Marks a specific Chat conversation as read on behalf of the authenticated user. For 1:1 conversations, provide the recipient's user ID; the server constructs the canonical conversation ID from the authenticated user and recipient.
     public func markChatConversationRead(config : Config, id : Text, chatMarkConversationReadRequest : ChatMarkConversationReadRequest) : async* ChatMarkConversationReadResponse {
         let {baseUrl; cycles} = config;
@@ -1491,7 +1505,7 @@ module {
             body = do ? {
                 let jsonValue = ChatMarkConversationReadRequest.toJSON(chatMarkConversationReadRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["seen_until_sequence_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -1556,6 +1570,7 @@ module {
     };
 
     /// Send Chat Message
+    ///
     /// Sends an encrypted message to a specific Chat conversation. For 1:1 conversations, provide the recipient's user ID; the server constructs the canonical conversation ID from the authenticated user and recipient.
     public func sendChatMessage(config : Config, id : Text, chatSendMessageRequest : ChatSendMessageRequest) : async* ChatSendMessageResponse {
         let {baseUrl; cycles} = config;
@@ -1599,7 +1614,7 @@ module {
             body = do ? {
                 let jsonValue = ChatSendMessageRequest.toJSON(chatSendMessageRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["conversation_token", "encoded_message_create_event", "encoded_message_event_signature", "message_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -1664,6 +1679,7 @@ module {
     };
 
     /// Send Typing Indicator
+    ///
     /// Sends a typing indicator to a specific Chat conversation on behalf of the authenticated user. For 1:1 conversations, provide the recipient's user ID; the server constructs the canonical conversation ID from the authenticated user and recipient.
     public func sendChatTypingIndicator(config : Config, id : Text) : async* ChatSendTypingIndicatorResponse {
         let {baseUrl; cycles} = config;
@@ -1788,96 +1804,112 @@ module {
 
     public module class ChatApi(config : Config) {
         /// Add members to a Chat group conversation
+        ///
         /// Adds one or more members to an existing encrypted Chat group conversation, rotating the conversation key.
         public func addChatGroupMembers(id : Text, chatAddGroupMembersRequest : ChatAddGroupMembersRequest) : async ChatAddGroupMembersResponse {
             await* operations__.addChatGroupMembers(config, id, chatAddGroupMembersRequest)
         };
 
         /// Add public key
+        ///
         /// Registers a user's public key for X Chat encryption.
         public func addUserPublicKey(id : Text, chatAddPublicKeyRequest : ChatAddPublicKeyRequest) : async ChatAddPublicKeyResponse {
             await* operations__.addUserPublicKey(config, id, chatAddPublicKeyRequest)
         };
 
         /// Download Chat Media
+        ///
         /// Downloads encrypted media bytes from an XChat conversation. The response body contains raw binary bytes. For 1:1 conversations, provide the recipient's user ID; the server constructs the canonical conversation ID from the authenticated user and recipient.
         public func chatMediaDownload(id : Text, mediaHashKey : Text) : async Blob {
             await* operations__.chatMediaDownload(config, id, mediaHashKey)
         };
 
         /// Append Chat Media Upload
+        ///
         /// Appends media data to an XChat upload session.
         public func chatMediaUploadAppend(id : Text, chatMediaUploadAppendRequest : ChatMediaUploadAppendRequest) : async MediaUploadAppendResponse {
             await* operations__.chatMediaUploadAppend(config, id, chatMediaUploadAppendRequest)
         };
 
         /// Finalize Chat Media Upload
+        ///
         /// Finalizes an XChat media upload session.
         public func chatMediaUploadFinalize(id : Text, chatMediaUploadFinalizeRequest : ChatMediaUploadFinalizeRequest) : async ChatMediaUploadFinalizeResponse {
             await* operations__.chatMediaUploadFinalize(config, id, chatMediaUploadFinalizeRequest)
         };
 
         /// Initialize Chat Media Upload
+        ///
         /// Initializes an XChat media upload session.
         public func chatMediaUploadInitialize(chatMediaUploadInitializeRequest : ChatMediaUploadInitializeRequest) : async ChatMediaUploadInitializeResponse {
             await* operations__.chatMediaUploadInitialize(config, chatMediaUploadInitializeRequest)
         };
 
         /// Create Chat Group Conversation
+        ///
         /// Creates a new encrypted Chat group conversation on behalf of the authenticated user.
         public func createChatConversation(chatCreateConversationRequest : ChatCreateConversationRequest) : async ChatCreateConversationResponse {
             await* operations__.createChatConversation(config, chatCreateConversationRequest)
         };
 
         /// Get Chat Conversation
+        ///
         /// Retrieves messages and key change events for a specific Chat conversation with pagination support. For 1:1 conversations, provide the recipient's user ID; the server constructs the canonical conversation ID from the authenticated user and recipient.
         public func getChatConversation(id : Text, maxResults : Nat, paginationToken : Text, chatMessageEventPeriodfields : [GetChatConversationChatMessageEventFieldsParameterInner]) : async ChatGetConversationResponse {
             await* operations__.getChatConversation(config, id, maxResults, paginationToken, chatMessageEventPeriodfields)
         };
 
         /// Get Chat Conversations
+        ///
         /// Retrieves a list of Chat conversations for the authenticated user's inbox.
         public func getChatConversations(maxResults : Nat, paginationToken : Text, chatConversationPeriodfields : [GetChatConversationsChatConversationFieldsParameterInner], expansions : [GetChatConversationsExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async ChatGetConversationsResponse {
             await* operations__.getChatConversations(config, maxResults, paginationToken, chatConversationPeriodfields, expansions, userPeriodfields)
         };
 
         /// Get user public keys
+        ///
         /// Returns the public keys and Juicebox configuration for the specified user.
         public func getUsersPublicKey(id : Text, publicKeyPeriodfields : [GetUsersPublicKeysPublicKeyFieldsParameterInner]) : async Get2UsersIdPublicKeysResponse {
             await* operations__.getUsersPublicKey(config, id, publicKeyPeriodfields)
         };
 
         /// Get public keys for multiple users
+        ///
         /// Returns the public keys and Juicebox configuration for the specified users.
         public func getUsersPublicKeys(ids : [Text], publicKeyPeriodfields : [GetUsersPublicKeysPublicKeyFieldsParameterInner]) : async Get2UsersPublicKeysResponse {
             await* operations__.getUsersPublicKeys(config, ids, publicKeyPeriodfields)
         };
 
         /// Initialize Conversation Keys
+        ///
         /// Initializes encryption keys for a Chat conversation. This is the first step before sending messages in a new 1:1 conversation.  For 1:1 conversations, provide the recipient's user ID as the conversation_id. The server constructs the canonical conversation ID from the authenticated user and recipient.  The request body must contain the conversation key version and participant keys (the conversation key encrypted for each participant using their public key).  **Workflow (1:1 conversation):** 1. Generate a conversation key using the SDK 2. Encrypt the key for both participants using their public keys 3. Call this endpoint to register the keys 4. Send messages using `POST /chat/conversations/{id}/messages`  **Authentication:** - Requires OAuth 1.0a User Context or OAuth 2.0 User Context - Required scopes: `tweet.read`, `users.read`, `dm.write` 
         public func initializeChatConversationKeys(id : Text, chatInitializeConversationKeysRequest : ChatInitializeConversationKeysRequest) : async ChatInitializeConversationKeysResponse {
             await* operations__.initializeChatConversationKeys(config, id, chatInitializeConversationKeysRequest)
         };
 
         /// Initialize Chat Group
+        ///
         /// Initializes a new XChat group conversation and returns a unique conversation ID.  This endpoint is the first step in creating a group chat. The returned conversation_id  should be used in subsequent calls to POST /chat/conversations/group to fully create and  configure the group with members, admins, encryption keys, and other settings.  **Workflow:** 1. Call this endpoint to get a `conversation_id` 2. Use that `conversation_id` when calling `POST /chat/conversations/group` to create the group  **Authentication:** - Requires OAuth 1.0a User Context or OAuth 2.0 User Context - Required scope: `dm.write` 
         public func initializeChatGroup() : async ChatInitializeGroupResponse {
             await* operations__.initializeChatGroup(config)
         };
 
         /// Mark Conversation as Read
+        ///
         /// Marks a specific Chat conversation as read on behalf of the authenticated user. For 1:1 conversations, provide the recipient's user ID; the server constructs the canonical conversation ID from the authenticated user and recipient.
         public func markChatConversationRead(id : Text, chatMarkConversationReadRequest : ChatMarkConversationReadRequest) : async ChatMarkConversationReadResponse {
             await* operations__.markChatConversationRead(config, id, chatMarkConversationReadRequest)
         };
 
         /// Send Chat Message
+        ///
         /// Sends an encrypted message to a specific Chat conversation. For 1:1 conversations, provide the recipient's user ID; the server constructs the canonical conversation ID from the authenticated user and recipient.
         public func sendChatMessage(id : Text, chatSendMessageRequest : ChatSendMessageRequest) : async ChatSendMessageResponse {
             await* operations__.sendChatMessage(config, id, chatSendMessageRequest)
         };
 
         /// Send Typing Indicator
+        ///
         /// Sends a typing indicator to a specific Chat conversation on behalf of the authenticated user. For 1:1 conversations, provide the recipient's user ID; the server constructs the canonical conversation ID from the authenticated user and recipient.
         public func sendChatTypingIndicator(id : Text) : async ChatSendTypingIndicatorResponse {
             await* operations__.sendChatTypingIndicator(config, id)

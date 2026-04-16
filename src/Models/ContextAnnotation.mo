@@ -1,10 +1,10 @@
+/// Annotation inferred from the Tweet text.
 
 import { type ContextAnnotationDomainFields; JSON = ContextAnnotationDomainFields } "./ContextAnnotationDomainFields";
 
 import { type ContextAnnotationEntityFields; JSON = ContextAnnotationEntityFields } "./ContextAnnotationEntityFields";
 
 // ContextAnnotation.mo
-/// Annotation inferred from the Tweet text.
 
 module {
     // User-facing type: what application code uses

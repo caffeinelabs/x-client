@@ -1,6 +1,6 @@
+/// Optional direction filter for directional events.
 
 // ActivitySubscriptionFilterDirection.mo
-/// Optional direction filter for directional events.
 /// Enum values: #inbound, #outbound
 
 module {

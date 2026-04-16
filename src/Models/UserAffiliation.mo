@@ -1,6 +1,6 @@
+/// Metadata about a user's affiliation.
 
 // UserAffiliation.mo
-/// Metadata about a user's affiliation.
 
 module {
     // User-facing type: what application code uses

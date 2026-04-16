@@ -1,6 +1,6 @@
+/// Indicates that the content being withheld is a `user`.
 
 // UserWithheldScope.mo
-/// Indicates that the content being withheld is a `user`.
 /// Enum values: #user
 
 module {

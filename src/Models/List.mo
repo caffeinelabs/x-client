@@ -1,6 +1,6 @@
+/// A X List is a curated group of accounts.
 
 // List.mo
-/// A X List is a curated group of accounts.
 
 module {
     // User-facing type: what application code uses

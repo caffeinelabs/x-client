@@ -1,3 +1,4 @@
+/// A X Community Note is a note on a Post.
 
 import { type NoteInfo; JSON = NoteInfo } "./NoteInfo";
 
@@ -6,7 +7,6 @@ import { type NoteRatingStatus; JSON = NoteRatingStatus } "./NoteRatingStatus";
 import { type NoteTestResult; JSON = NoteTestResult } "./NoteTestResult";
 
 // Note.mo
-/// A X Community Note is a note on a Post.
 
 module {
     // User-facing type: what application code uses

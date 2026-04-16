@@ -1,6 +1,6 @@
+/// The current state of the Space.
 
 // SpaceState.mo
-/// The current state of the Space.
 /// Enum values: #live, #scheduled, #ended
 
 module {

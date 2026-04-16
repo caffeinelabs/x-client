@@ -1,8 +1,8 @@
+/// A generic problem with no additional information beyond that provided by the HTTP status code.
 
 import { type Problem; JSON = Problem } "./Problem";
 
 // GenericProblem.mo
-/// A generic problem with no additional information beyond that provided by the HTTP status code.
 
 module {
     // User-facing type: what application code uses

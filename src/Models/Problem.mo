@@ -1,6 +1,6 @@
+/// An HTTP Problem Details object, as defined in IETF RFC 7807 (https://tools.ietf.org/html/rfc7807).
 
 // Problem.mo
-/// An HTTP Problem Details object, as defined in IETF RFC 7807 (https://tools.ietf.org/html/rfc7807).
 
 module {
     // User-facing type: what application code uses

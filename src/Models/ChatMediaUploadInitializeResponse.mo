@@ -1,8 +1,8 @@
+/// Response from initializing a Chat media upload.
 
 import { type ChatMediaUploadInitializeResponseData; JSON = ChatMediaUploadInitializeResponseData } "./ChatMediaUploadInitializeResponseData";
 
 // ChatMediaUploadInitializeResponse.mo
-/// Response from initializing a Chat media upload.
 
 module {
     // User-facing type: what application code uses

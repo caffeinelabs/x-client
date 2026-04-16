@@ -1,3 +1,4 @@
+/// A problem that indicates that a usage cap has been exceeded.
 
 import { type Problem; JSON = Problem } "./Problem";
 
@@ -6,7 +7,6 @@ import { type UsageCapExceededProblemAllOfPeriod; JSON = UsageCapExceededProblem
 import { type UsageCapExceededProblemAllOfScope; JSON = UsageCapExceededProblemAllOfScope } "./UsageCapExceededProblemAllOfScope";
 
 // UsageCapExceededProblem.mo
-/// A problem that indicates that a usage cap has been exceeded.
 
 module {
     // User-facing type: what application code uses

@@ -1,6 +1,6 @@
+/// A X Community is a curated group of Posts.
 
 // Community.mo
-/// A X Community is a curated group of Posts.
 
 module {
     // User-facing type: what application code uses

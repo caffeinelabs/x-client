@@ -1,3 +1,4 @@
+/// User compliance stream events.
 
 import { type LikesComplianceStreamResponseOneOf1; JSON = LikesComplianceStreamResponseOneOf1 } "./LikesComplianceStreamResponseOneOf1";
 
@@ -8,7 +9,6 @@ import { type UserComplianceData; JSON = UserComplianceData } "./UserComplianceD
 import { type UserComplianceStreamResponseOneOf; JSON = UserComplianceStreamResponseOneOf } "./UserComplianceStreamResponseOneOf";
 
 // UserComplianceStreamResponse.mo
-/// User compliance stream events.
 import Runtime "mo:core/Runtime";
 
 module {

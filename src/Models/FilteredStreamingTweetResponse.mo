@@ -1,3 +1,4 @@
+/// A Tweet or error that can be returned by the streaming Tweet API. The values returned with a successful streamed Tweet includes the user provided rules that the Tweet matched.
 
 import { type Expansions; JSON = Expansions } "./Expansions";
 
@@ -8,7 +9,6 @@ import { type Problem; JSON = Problem } "./Problem";
 import { type Tweet; JSON = Tweet } "./Tweet";
 
 // FilteredStreamingTweetResponse.mo
-/// A Tweet or error that can be returned by the streaming Tweet API. The values returned with a successful streamed Tweet includes the user provided rules that the Tweet matched.
 
 module {
     // User-facing type: what application code uses

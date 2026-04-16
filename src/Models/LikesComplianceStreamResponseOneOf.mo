@@ -1,8 +1,8 @@
+/// Compliance event.
 
 import { type LikeComplianceSchema; JSON = LikeComplianceSchema } "./LikeComplianceSchema";
 
 // LikesComplianceStreamResponseOneOf.mo
-/// Compliance event.
 
 module {
     // User-facing type: what application code uses

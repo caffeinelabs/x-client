@@ -1,6 +1,6 @@
+/// Descriptor for a Plaid account.
 
 // PlaidAccountTransaction.mo
-/// Descriptor for a Plaid account.
 
 module {
     // User-facing type: what application code uses

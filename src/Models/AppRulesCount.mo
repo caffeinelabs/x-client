@@ -1,6 +1,6 @@
+/// A count of user-provided stream filtering rules at the client application level.
 
 // AppRulesCount.mo
-/// A count of user-provided stream filtering rules at the client application level.
 
 module {
     // User-facing type: what application code uses

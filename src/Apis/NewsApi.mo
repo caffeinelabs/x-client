@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type Error_; JSON = Error_ } "../Models/Error_";
 import { type Get2NewsIdResponse; JSON = Get2NewsIdResponse } "../Models/Get2NewsIdResponse";
 import { type Get2NewsSearchResponse; JSON = Get2NewsSearchResponse } "../Models/Get2NewsSearchResponse";
@@ -16,7 +16,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -53,6 +53,7 @@ module {
 
 
     /// Get news stories by ID
+    ///
     /// Retrieves news story by its ID.
     public func getNews(config : Config, id : Text, newsPeriodfields : [SearchNewsNewsFieldsParameterInner]) : async* Get2NewsIdResponse {
         let {baseUrl; cycles} = config;
@@ -157,6 +158,7 @@ module {
     };
 
     /// Search News
+    ///
     /// Retrieves a list of News stories matching the specified search query.
     public func searchNews(config : Config, query_ : Text, maxResults : Nat, maxAgeHours : Nat, newsPeriodfields : [SearchNewsNewsFieldsParameterInner]) : async* Get2NewsSearchResponse {
         let {baseUrl; cycles} = config;
@@ -267,12 +269,14 @@ module {
 
     public module class NewsApi(config : Config) {
         /// Get news stories by ID
+        ///
         /// Retrieves news story by its ID.
         public func getNews(id : Text, newsPeriodfields : [SearchNewsNewsFieldsParameterInner]) : async Get2NewsIdResponse {
             await* operations__.getNews(config, id, newsPeriodfields)
         };
 
         /// Search News
+        ///
         /// Retrieves a list of News stories matching the specified search query.
         public func searchNews(query_ : Text, maxResults : Nat, maxAgeHours : Nat, newsPeriodfields : [SearchNewsNewsFieldsParameterInner]) : async Get2NewsSearchResponse {
             await* operations__.searchNews(config, query_, maxResults, maxAgeHours, newsPeriodfields)

@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type AddOrDeleteRulesRequest; JSON = AddOrDeleteRulesRequest } "../Models/AddOrDeleteRulesRequest";
 import { type AddOrDeleteRulesResponse; JSON = AddOrDeleteRulesResponse } "../Models/AddOrDeleteRulesResponse";
 import { type Analytics; JSON = Analytics } "../Models/Analytics";
@@ -68,7 +68,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -105,6 +105,7 @@ module {
 
 
     /// Create or Edit Post
+    ///
     /// Creates a new Post for the authenticated user, or edits an existing Post when edit_options are provided. Supports paid partnership disclosure via the paid_partnership field.
     public func createPosts(config : Config, tweetCreateRequest : TweetCreateRequest) : async* TweetCreateResponse {
         let {baseUrl; cycles} = config;
@@ -147,7 +148,7 @@ module {
             body = do ? {
                 let jsonValue = TweetCreateRequest.toJSON(tweetCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["card_uri", "community_id", "direct_message_deep_link", "edit_options", "for_super_followers_only", "geo", "made_with_ai", "media", "nullcast", "paid_partnership", "poll", "quote_tweet_id", "reply", "reply_settings", "share_with_followers", "text"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -212,6 +213,7 @@ module {
     };
 
     /// Delete Post
+    ///
     /// Deletes a specific Post by its ID, if owned by the authenticated user.
     public func deletePosts(config : Config, id : Text) : async* TweetDeleteResponse {
         let {baseUrl; cycles} = config;
@@ -315,6 +317,7 @@ module {
     };
 
     /// Get 28-hour Post insights
+    ///
     /// Retrieves engagement metrics for specified Posts over the last 28 hours.
     public func getInsights28Hr(config : Config, tweetIds : [Text], granularity : GetInsights28HrGranularityParameter, requestedMetrics : [GetInsights28HrRequestedMetricsParameterInner], engagementPeriodfields : [GetInsights28HrEngagementFieldsParameterInner]) : async* Get2Insights28hrResponse {
         let {baseUrl; cycles} = config;
@@ -418,6 +421,7 @@ module {
     };
 
     /// Get historical Post insights
+    ///
     /// Retrieves historical engagement metrics for specified Posts within a defined time range.
     public func getInsightsHistorical(config : Config, tweetIds : [Text], endTime : Text, startTime : Text, granularity : GetInsights28HrGranularityParameter, requestedMetrics : [GetInsights28HrRequestedMetricsParameterInner], engagementPeriodfields : [GetInsights28HrEngagementFieldsParameterInner]) : async* Get2InsightsHistoricalResponse {
         let {baseUrl; cycles} = config;
@@ -521,6 +525,7 @@ module {
     };
 
     /// Get List Posts
+    ///
     /// Retrieves a list of Posts associated with a specific List by its ID.
     public func getListsPosts(config : Config, id : Text, maxResults : Nat, paginationToken : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2ListsIdTweetsResponse {
         let {baseUrl; cycles} = config;
@@ -625,6 +630,7 @@ module {
     };
 
     /// Get Post analytics
+    ///
     /// Retrieves analytics data for specified Posts within a defined time range.
     public func getPostsAnalytics(config : Config, ids : [Text], endTime : Text, startTime : Text, granularity : GetPostsAnalyticsGranularityParameter, analyticsPeriodfields : [GetPostsAnalyticsAnalyticsFieldsParameterInner]) : async* Analytics {
         let {baseUrl; cycles} = config;
@@ -728,6 +734,7 @@ module {
     };
 
     /// Get Post by ID
+    ///
     /// Retrieves details of a specific Post by its ID.
     public func getPostsById(config : Config, id : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2TweetsIdResponse {
         let {baseUrl; cycles} = config;
@@ -832,6 +839,7 @@ module {
     };
 
     /// Get Posts by IDs
+    ///
     /// Retrieves details of multiple Posts by their IDs.
     public func getPostsByIds(config : Config, ids : [Text], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2TweetsResponse {
         let {baseUrl; cycles} = config;
@@ -935,6 +943,7 @@ module {
     };
 
     /// Get count of all Posts
+    ///
     /// Retrieves the count of Posts matching a search query from the full archive.
     public func getPostsCountsAll(config : Config, query_ : Text, startTime : Text, endTime : Text, sinceId : Text, untilId : Text, nextToken : Text, paginationToken : Text, granularity : GetPostsCountsAllGranularityParameter, searchCountPeriodfields : [GetPostsCountsAllSearchCountFieldsParameterInner]) : async* Get2TweetsCountsAllResponse {
         let {baseUrl; cycles} = config;
@@ -1038,6 +1047,7 @@ module {
     };
 
     /// Get count of recent Posts
+    ///
     /// Retrieves the count of Posts from the last 7 days matching a search query.
     public func getPostsCountsRecent(config : Config, query_ : Text, startTime : Text, endTime : Text, sinceId : Text, untilId : Text, nextToken : Text, paginationToken : Text, granularity : GetPostsCountsAllGranularityParameter, searchCountPeriodfields : [GetPostsCountsAllSearchCountFieldsParameterInner]) : async* Get2TweetsCountsRecentResponse {
         let {baseUrl; cycles} = config;
@@ -1141,6 +1151,7 @@ module {
     };
 
     /// Get Liking Users
+    ///
     /// Retrieves a list of Users who liked a specific Post by its ID.
     public func getPostsLikingUsers(config : Config, id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2TweetsIdLikingUsersResponse {
         let {baseUrl; cycles} = config;
@@ -1245,6 +1256,7 @@ module {
     };
 
     /// Get Quoted Posts
+    ///
     /// Retrieves a list of Posts that quote a specific Post by its ID.
     public func getPostsQuotedPosts(config : Config, id : Text, maxResults : Nat, paginationToken : Text, exclude : [GetPostsQuotedPostsExcludeParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2TweetsIdQuoteTweetsResponse {
         let {baseUrl; cycles} = config;
@@ -1349,6 +1361,7 @@ module {
     };
 
     /// Get Reposted by
+    ///
     /// Retrieves a list of Users who reposted a specific Post by its ID.
     public func getPostsRepostedBy(config : Config, id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2TweetsIdRetweetedByResponse {
         let {baseUrl; cycles} = config;
@@ -1453,6 +1466,7 @@ module {
     };
 
     /// Get Reposts
+    ///
     /// Retrieves a list of Posts that repost a specific Post by its ID.
     public func getPostsReposts(config : Config, id : Text, maxResults : Nat, paginationToken : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2TweetsIdRetweetsResponse {
         let {baseUrl; cycles} = config;
@@ -1557,6 +1571,7 @@ module {
     };
 
     /// Get stream rule counts
+    ///
     /// Retrieves the count of rules in the active rule set for the filtered stream.
     public func getRuleCounts(config : Config, rulesCountPeriodfields : [GetRuleCountsRulesCountFieldsParameterInner]) : async* Get2TweetsSearchStreamRulesCountsResponse {
         let {baseUrl; cycles} = config;
@@ -1660,6 +1675,7 @@ module {
     };
 
     /// Get stream rules
+    ///
     /// Retrieves the active rule set or a subset of rules for the filtered stream.
     public func getRules(config : Config, ids : [Text], maxResults : Nat, paginationToken : Text) : async* RulesLookupResponse {
         let {baseUrl; cycles} = config;
@@ -1763,6 +1779,7 @@ module {
     };
 
     /// Get Space ticket buyers
+    ///
     /// Retrieves a list of Users who purchased tickets to a specific Space by its ID.
     public func getSpacesBuyers(config : Config, id : Text, paginationToken : Text, maxResults : Nat, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2SpacesIdBuyersResponse {
         let {baseUrl; cycles} = config;
@@ -1867,6 +1884,7 @@ module {
     };
 
     /// Get Space Posts
+    ///
     /// Retrieves a list of Posts shared in a specific Space by its ID.
     public func getSpacesPosts(config : Config, id : Text, maxResults : Nat, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2SpacesIdTweetsResponse {
         let {baseUrl; cycles} = config;
@@ -1971,6 +1989,7 @@ module {
     };
 
     /// Get liked Posts
+    ///
     /// Retrieves a list of Posts liked by a specific User by their ID.
     public func getUsersLikedPosts(config : Config, id : Text, maxResults : Nat, paginationToken : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2UsersIdLikedTweetsResponse {
         let {baseUrl; cycles} = config;
@@ -2075,6 +2094,7 @@ module {
     };
 
     /// Get mentions
+    ///
     /// Retrieves a list of Posts that mention a specific User by their ID.
     public func getUsersMentions(config : Config, id : Text, sinceId : Text, untilId : Text, maxResults : Nat, paginationToken : Text, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2UsersIdMentionsResponse {
         let {baseUrl; cycles} = config;
@@ -2179,6 +2199,7 @@ module {
     };
 
     /// Get Posts
+    ///
     /// Retrieves a list of posts authored by a specific User by their ID.
     public func getUsersPosts(config : Config, id : Text, sinceId : Text, untilId : Text, maxResults : Nat, paginationToken : Text, exclude : [GetPostsQuotedPostsExcludeParameterInner], startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2UsersIdTweetsResponse {
         let {baseUrl; cycles} = config;
@@ -2283,6 +2304,7 @@ module {
     };
 
     /// Get Timeline
+    ///
     /// Retrieves a reverse chronological list of Posts in the authenticated User’s Timeline.
     public func getUsersTimeline(config : Config, id : Text, sinceId : Text, untilId : Text, maxResults : Nat, paginationToken : Text, exclude : [GetPostsQuotedPostsExcludeParameterInner], startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2UsersIdTimelinesReverseChronologicalResponse {
         let {baseUrl; cycles} = config;
@@ -2387,6 +2409,7 @@ module {
     };
 
     /// Hide reply
+    ///
     /// Hides or unhides a reply to a conversation owned by the authenticated user.
     public func hidePostsReply(config : Config, tweetId : Text, tweetHideRequest : TweetHideRequest) : async* TweetHideResponse {
         let {baseUrl; cycles} = config;
@@ -2430,7 +2453,7 @@ module {
             body = do ? {
                 let jsonValue = TweetHideRequest.toJSON(tweetHideRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["hidden"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -2495,6 +2518,7 @@ module {
     };
 
     /// Like Post
+    ///
     /// Causes the authenticated user to Like a specific Post by its ID.
     public func likePost(config : Config, id : Text, usersLikesCreateRequest : UsersLikesCreateRequest) : async* UsersLikesCreateResponse {
         let {baseUrl; cycles} = config;
@@ -2538,7 +2562,7 @@ module {
             body = do ? {
                 let jsonValue = UsersLikesCreateRequest.toJSON(usersLikesCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["tweet_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -2603,6 +2627,7 @@ module {
     };
 
     /// Repost Post
+    ///
     /// Causes the authenticated user to repost a specific Post by its ID.
     public func repostPost(config : Config, id : Text, usersRetweetsCreateRequest : UsersRetweetsCreateRequest) : async* UsersRetweetsCreateResponse {
         let {baseUrl; cycles} = config;
@@ -2646,7 +2671,7 @@ module {
             body = do ? {
                 let jsonValue = UsersRetweetsCreateRequest.toJSON(usersRetweetsCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["tweet_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -2711,6 +2736,7 @@ module {
     };
 
     /// Search all Posts
+    ///
     /// Retrieves Posts from the full archive matching a search query.
     public func searchPostsAll(config : Config, query_ : Text, startTime : Text, endTime : Text, sinceId : Text, untilId : Text, maxResults : Nat, nextToken : Text, paginationToken : Text, sortOrder : SearchPostsAllSortOrderParameter, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2TweetsSearchAllResponse {
         let {baseUrl; cycles} = config;
@@ -2814,6 +2840,7 @@ module {
     };
 
     /// Search recent Posts
+    ///
     /// Retrieves Posts from the last 7 days matching a search query.
     public func searchPostsRecent(config : Config, query_ : Text, startTime : Text, endTime : Text, sinceId : Text, untilId : Text, maxResults : Nat, nextToken : Text, paginationToken : Text, sortOrder : SearchPostsAllSortOrderParameter, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2TweetsSearchRecentResponse {
         let {baseUrl; cycles} = config;
@@ -2917,6 +2944,7 @@ module {
     };
 
     /// Stream filtered Posts
+    ///
     /// Streams Posts in real-time matching the active rule set.
     public func streamPosts(config : Config, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* FilteredStreamingTweetResponse {
         let {baseUrl; cycles} = config;
@@ -3020,6 +3048,7 @@ module {
     };
 
     /// Stream all Posts
+    ///
     /// Streams all public Posts in real-time.
     public func streamPostsFirehose(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* StreamingTweetResponse {
         let {baseUrl; cycles} = config;
@@ -3123,6 +3152,7 @@ module {
     };
 
     /// Stream English Posts
+    ///
     /// Streams all public English-language Posts in real-time.
     public func streamPostsFirehoseEn(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* StreamingTweetResponse {
         let {baseUrl; cycles} = config;
@@ -3226,6 +3256,7 @@ module {
     };
 
     /// Stream Japanese Posts
+    ///
     /// Streams all public Japanese-language Posts in real-time.
     public func streamPostsFirehoseJa(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* StreamingTweetResponse {
         let {baseUrl; cycles} = config;
@@ -3329,6 +3360,7 @@ module {
     };
 
     /// Stream Korean Posts
+    ///
     /// Streams all public Korean-language Posts in real-time.
     public func streamPostsFirehoseKo(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* StreamingTweetResponse {
         let {baseUrl; cycles} = config;
@@ -3432,6 +3464,7 @@ module {
     };
 
     /// Stream Portuguese Posts
+    ///
     /// Streams all public Portuguese-language Posts in real-time.
     public func streamPostsFirehosePt(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* StreamingTweetResponse {
         let {baseUrl; cycles} = config;
@@ -3535,6 +3568,7 @@ module {
     };
 
     /// Stream sampled Posts
+    ///
     /// Streams a 1% sample of public Posts in real-time.
     public func streamPostsSample(config : Config, backfillMinutes : Nat, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* StreamingTweetResponse {
         let {baseUrl; cycles} = config;
@@ -3638,6 +3672,7 @@ module {
     };
 
     /// Stream 10% sampled Posts
+    ///
     /// Streams a 10% sample of public Posts in real-time.
     public func streamPostsSample10(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2TweetsSample10StreamResponse {
         let {baseUrl; cycles} = config;
@@ -3741,6 +3776,7 @@ module {
     };
 
     /// Unlike Post
+    ///
     /// Causes the authenticated user to Unlike a specific Post by its ID.
     public func unlikePost(config : Config, id : Text, tweetId : Text) : async* UsersLikesDeleteResponse {
         let {baseUrl; cycles} = config;
@@ -3845,6 +3881,7 @@ module {
     };
 
     /// Unrepost Post
+    ///
     /// Causes the authenticated user to unrepost a specific Post by its ID.
     public func unrepostPost(config : Config, id : Text, sourceTweetId : Text) : async* UsersRetweetsDeleteResponse {
         let {baseUrl; cycles} = config;
@@ -3949,6 +3986,7 @@ module {
     };
 
     /// Update stream rules
+    ///
     /// Adds or deletes rules from the active rule set for the filtered stream.
     public func updateRules(config : Config, addOrDeleteRulesRequest : AddOrDeleteRulesRequest, dryRun : Bool, deleteAll : Bool) : async* AddOrDeleteRulesResponse {
         let {baseUrl; cycles} = config;
@@ -3992,7 +4030,7 @@ module {
             body = do ? {
                 let jsonValue = AddOrDeleteRulesRequest.toJSON(addOrDeleteRulesRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["add", "delete"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -4100,228 +4138,266 @@ module {
 
     public module class TweetsApi(config : Config) {
         /// Create or Edit Post
+        ///
         /// Creates a new Post for the authenticated user, or edits an existing Post when edit_options are provided. Supports paid partnership disclosure via the paid_partnership field.
         public func createPosts(tweetCreateRequest : TweetCreateRequest) : async TweetCreateResponse {
             await* operations__.createPosts(config, tweetCreateRequest)
         };
 
         /// Delete Post
+        ///
         /// Deletes a specific Post by its ID, if owned by the authenticated user.
         public func deletePosts(id : Text) : async TweetDeleteResponse {
             await* operations__.deletePosts(config, id)
         };
 
         /// Get 28-hour Post insights
+        ///
         /// Retrieves engagement metrics for specified Posts over the last 28 hours.
         public func getInsights28Hr(tweetIds : [Text], granularity : GetInsights28HrGranularityParameter, requestedMetrics : [GetInsights28HrRequestedMetricsParameterInner], engagementPeriodfields : [GetInsights28HrEngagementFieldsParameterInner]) : async Get2Insights28hrResponse {
             await* operations__.getInsights28Hr(config, tweetIds, granularity, requestedMetrics, engagementPeriodfields)
         };
 
         /// Get historical Post insights
+        ///
         /// Retrieves historical engagement metrics for specified Posts within a defined time range.
         public func getInsightsHistorical(tweetIds : [Text], endTime : Text, startTime : Text, granularity : GetInsights28HrGranularityParameter, requestedMetrics : [GetInsights28HrRequestedMetricsParameterInner], engagementPeriodfields : [GetInsights28HrEngagementFieldsParameterInner]) : async Get2InsightsHistoricalResponse {
             await* operations__.getInsightsHistorical(config, tweetIds, endTime, startTime, granularity, requestedMetrics, engagementPeriodfields)
         };
 
         /// Get List Posts
+        ///
         /// Retrieves a list of Posts associated with a specific List by its ID.
         public func getListsPosts(id : Text, maxResults : Nat, paginationToken : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2ListsIdTweetsResponse {
             await* operations__.getListsPosts(config, id, maxResults, paginationToken, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Get Post analytics
+        ///
         /// Retrieves analytics data for specified Posts within a defined time range.
         public func getPostsAnalytics(ids : [Text], endTime : Text, startTime : Text, granularity : GetPostsAnalyticsGranularityParameter, analyticsPeriodfields : [GetPostsAnalyticsAnalyticsFieldsParameterInner]) : async Analytics {
             await* operations__.getPostsAnalytics(config, ids, endTime, startTime, granularity, analyticsPeriodfields)
         };
 
         /// Get Post by ID
+        ///
         /// Retrieves details of a specific Post by its ID.
         public func getPostsById(id : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2TweetsIdResponse {
             await* operations__.getPostsById(config, id, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Get Posts by IDs
+        ///
         /// Retrieves details of multiple Posts by their IDs.
         public func getPostsByIds(ids : [Text], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2TweetsResponse {
             await* operations__.getPostsByIds(config, ids, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Get count of all Posts
+        ///
         /// Retrieves the count of Posts matching a search query from the full archive.
         public func getPostsCountsAll(query_ : Text, startTime : Text, endTime : Text, sinceId : Text, untilId : Text, nextToken : Text, paginationToken : Text, granularity : GetPostsCountsAllGranularityParameter, searchCountPeriodfields : [GetPostsCountsAllSearchCountFieldsParameterInner]) : async Get2TweetsCountsAllResponse {
             await* operations__.getPostsCountsAll(config, query_, startTime, endTime, sinceId, untilId, nextToken, paginationToken, granularity, searchCountPeriodfields)
         };
 
         /// Get count of recent Posts
+        ///
         /// Retrieves the count of Posts from the last 7 days matching a search query.
         public func getPostsCountsRecent(query_ : Text, startTime : Text, endTime : Text, sinceId : Text, untilId : Text, nextToken : Text, paginationToken : Text, granularity : GetPostsCountsAllGranularityParameter, searchCountPeriodfields : [GetPostsCountsAllSearchCountFieldsParameterInner]) : async Get2TweetsCountsRecentResponse {
             await* operations__.getPostsCountsRecent(config, query_, startTime, endTime, sinceId, untilId, nextToken, paginationToken, granularity, searchCountPeriodfields)
         };
 
         /// Get Liking Users
+        ///
         /// Retrieves a list of Users who liked a specific Post by its ID.
         public func getPostsLikingUsers(id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2TweetsIdLikingUsersResponse {
             await* operations__.getPostsLikingUsers(config, id, maxResults, paginationToken, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get Quoted Posts
+        ///
         /// Retrieves a list of Posts that quote a specific Post by its ID.
         public func getPostsQuotedPosts(id : Text, maxResults : Nat, paginationToken : Text, exclude : [GetPostsQuotedPostsExcludeParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2TweetsIdQuoteTweetsResponse {
             await* operations__.getPostsQuotedPosts(config, id, maxResults, paginationToken, exclude, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Get Reposted by
+        ///
         /// Retrieves a list of Users who reposted a specific Post by its ID.
         public func getPostsRepostedBy(id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2TweetsIdRetweetedByResponse {
             await* operations__.getPostsRepostedBy(config, id, maxResults, paginationToken, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get Reposts
+        ///
         /// Retrieves a list of Posts that repost a specific Post by its ID.
         public func getPostsReposts(id : Text, maxResults : Nat, paginationToken : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2TweetsIdRetweetsResponse {
             await* operations__.getPostsReposts(config, id, maxResults, paginationToken, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Get stream rule counts
+        ///
         /// Retrieves the count of rules in the active rule set for the filtered stream.
         public func getRuleCounts(rulesCountPeriodfields : [GetRuleCountsRulesCountFieldsParameterInner]) : async Get2TweetsSearchStreamRulesCountsResponse {
             await* operations__.getRuleCounts(config, rulesCountPeriodfields)
         };
 
         /// Get stream rules
+        ///
         /// Retrieves the active rule set or a subset of rules for the filtered stream.
         public func getRules(ids : [Text], maxResults : Nat, paginationToken : Text) : async RulesLookupResponse {
             await* operations__.getRules(config, ids, maxResults, paginationToken)
         };
 
         /// Get Space ticket buyers
+        ///
         /// Retrieves a list of Users who purchased tickets to a specific Space by its ID.
         public func getSpacesBuyers(id : Text, paginationToken : Text, maxResults : Nat, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2SpacesIdBuyersResponse {
             await* operations__.getSpacesBuyers(config, id, paginationToken, maxResults, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get Space Posts
+        ///
         /// Retrieves a list of Posts shared in a specific Space by its ID.
         public func getSpacesPosts(id : Text, maxResults : Nat, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2SpacesIdTweetsResponse {
             await* operations__.getSpacesPosts(config, id, maxResults, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Get liked Posts
+        ///
         /// Retrieves a list of Posts liked by a specific User by their ID.
         public func getUsersLikedPosts(id : Text, maxResults : Nat, paginationToken : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2UsersIdLikedTweetsResponse {
             await* operations__.getUsersLikedPosts(config, id, maxResults, paginationToken, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Get mentions
+        ///
         /// Retrieves a list of Posts that mention a specific User by their ID.
         public func getUsersMentions(id : Text, sinceId : Text, untilId : Text, maxResults : Nat, paginationToken : Text, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2UsersIdMentionsResponse {
             await* operations__.getUsersMentions(config, id, sinceId, untilId, maxResults, paginationToken, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Get Posts
+        ///
         /// Retrieves a list of posts authored by a specific User by their ID.
         public func getUsersPosts(id : Text, sinceId : Text, untilId : Text, maxResults : Nat, paginationToken : Text, exclude : [GetPostsQuotedPostsExcludeParameterInner], startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2UsersIdTweetsResponse {
             await* operations__.getUsersPosts(config, id, sinceId, untilId, maxResults, paginationToken, exclude, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Get Timeline
+        ///
         /// Retrieves a reverse chronological list of Posts in the authenticated User’s Timeline.
         public func getUsersTimeline(id : Text, sinceId : Text, untilId : Text, maxResults : Nat, paginationToken : Text, exclude : [GetPostsQuotedPostsExcludeParameterInner], startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2UsersIdTimelinesReverseChronologicalResponse {
             await* operations__.getUsersTimeline(config, id, sinceId, untilId, maxResults, paginationToken, exclude, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Hide reply
+        ///
         /// Hides or unhides a reply to a conversation owned by the authenticated user.
         public func hidePostsReply(tweetId : Text, tweetHideRequest : TweetHideRequest) : async TweetHideResponse {
             await* operations__.hidePostsReply(config, tweetId, tweetHideRequest)
         };
 
         /// Like Post
+        ///
         /// Causes the authenticated user to Like a specific Post by its ID.
         public func likePost(id : Text, usersLikesCreateRequest : UsersLikesCreateRequest) : async UsersLikesCreateResponse {
             await* operations__.likePost(config, id, usersLikesCreateRequest)
         };
 
         /// Repost Post
+        ///
         /// Causes the authenticated user to repost a specific Post by its ID.
         public func repostPost(id : Text, usersRetweetsCreateRequest : UsersRetweetsCreateRequest) : async UsersRetweetsCreateResponse {
             await* operations__.repostPost(config, id, usersRetweetsCreateRequest)
         };
 
         /// Search all Posts
+        ///
         /// Retrieves Posts from the full archive matching a search query.
         public func searchPostsAll(query_ : Text, startTime : Text, endTime : Text, sinceId : Text, untilId : Text, maxResults : Nat, nextToken : Text, paginationToken : Text, sortOrder : SearchPostsAllSortOrderParameter, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2TweetsSearchAllResponse {
             await* operations__.searchPostsAll(config, query_, startTime, endTime, sinceId, untilId, maxResults, nextToken, paginationToken, sortOrder, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Search recent Posts
+        ///
         /// Retrieves Posts from the last 7 days matching a search query.
         public func searchPostsRecent(query_ : Text, startTime : Text, endTime : Text, sinceId : Text, untilId : Text, maxResults : Nat, nextToken : Text, paginationToken : Text, sortOrder : SearchPostsAllSortOrderParameter, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2TweetsSearchRecentResponse {
             await* operations__.searchPostsRecent(config, query_, startTime, endTime, sinceId, untilId, maxResults, nextToken, paginationToken, sortOrder, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Stream filtered Posts
+        ///
         /// Streams Posts in real-time matching the active rule set.
         public func streamPosts(backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async FilteredStreamingTweetResponse {
             await* operations__.streamPosts(config, backfillMinutes, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Stream all Posts
+        ///
         /// Streams all public Posts in real-time.
         public func streamPostsFirehose(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async StreamingTweetResponse {
             await* operations__.streamPostsFirehose(config, partition, backfillMinutes, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Stream English Posts
+        ///
         /// Streams all public English-language Posts in real-time.
         public func streamPostsFirehoseEn(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async StreamingTweetResponse {
             await* operations__.streamPostsFirehoseEn(config, partition, backfillMinutes, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Stream Japanese Posts
+        ///
         /// Streams all public Japanese-language Posts in real-time.
         public func streamPostsFirehoseJa(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async StreamingTweetResponse {
             await* operations__.streamPostsFirehoseJa(config, partition, backfillMinutes, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Stream Korean Posts
+        ///
         /// Streams all public Korean-language Posts in real-time.
         public func streamPostsFirehoseKo(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async StreamingTweetResponse {
             await* operations__.streamPostsFirehoseKo(config, partition, backfillMinutes, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Stream Portuguese Posts
+        ///
         /// Streams all public Portuguese-language Posts in real-time.
         public func streamPostsFirehosePt(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async StreamingTweetResponse {
             await* operations__.streamPostsFirehosePt(config, partition, backfillMinutes, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Stream sampled Posts
+        ///
         /// Streams a 1% sample of public Posts in real-time.
         public func streamPostsSample(backfillMinutes : Nat, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async StreamingTweetResponse {
             await* operations__.streamPostsSample(config, backfillMinutes, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Stream 10% sampled Posts
+        ///
         /// Streams a 10% sample of public Posts in real-time.
         public func streamPostsSample10(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2TweetsSample10StreamResponse {
             await* operations__.streamPostsSample10(config, partition, backfillMinutes, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Unlike Post
+        ///
         /// Causes the authenticated user to Unlike a specific Post by its ID.
         public func unlikePost(id : Text, tweetId : Text) : async UsersLikesDeleteResponse {
             await* operations__.unlikePost(config, id, tweetId)
         };
 
         /// Unrepost Post
+        ///
         /// Causes the authenticated user to unrepost a specific Post by its ID.
         public func unrepostPost(id : Text, sourceTweetId : Text) : async UsersRetweetsDeleteResponse {
             await* operations__.unrepostPost(config, id, sourceTweetId)
         };
 
         /// Update stream rules
+        ///
         /// Adds or deletes rules from the active rule set for the filtered stream.
         public func updateRules(addOrDeleteRulesRequest : AddOrDeleteRulesRequest, dryRun : Bool, deleteAll : Bool) : async AddOrDeleteRulesResponse {
             await* operations__.updateRules(config, addOrDeleteRulesRequest, dryRun, deleteAll)

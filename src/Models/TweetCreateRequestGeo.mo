@@ -1,6 +1,6 @@
+/// Place ID being attached to the Tweet for geo location.
 
 // TweetCreateRequestGeo.mo
-/// Place ID being attached to the Tweet for geo location.
 
 module {
     // User-facing type: what application code uses

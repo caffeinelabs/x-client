@@ -1,6 +1,6 @@
+/// The scopes for this tweet
 
 // TweetScopes.mo
-/// The scopes for this tweet
 
 module {
     // User-facing type: what application code uses

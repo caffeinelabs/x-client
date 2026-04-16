@@ -1,8 +1,8 @@
+/// The list of active webhook links for a given stream
 
 import { type WebhookLinksGetResponseDataLinksInner; JSON = WebhookLinksGetResponseDataLinksInner } "./WebhookLinksGetResponseDataLinksInner";
 
 // WebhookLinksGetResponseData.mo
-/// The list of active webhook links for a given stream
 
 module {
     // User-facing type: what application code uses

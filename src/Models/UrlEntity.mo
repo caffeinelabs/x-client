@@ -1,10 +1,10 @@
+/// Represent the portion of text recognized as a URL, and its start and end position within the text.
 
 import { type UrlImage; JSON = UrlImage } "./UrlImage";
 
 import Int "mo:core/Int";
 
 // UrlEntity.mo
-/// Represent the portion of text recognized as a URL, and its start and end position within the text.
 
 module {
     // User-facing type: what application code uses

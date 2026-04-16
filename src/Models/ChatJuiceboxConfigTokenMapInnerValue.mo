@@ -1,6 +1,6 @@
+/// Realm connection details.
 
 // ChatJuiceboxConfigTokenMapInnerValue.mo
-/// Realm connection details.
 
 module {
     // User-facing type: what application code uses

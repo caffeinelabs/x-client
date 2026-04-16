@@ -1,10 +1,10 @@
+/// A response from getting a media upload request status.
 
 import { type MediaUploadAppendResponseData; JSON = MediaUploadAppendResponseData } "./MediaUploadAppendResponseData";
 
 import { type Problem; JSON = Problem } "./Problem";
 
 // MediaUploadAppendResponse.mo
-/// A response from getting a media upload request status.
 
 module {
     // User-facing type: what application code uses

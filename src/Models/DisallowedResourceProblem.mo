@@ -1,3 +1,4 @@
+/// A problem that indicates that the resource requested violates the precepts of this API.
 
 import { type DisallowedResourceProblemAllOfResourceType; JSON = DisallowedResourceProblemAllOfResourceType } "./DisallowedResourceProblemAllOfResourceType";
 
@@ -6,7 +7,6 @@ import { type DisallowedResourceProblemAllOfSection; JSON = DisallowedResourcePr
 import { type Problem; JSON = Problem } "./Problem";
 
 // DisallowedResourceProblem.mo
-/// A problem that indicates that the resource requested violates the precepts of this API.
 
 module {
     // User-facing type: what application code uses

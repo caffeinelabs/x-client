@@ -1,8 +1,8 @@
+/// Descriptor for a Plaid account.
 
 import { type PlaidCurrency; JSON = PlaidCurrency } "./PlaidCurrency";
 
 // PlaidAccount.mo
-/// Descriptor for a Plaid account.
 
 module {
     // User-facing type: what application code uses

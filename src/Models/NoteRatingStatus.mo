@@ -1,6 +1,6 @@
+/// Community Note rating status
 
 // NoteRatingStatus.mo
-/// Community Note rating status
 /// Enum values: #currently_rated_helpful, #currently_rated_not_helpful, #firm_reject, #insufficient_consensus, #minimum_ratings_not_met, #needs_more_ratings, #needs_your_help
 
 module {

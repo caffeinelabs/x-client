@@ -1,8 +1,8 @@
+/// A problem that indicates your client application does not have the required OAuth1 permissions for the requested endpoint.
 
 import { type Problem; JSON = Problem } "./Problem";
 
 // Oauth1PermissionsProblem.mo
-/// A problem that indicates your client application does not have the required OAuth1 permissions for the requested endpoint.
 
 module {
     // User-facing type: what application code uses

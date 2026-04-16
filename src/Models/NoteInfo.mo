@@ -1,10 +1,10 @@
+/// A X Community Note is a note on a Post.
 
 import { type MisleadingTags; JSON = MisleadingTags } "./MisleadingTags";
 
 import { type NoteClassification; JSON = NoteClassification } "./NoteClassification";
 
 // NoteInfo.mo
-/// A X Community Note is a note on a Post.
 
 module {
     // User-facing type: what application code uses

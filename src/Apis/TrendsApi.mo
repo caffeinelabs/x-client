@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type Error_; JSON = Error_ } "../Models/Error_";
 import { type Get2TrendsByWoeidWoeidResponse; JSON = Get2TrendsByWoeidWoeidResponse } "../Models/Get2TrendsByWoeidWoeidResponse";
 import { type Get2UsersPersonalizedTrendsResponse; JSON = Get2UsersPersonalizedTrendsResponse } "../Models/Get2UsersPersonalizedTrendsResponse";
@@ -17,7 +17,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -54,6 +54,7 @@ module {
 
 
     /// Get Trends by WOEID
+    ///
     /// Retrieves trending topics for a specific location identified by its WOEID.
     public func getTrendsByWoeid(config : Config, woeid : Int, maxTrends : Nat, trendPeriodfields : [GetTrendsByWoeidTrendFieldsParameterInner]) : async* Get2TrendsByWoeidWoeidResponse {
         let {baseUrl; cycles} = config;
@@ -158,6 +159,7 @@ module {
     };
 
     /// Get personalized Trends
+    ///
     /// Retrieves personalized trending topics for the authenticated user.
     public func getTrendsPersonalizedTrends(config : Config, personalizedTrendPeriodfields : [GetTrendsPersonalizedTrendsPersonalizedTrendFieldsParameterInner]) : async* Get2UsersPersonalizedTrendsResponse {
         let {baseUrl; cycles} = config;
@@ -268,12 +270,14 @@ module {
 
     public module class TrendsApi(config : Config) {
         /// Get Trends by WOEID
+        ///
         /// Retrieves trending topics for a specific location identified by its WOEID.
         public func getTrendsByWoeid(woeid : Int, maxTrends : Nat, trendPeriodfields : [GetTrendsByWoeidTrendFieldsParameterInner]) : async Get2TrendsByWoeidWoeidResponse {
             await* operations__.getTrendsByWoeid(config, woeid, maxTrends, trendPeriodfields)
         };
 
         /// Get personalized Trends
+        ///
         /// Retrieves personalized trending topics for the authenticated user.
         public func getTrendsPersonalizedTrends(personalizedTrendPeriodfields : [GetTrendsPersonalizedTrendsPersonalizedTrendFieldsParameterInner]) : async Get2UsersPersonalizedTrendsResponse {
             await* operations__.getTrendsPersonalizedTrends(config, personalizedTrendPeriodfields)

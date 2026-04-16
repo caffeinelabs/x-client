@@ -1,3 +1,4 @@
+/// Likes compliance stream events.
 
 import { type LikeComplianceSchema; JSON = LikeComplianceSchema } "./LikeComplianceSchema";
 
@@ -8,7 +9,6 @@ import { type LikesComplianceStreamResponseOneOf1; JSON = LikesComplianceStreamR
 import { type Problem; JSON = Problem } "./Problem";
 
 // LikesComplianceStreamResponse.mo
-/// Likes compliance stream events.
 import Runtime "mo:core/Runtime";
 
 module {

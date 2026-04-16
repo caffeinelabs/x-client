@@ -1,8 +1,8 @@
+/// The full-content of the Tweet, including text beyond 280 characters.
 
 import { type TweetNoteTweetEntities; JSON = TweetNoteTweetEntities } "./TweetNoteTweetEntities";
 
 // TweetNoteTweet.mo
-/// The full-content of the Tweet, including text beyond 280 characters.
 
 module {
     // User-facing type: what application code uses

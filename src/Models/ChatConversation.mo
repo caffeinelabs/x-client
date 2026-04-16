@@ -1,8 +1,8 @@
+/// A Chat conversation resource representing either a direct or group conversation.
 
 import { type ChatConversationType; JSON = ChatConversationType } "./ChatConversationType";
 
 // ChatConversation.mo
-/// A Chat conversation resource representing either a direct or group conversation.
 
 module {
     // User-facing type: what application code uses

@@ -1,8 +1,8 @@
+/// Suggested source links and the number of requests that included each link.
 
 import { type UrlEntity; JSON = UrlEntity } "./UrlEntity";
 
 // TweetSuggestedSourceLinksWithCounts.mo
-/// Suggested source links and the number of requests that included each link.
 
 module {
     // User-facing type: what application code uses

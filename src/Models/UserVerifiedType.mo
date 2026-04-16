@@ -1,6 +1,6 @@
+/// The X Blue verified type of the user, eg: blue, government, business or none.
 
 // UserVerifiedType.mo
-/// The X Blue verified type of the user, eg: blue, government, business or none.
 /// Enum values: #blue, #government, #business, #none_
 
 module {

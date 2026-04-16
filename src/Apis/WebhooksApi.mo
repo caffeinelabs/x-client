@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type Error_; JSON = Error_ } "../Models/Error_";
 import { type Get2WebhooksResponse; JSON = Get2WebhooksResponse } "../Models/Get2WebhooksResponse";
 import { type GetWebhooksWebhookConfigFieldsParameterInner; JSON = GetWebhooksWebhookConfigFieldsParameterInner } "../Models/GetWebhooksWebhookConfigFieldsParameterInner";
@@ -24,7 +24,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -61,6 +61,7 @@ module {
 
 
     /// Create replay job for webhook
+    ///
     /// Creates a replay job to retrieve events from up to the past 24 hours for all events delivered or attempted to be delivered to the webhook.
     public func createWebhookReplayJob(config : Config, webhookReplayCreateRequest : WebhookReplayCreateRequest) : async* ReplayJobCreateResponse {
         let {baseUrl; cycles} = config;
@@ -103,7 +104,7 @@ module {
             body = do ? {
                 let jsonValue = WebhookReplayCreateRequest.toJSON(webhookReplayCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["from_date", "to_date", "webhook_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -168,6 +169,7 @@ module {
     };
 
     /// Create webhook
+    ///
     /// Creates a new webhook configuration.
     public func createWebhooks(config : Config, webhookConfigCreateRequest : WebhookConfigCreateRequest) : async* WebhookConfigCreateResponse {
         let {baseUrl; cycles} = config;
@@ -210,7 +212,7 @@ module {
             body = do ? {
                 let jsonValue = WebhookConfigCreateRequest.toJSON(webhookConfigCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["url"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -275,6 +277,7 @@ module {
     };
 
     /// Create stream link
+    ///
     /// Creates a link to deliver FilteredStream events to the given webhook.
     public func createWebhooksStreamLink(config : Config, webhookId : Text, tweetPeriodfields : Text, expansions : Text, mediaPeriodfields : Text, pollPeriodfields : Text, userPeriodfields : Text, placePeriodfields : Text) : async* WebhookLinksCreateResponse {
         let {baseUrl; cycles} = config;
@@ -379,6 +382,7 @@ module {
     };
 
     /// Delete webhook
+    ///
     /// Deletes an existing webhook configuration.
     public func deleteWebhooks(config : Config, webhookId : Text) : async* WebhookConfigDeleteResponse {
         let {baseUrl; cycles} = config;
@@ -482,6 +486,7 @@ module {
     };
 
     /// Delete stream link
+    ///
     /// Deletes a link from FilteredStream events to the given webhook.
     public func deleteWebhooksStreamLink(config : Config, webhookId : Text) : async* WebhookLinksDeleteResponse {
         let {baseUrl; cycles} = config;
@@ -585,6 +590,7 @@ module {
     };
 
     /// Get webhook
+    ///
     /// Get a list of webhook configs associated with a client app.
     public func getWebhooks(config : Config, webhookConfigPeriodfields : [GetWebhooksWebhookConfigFieldsParameterInner]) : async* Get2WebhooksResponse {
         let {baseUrl; cycles} = config;
@@ -688,6 +694,7 @@ module {
     };
 
     /// Get stream links
+    ///
     /// Get a list of webhook links associated with a filtered stream ruleset.
     public func getWebhooksStreamLinks(config : Config) : async* WebhookLinksGetResponse {
         let {baseUrl; cycles} = config;
@@ -790,6 +797,7 @@ module {
     };
 
     /// Validate webhook
+    ///
     /// Triggers a CRC check for a given webhook.
     public func validateWebhooks(config : Config, webhookId : Text) : async* WebhookConfigPutResponse {
         let {baseUrl; cycles} = config;
@@ -906,48 +914,56 @@ module {
 
     public module class WebhooksApi(config : Config) {
         /// Create replay job for webhook
+        ///
         /// Creates a replay job to retrieve events from up to the past 24 hours for all events delivered or attempted to be delivered to the webhook.
         public func createWebhookReplayJob(webhookReplayCreateRequest : WebhookReplayCreateRequest) : async ReplayJobCreateResponse {
             await* operations__.createWebhookReplayJob(config, webhookReplayCreateRequest)
         };
 
         /// Create webhook
+        ///
         /// Creates a new webhook configuration.
         public func createWebhooks(webhookConfigCreateRequest : WebhookConfigCreateRequest) : async WebhookConfigCreateResponse {
             await* operations__.createWebhooks(config, webhookConfigCreateRequest)
         };
 
         /// Create stream link
+        ///
         /// Creates a link to deliver FilteredStream events to the given webhook.
         public func createWebhooksStreamLink(webhookId : Text, tweetPeriodfields : Text, expansions : Text, mediaPeriodfields : Text, pollPeriodfields : Text, userPeriodfields : Text, placePeriodfields : Text) : async WebhookLinksCreateResponse {
             await* operations__.createWebhooksStreamLink(config, webhookId, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Delete webhook
+        ///
         /// Deletes an existing webhook configuration.
         public func deleteWebhooks(webhookId : Text) : async WebhookConfigDeleteResponse {
             await* operations__.deleteWebhooks(config, webhookId)
         };
 
         /// Delete stream link
+        ///
         /// Deletes a link from FilteredStream events to the given webhook.
         public func deleteWebhooksStreamLink(webhookId : Text) : async WebhookLinksDeleteResponse {
             await* operations__.deleteWebhooksStreamLink(config, webhookId)
         };
 
         /// Get webhook
+        ///
         /// Get a list of webhook configs associated with a client app.
         public func getWebhooks(webhookConfigPeriodfields : [GetWebhooksWebhookConfigFieldsParameterInner]) : async Get2WebhooksResponse {
             await* operations__.getWebhooks(config, webhookConfigPeriodfields)
         };
 
         /// Get stream links
+        ///
         /// Get a list of webhook links associated with a filtered stream ruleset.
         public func getWebhooksStreamLinks() : async WebhookLinksGetResponse {
             await* operations__.getWebhooksStreamLinks(config)
         };
 
         /// Validate webhook
+        ///
         /// Triggers a CRC check for a given webhook.
         public func validateWebhooks(webhookId : Text) : async WebhookConfigPutResponse {
             await* operations__.validateWebhooks(config, webhookId)

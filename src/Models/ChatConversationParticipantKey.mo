@@ -1,6 +1,6 @@
+/// A participant's encrypted conversation key.
 
 // ChatConversationParticipantKey.mo
-/// A participant's encrypted conversation key.
 
 module {
     // User-facing type: what application code uses

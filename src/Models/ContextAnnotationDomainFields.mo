@@ -1,6 +1,6 @@
+/// Represents the data for the context annotation domain.
 
 // ContextAnnotationDomainFields.mo
-/// Represents the data for the context annotation domain.
 
 module {
     // User-facing type: what application code uses

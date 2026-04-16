@@ -1,6 +1,6 @@
+/// The conversation type that is being created.
 
 // CreateDmConversationRequestConversationType.mo
-/// The conversation type that is being created.
 /// Enum values: #group
 
 module {

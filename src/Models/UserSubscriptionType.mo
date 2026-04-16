@@ -1,6 +1,6 @@
+/// The X Blue subscription type of the user, eg: Basic, Premium, PremiumPlus or None.
 
 // UserSubscriptionType.mo
-/// The X Blue subscription type of the user, eg: Basic, Premium, PremiumPlus or None.
 /// Enum values: #basic, #premium, #premiumplus, #none_
 
 module {

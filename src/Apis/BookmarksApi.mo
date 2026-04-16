@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type BookmarkAddRequest; JSON = BookmarkAddRequest } "../Models/BookmarkAddRequest";
 import { type BookmarkFolderPostsResponse; JSON = BookmarkFolderPostsResponse } "../Models/BookmarkFolderPostsResponse";
 import { type BookmarkFoldersResponse; JSON = BookmarkFoldersResponse } "../Models/BookmarkFoldersResponse";
@@ -24,7 +24,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -61,6 +61,7 @@ module {
 
 
     /// Create Bookmark
+    ///
     /// Adds a post to the authenticated user’s bookmarks.
     public func createUsersBookmark(config : Config, id : Text, bookmarkAddRequest : BookmarkAddRequest) : async* BookmarkMutationResponse {
         let {baseUrl; cycles} = config;
@@ -104,7 +105,7 @@ module {
             body = do ? {
                 let jsonValue = BookmarkAddRequest.toJSON(bookmarkAddRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["tweet_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -169,6 +170,7 @@ module {
     };
 
     /// Delete Bookmark
+    ///
     /// Removes a Post from the authenticated user’s Bookmarks by its ID.
     public func deleteUsersBookmark(config : Config, id : Text, tweetId : Text) : async* BookmarkMutationResponse {
         let {baseUrl; cycles} = config;
@@ -273,6 +275,7 @@ module {
     };
 
     /// Get Bookmark folders
+    ///
     /// Retrieves a list of Bookmark folders created by the authenticated user.
     public func getUsersBookmarkFolders(config : Config, id : Text, maxResults : Nat, paginationToken : Text) : async* BookmarkFoldersResponse {
         let {baseUrl; cycles} = config;
@@ -377,6 +380,7 @@ module {
     };
 
     /// Get Bookmarks
+    ///
     /// Retrieves a list of Posts bookmarked by the authenticated user.
     public func getUsersBookmarks(config : Config, id : Text, maxResults : Nat, paginationToken : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2UsersIdBookmarksResponse {
         let {baseUrl; cycles} = config;
@@ -481,6 +485,7 @@ module {
     };
 
     /// Get Bookmarks by folder ID
+    ///
     /// Retrieves Posts in a specific Bookmark folder by its ID for the authenticated user.
     public func getUsersBookmarksByFolderId(config : Config, id : Text, folderId : Text) : async* BookmarkFolderPostsResponse {
         let {baseUrl; cycles} = config;
@@ -595,30 +600,35 @@ module {
 
     public module class BookmarksApi(config : Config) {
         /// Create Bookmark
+        ///
         /// Adds a post to the authenticated user’s bookmarks.
         public func createUsersBookmark(id : Text, bookmarkAddRequest : BookmarkAddRequest) : async BookmarkMutationResponse {
             await* operations__.createUsersBookmark(config, id, bookmarkAddRequest)
         };
 
         /// Delete Bookmark
+        ///
         /// Removes a Post from the authenticated user’s Bookmarks by its ID.
         public func deleteUsersBookmark(id : Text, tweetId : Text) : async BookmarkMutationResponse {
             await* operations__.deleteUsersBookmark(config, id, tweetId)
         };
 
         /// Get Bookmark folders
+        ///
         /// Retrieves a list of Bookmark folders created by the authenticated user.
         public func getUsersBookmarkFolders(id : Text, maxResults : Nat, paginationToken : Text) : async BookmarkFoldersResponse {
             await* operations__.getUsersBookmarkFolders(config, id, maxResults, paginationToken)
         };
 
         /// Get Bookmarks
+        ///
         /// Retrieves a list of Posts bookmarked by the authenticated user.
         public func getUsersBookmarks(id : Text, maxResults : Nat, paginationToken : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2UsersIdBookmarksResponse {
             await* operations__.getUsersBookmarks(config, id, maxResults, paginationToken, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Get Bookmarks by folder ID
+        ///
         /// Retrieves Posts in a specific Bookmark folder by its ID for the authenticated user.
         public func getUsersBookmarksByFolderId(id : Text, folderId : Text) : async BookmarkFolderPostsResponse {
             await* operations__.getUsersBookmarksByFolderId(config, id, folderId)

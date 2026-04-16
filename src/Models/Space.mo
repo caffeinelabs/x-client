@@ -1,10 +1,10 @@
+/// 
 
 import { type SpaceState; JSON = SpaceState } "./SpaceState";
 
 import { type SpaceTopicsInner; JSON = SpaceTopicsInner } "./SpaceTopicsInner";
 
 // Space.mo
-/// 
 
 module {
     // User-facing type: what application code uses

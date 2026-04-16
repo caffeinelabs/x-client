@@ -1,8 +1,8 @@
+/// A request to create a new batch compliance job.
 
 import { type CreateComplianceJobRequestType; JSON = CreateComplianceJobRequestType } "./CreateComplianceJobRequestType";
 
 // CreateComplianceJobRequest.mo
-/// A request to create a new batch compliance job.
 
 module {
     // User-facing type: what application code uses

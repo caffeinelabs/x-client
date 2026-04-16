@@ -1,6 +1,6 @@
+/// IDs and values of all deleted user-specified stream filtering rules.
 
 // DeleteRulesRequestDelete.mo
-/// IDs and values of all deleted user-specified stream filtering rules.
 
 module {
     // User-facing type: what application code uses

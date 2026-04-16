@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type Error_; JSON = Error_ } "../Models/Error_";
 import { type Get2ConnectionsResponse; JSON = Get2ConnectionsResponse } "../Models/Get2ConnectionsResponse";
 import { type GetConnectionHistoryConnectionFieldsParameterInner; JSON = GetConnectionHistoryConnectionFieldsParameterInner } "../Models/GetConnectionHistoryConnectionFieldsParameterInner";
@@ -21,7 +21,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -58,6 +58,7 @@ module {
 
 
     /// Terminate all connections
+    ///
     /// Terminates all active streaming connections for the authenticated application.
     public func deleteAllConnections(config : Config) : async* KillAllConnectionsResponse {
         let {baseUrl; cycles} = config;
@@ -160,6 +161,7 @@ module {
     };
 
     /// Terminate connections by endpoint
+    ///
     /// Terminates all streaming connections for a specific endpoint ID for the authenticated application.
     public func deleteConnectionsByEndpoint(config : Config, endpointId : GetConnectionHistoryEndpointsParameterInner) : async* KillConnectionsByEndpointResponse {
         let {baseUrl; cycles} = config;
@@ -263,6 +265,7 @@ module {
     };
 
     /// Terminate multiple connections
+    ///
     /// Terminates multiple streaming connections by their UUIDs for the authenticated application.
     public func deleteConnectionsByUuids(config : Config, killConnectionsByUuidsRequest : KillConnectionsByUuidsRequest) : async* KillConnectionsByUuidsResponse {
         let {baseUrl; cycles} = config;
@@ -305,7 +308,7 @@ module {
             body = do ? {
                 let jsonValue = KillConnectionsByUuidsRequest.toJSON(killConnectionsByUuidsRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["uuids"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -370,6 +373,7 @@ module {
     };
 
     /// Get Connection History
+    ///
     /// Returns active and historical streaming connections with disconnect reasons for the authenticated application.
     public func getConnectionHistory(config : Config, status : GetConnectionHistoryStatusParameter, endpoints : [GetConnectionHistoryEndpointsParameterInner], maxResults : Nat, paginationToken : Text, connectionPeriodfields : [GetConnectionHistoryConnectionFieldsParameterInner]) : async* Get2ConnectionsResponse {
         let {baseUrl; cycles} = config;
@@ -482,24 +486,28 @@ module {
 
     public module class ConnectionsApi(config : Config) {
         /// Terminate all connections
+        ///
         /// Terminates all active streaming connections for the authenticated application.
         public func deleteAllConnections() : async KillAllConnectionsResponse {
             await* operations__.deleteAllConnections(config)
         };
 
         /// Terminate connections by endpoint
+        ///
         /// Terminates all streaming connections for a specific endpoint ID for the authenticated application.
         public func deleteConnectionsByEndpoint(endpointId : GetConnectionHistoryEndpointsParameterInner) : async KillConnectionsByEndpointResponse {
             await* operations__.deleteConnectionsByEndpoint(config, endpointId)
         };
 
         /// Terminate multiple connections
+        ///
         /// Terminates multiple streaming connections by their UUIDs for the authenticated application.
         public func deleteConnectionsByUuids(killConnectionsByUuidsRequest : KillConnectionsByUuidsRequest) : async KillConnectionsByUuidsResponse {
             await* operations__.deleteConnectionsByUuids(config, killConnectionsByUuidsRequest)
         };
 
         /// Get Connection History
+        ///
         /// Returns active and historical streaming connections with disconnect reasons for the authenticated application.
         public func getConnectionHistory(status : GetConnectionHistoryStatusParameter, endpoints : [GetConnectionHistoryEndpointsParameterInner], maxResults : Nat, paginationToken : Text, connectionPeriodfields : [GetConnectionHistoryConnectionFieldsParameterInner]) : async Get2ConnectionsResponse {
             await* operations__.getConnectionHistory(config, status, endpoints, maxResults, paginationToken, connectionPeriodfields)

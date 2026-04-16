@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type ActivityStreamingResponse; JSON = ActivityStreamingResponse } "../Models/ActivityStreamingResponse";
 import { type ActivitySubscriptionCreateRequest; JSON = ActivitySubscriptionCreateRequest } "../Models/ActivitySubscriptionCreateRequest";
 import { type ActivitySubscriptionCreateResponse; JSON = ActivitySubscriptionCreateResponse } "../Models/ActivitySubscriptionCreateResponse";
@@ -40,7 +40,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -77,6 +77,7 @@ module {
 
 
     /// Activity Stream
+    ///
     /// Stream of X Activities
     public func activityStream(config : Config, backfillMinutes : Nat, startTime : Text, endTime : Text) : async* ActivityStreamingResponse {
         let {baseUrl; cycles} = config;
@@ -180,6 +181,7 @@ module {
     };
 
     /// Create X activity subscription
+    ///
     /// Creates a subscription for an X activity event
     public func createActivitySubscription(config : Config, activitySubscriptionCreateRequest : ActivitySubscriptionCreateRequest) : async* ActivitySubscriptionCreateResponse {
         let {baseUrl; cycles} = config;
@@ -222,7 +224,7 @@ module {
             body = do ? {
                 let jsonValue = ActivitySubscriptionCreateRequest.toJSON(activitySubscriptionCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["event_type", "filter", "tag", "webhook_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -287,6 +289,7 @@ module {
     };
 
     /// Create stream link
+    ///
     /// Creates a link to deliver FilteredStream events to the given webhook.
     public func createWebhooksStreamLink(config : Config, webhookId : Text, tweetPeriodfields : Text, expansions : Text, mediaPeriodfields : Text, pollPeriodfields : Text, userPeriodfields : Text, placePeriodfields : Text) : async* WebhookLinksCreateResponse {
         let {baseUrl; cycles} = config;
@@ -391,6 +394,7 @@ module {
     };
 
     /// Delete stream link
+    ///
     /// Deletes a link from FilteredStream events to the given webhook.
     public func deleteWebhooksStreamLink(config : Config, webhookId : Text) : async* WebhookLinksDeleteResponse {
         let {baseUrl; cycles} = config;
@@ -494,6 +498,7 @@ module {
     };
 
     /// Get stream rule counts
+    ///
     /// Retrieves the count of rules in the active rule set for the filtered stream.
     public func getRuleCounts(config : Config, rulesCountPeriodfields : [GetRuleCountsRulesCountFieldsParameterInner]) : async* Get2TweetsSearchStreamRulesCountsResponse {
         let {baseUrl; cycles} = config;
@@ -597,6 +602,7 @@ module {
     };
 
     /// Get stream rules
+    ///
     /// Retrieves the active rule set or a subset of rules for the filtered stream.
     public func getRules(config : Config, ids : [Text], maxResults : Nat, paginationToken : Text) : async* RulesLookupResponse {
         let {baseUrl; cycles} = config;
@@ -700,6 +706,7 @@ module {
     };
 
     /// Get stream links
+    ///
     /// Get a list of webhook links associated with a filtered stream ruleset.
     public func getWebhooksStreamLinks(config : Config) : async* WebhookLinksGetResponse {
         let {baseUrl; cycles} = config;
@@ -802,6 +809,7 @@ module {
     };
 
     /// Stream Post labels
+    ///
     /// Streams all labeling events applied to Posts.
     public func streamLabelsCompliance(config : Config, backfillMinutes : Nat, startTime : Text, endTime : Text) : async* TweetLabelStreamResponse {
         let {baseUrl; cycles} = config;
@@ -905,6 +913,7 @@ module {
     };
 
     /// Stream Likes compliance data
+    ///
     /// Streams all compliance data related to Likes for Users.
     public func streamLikesCompliance(config : Config, backfillMinutes : Nat, startTime : Text, endTime : Text) : async* LikesComplianceStreamResponse {
         let {baseUrl; cycles} = config;
@@ -1008,6 +1017,7 @@ module {
     };
 
     /// Stream all Likes
+    ///
     /// Streams all public Likes in real-time.
     public func streamLikesFirehose(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, likeWithTweetAuthorPeriodfields : [StreamLikesFirehoseLikeWithTweetAuthorFieldsParameterInner], expansions : [StreamLikesFirehoseExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* StreamingLikeResponseV2 {
         let {baseUrl; cycles} = config;
@@ -1111,6 +1121,7 @@ module {
     };
 
     /// Stream sampled Likes
+    ///
     /// Streams a 10% sample of public Likes in real-time.
     public func streamLikesSample10(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, likeWithTweetAuthorPeriodfields : [StreamLikesFirehoseLikeWithTweetAuthorFieldsParameterInner], expansions : [StreamLikesFirehoseExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* StreamingLikeResponseV2 {
         let {baseUrl; cycles} = config;
@@ -1214,6 +1225,7 @@ module {
     };
 
     /// Stream filtered Posts
+    ///
     /// Streams Posts in real-time matching the active rule set.
     public func streamPosts(config : Config, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* FilteredStreamingTweetResponse {
         let {baseUrl; cycles} = config;
@@ -1317,6 +1329,7 @@ module {
     };
 
     /// Stream Posts compliance data
+    ///
     /// Streams all compliance data related to Posts.
     public func streamPostsCompliance(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text) : async* TweetComplianceStreamResponse {
         let {baseUrl; cycles} = config;
@@ -1420,6 +1433,7 @@ module {
     };
 
     /// Stream all Posts
+    ///
     /// Streams all public Posts in real-time.
     public func streamPostsFirehose(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* StreamingTweetResponse {
         let {baseUrl; cycles} = config;
@@ -1523,6 +1537,7 @@ module {
     };
 
     /// Stream English Posts
+    ///
     /// Streams all public English-language Posts in real-time.
     public func streamPostsFirehoseEn(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* StreamingTweetResponse {
         let {baseUrl; cycles} = config;
@@ -1626,6 +1641,7 @@ module {
     };
 
     /// Stream Japanese Posts
+    ///
     /// Streams all public Japanese-language Posts in real-time.
     public func streamPostsFirehoseJa(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* StreamingTweetResponse {
         let {baseUrl; cycles} = config;
@@ -1729,6 +1745,7 @@ module {
     };
 
     /// Stream Korean Posts
+    ///
     /// Streams all public Korean-language Posts in real-time.
     public func streamPostsFirehoseKo(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* StreamingTweetResponse {
         let {baseUrl; cycles} = config;
@@ -1832,6 +1849,7 @@ module {
     };
 
     /// Stream Portuguese Posts
+    ///
     /// Streams all public Portuguese-language Posts in real-time.
     public func streamPostsFirehosePt(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* StreamingTweetResponse {
         let {baseUrl; cycles} = config;
@@ -1935,6 +1953,7 @@ module {
     };
 
     /// Stream sampled Posts
+    ///
     /// Streams a 1% sample of public Posts in real-time.
     public func streamPostsSample(config : Config, backfillMinutes : Nat, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* StreamingTweetResponse {
         let {baseUrl; cycles} = config;
@@ -2038,6 +2057,7 @@ module {
     };
 
     /// Stream 10% sampled Posts
+    ///
     /// Streams a 10% sample of public Posts in real-time.
     public func streamPostsSample10(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2TweetsSample10StreamResponse {
         let {baseUrl; cycles} = config;
@@ -2141,6 +2161,7 @@ module {
     };
 
     /// Stream Users compliance data
+    ///
     /// Streams all compliance data related to Users.
     public func streamUsersCompliance(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text) : async* UserComplianceStreamResponse {
         let {baseUrl; cycles} = config;
@@ -2244,6 +2265,7 @@ module {
     };
 
     /// Update stream rules
+    ///
     /// Adds or deletes rules from the active rule set for the filtered stream.
     public func updateRules(config : Config, addOrDeleteRulesRequest : AddOrDeleteRulesRequest, dryRun : Bool, deleteAll : Bool) : async* AddOrDeleteRulesResponse {
         let {baseUrl; cycles} = config;
@@ -2287,7 +2309,7 @@ module {
             body = do ? {
                 let jsonValue = AddOrDeleteRulesRequest.toJSON(addOrDeleteRulesRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["add", "delete"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -2379,132 +2401,154 @@ module {
 
     public module class StreamApi(config : Config) {
         /// Activity Stream
+        ///
         /// Stream of X Activities
         public func activityStream(backfillMinutes : Nat, startTime : Text, endTime : Text) : async ActivityStreamingResponse {
             await* operations__.activityStream(config, backfillMinutes, startTime, endTime)
         };
 
         /// Create X activity subscription
+        ///
         /// Creates a subscription for an X activity event
         public func createActivitySubscription(activitySubscriptionCreateRequest : ActivitySubscriptionCreateRequest) : async ActivitySubscriptionCreateResponse {
             await* operations__.createActivitySubscription(config, activitySubscriptionCreateRequest)
         };
 
         /// Create stream link
+        ///
         /// Creates a link to deliver FilteredStream events to the given webhook.
         public func createWebhooksStreamLink(webhookId : Text, tweetPeriodfields : Text, expansions : Text, mediaPeriodfields : Text, pollPeriodfields : Text, userPeriodfields : Text, placePeriodfields : Text) : async WebhookLinksCreateResponse {
             await* operations__.createWebhooksStreamLink(config, webhookId, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Delete stream link
+        ///
         /// Deletes a link from FilteredStream events to the given webhook.
         public func deleteWebhooksStreamLink(webhookId : Text) : async WebhookLinksDeleteResponse {
             await* operations__.deleteWebhooksStreamLink(config, webhookId)
         };
 
         /// Get stream rule counts
+        ///
         /// Retrieves the count of rules in the active rule set for the filtered stream.
         public func getRuleCounts(rulesCountPeriodfields : [GetRuleCountsRulesCountFieldsParameterInner]) : async Get2TweetsSearchStreamRulesCountsResponse {
             await* operations__.getRuleCounts(config, rulesCountPeriodfields)
         };
 
         /// Get stream rules
+        ///
         /// Retrieves the active rule set or a subset of rules for the filtered stream.
         public func getRules(ids : [Text], maxResults : Nat, paginationToken : Text) : async RulesLookupResponse {
             await* operations__.getRules(config, ids, maxResults, paginationToken)
         };
 
         /// Get stream links
+        ///
         /// Get a list of webhook links associated with a filtered stream ruleset.
         public func getWebhooksStreamLinks() : async WebhookLinksGetResponse {
             await* operations__.getWebhooksStreamLinks(config)
         };
 
         /// Stream Post labels
+        ///
         /// Streams all labeling events applied to Posts.
         public func streamLabelsCompliance(backfillMinutes : Nat, startTime : Text, endTime : Text) : async TweetLabelStreamResponse {
             await* operations__.streamLabelsCompliance(config, backfillMinutes, startTime, endTime)
         };
 
         /// Stream Likes compliance data
+        ///
         /// Streams all compliance data related to Likes for Users.
         public func streamLikesCompliance(backfillMinutes : Nat, startTime : Text, endTime : Text) : async LikesComplianceStreamResponse {
             await* operations__.streamLikesCompliance(config, backfillMinutes, startTime, endTime)
         };
 
         /// Stream all Likes
+        ///
         /// Streams all public Likes in real-time.
         public func streamLikesFirehose(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, likeWithTweetAuthorPeriodfields : [StreamLikesFirehoseLikeWithTweetAuthorFieldsParameterInner], expansions : [StreamLikesFirehoseExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async StreamingLikeResponseV2 {
             await* operations__.streamLikesFirehose(config, partition, backfillMinutes, startTime, endTime, likeWithTweetAuthorPeriodfields, expansions, userPeriodfields, tweetPeriodfields)
         };
 
         /// Stream sampled Likes
+        ///
         /// Streams a 10% sample of public Likes in real-time.
         public func streamLikesSample10(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, likeWithTweetAuthorPeriodfields : [StreamLikesFirehoseLikeWithTweetAuthorFieldsParameterInner], expansions : [StreamLikesFirehoseExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async StreamingLikeResponseV2 {
             await* operations__.streamLikesSample10(config, partition, backfillMinutes, startTime, endTime, likeWithTweetAuthorPeriodfields, expansions, userPeriodfields, tweetPeriodfields)
         };
 
         /// Stream filtered Posts
+        ///
         /// Streams Posts in real-time matching the active rule set.
         public func streamPosts(backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async FilteredStreamingTweetResponse {
             await* operations__.streamPosts(config, backfillMinutes, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Stream Posts compliance data
+        ///
         /// Streams all compliance data related to Posts.
         public func streamPostsCompliance(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text) : async TweetComplianceStreamResponse {
             await* operations__.streamPostsCompliance(config, partition, backfillMinutes, startTime, endTime)
         };
 
         /// Stream all Posts
+        ///
         /// Streams all public Posts in real-time.
         public func streamPostsFirehose(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async StreamingTweetResponse {
             await* operations__.streamPostsFirehose(config, partition, backfillMinutes, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Stream English Posts
+        ///
         /// Streams all public English-language Posts in real-time.
         public func streamPostsFirehoseEn(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async StreamingTweetResponse {
             await* operations__.streamPostsFirehoseEn(config, partition, backfillMinutes, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Stream Japanese Posts
+        ///
         /// Streams all public Japanese-language Posts in real-time.
         public func streamPostsFirehoseJa(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async StreamingTweetResponse {
             await* operations__.streamPostsFirehoseJa(config, partition, backfillMinutes, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Stream Korean Posts
+        ///
         /// Streams all public Korean-language Posts in real-time.
         public func streamPostsFirehoseKo(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async StreamingTweetResponse {
             await* operations__.streamPostsFirehoseKo(config, partition, backfillMinutes, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Stream Portuguese Posts
+        ///
         /// Streams all public Portuguese-language Posts in real-time.
         public func streamPostsFirehosePt(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async StreamingTweetResponse {
             await* operations__.streamPostsFirehosePt(config, partition, backfillMinutes, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Stream sampled Posts
+        ///
         /// Streams a 1% sample of public Posts in real-time.
         public func streamPostsSample(backfillMinutes : Nat, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async StreamingTweetResponse {
             await* operations__.streamPostsSample(config, backfillMinutes, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Stream 10% sampled Posts
+        ///
         /// Streams a 10% sample of public Posts in real-time.
         public func streamPostsSample10(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2TweetsSample10StreamResponse {
             await* operations__.streamPostsSample10(config, partition, backfillMinutes, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Stream Users compliance data
+        ///
         /// Streams all compliance data related to Users.
         public func streamUsersCompliance(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text) : async UserComplianceStreamResponse {
             await* operations__.streamUsersCompliance(config, partition, backfillMinutes, startTime, endTime)
         };
 
         /// Update stream rules
+        ///
         /// Adds or deletes rules from the active rule set for the filtered stream.
         public func updateRules(addOrDeleteRulesRequest : AddOrDeleteRulesRequest, dryRun : Bool, deleteAll : Bool) : async AddOrDeleteRulesResponse {
             await* operations__.updateRules(config, addOrDeleteRulesRequest, dryRun, deleteAll)

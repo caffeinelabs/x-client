@@ -1,8 +1,8 @@
+/// A problem that indicates that the authentication used is not supported.
 
 import { type Problem; JSON = Problem } "./Problem";
 
 // UnsupportedAuthenticationProblem.mo
-/// A problem that indicates that the authentication used is not supported.
 
 module {
     // User-facing type: what application code uses

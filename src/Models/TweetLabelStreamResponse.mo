@@ -1,3 +1,4 @@
+/// Tweet label stream events.
 
 import { type LikesComplianceStreamResponseOneOf1; JSON = LikesComplianceStreamResponseOneOf1 } "./LikesComplianceStreamResponseOneOf1";
 
@@ -8,7 +9,6 @@ import { type TweetLabelData; JSON = TweetLabelData } "./TweetLabelData";
 import { type TweetLabelStreamResponseOneOf; JSON = TweetLabelStreamResponseOneOf } "./TweetLabelStreamResponseOneOf";
 
 // TweetLabelStreamResponse.mo
-/// Tweet label stream events.
 import Runtime "mo:core/Runtime";
 
 module {

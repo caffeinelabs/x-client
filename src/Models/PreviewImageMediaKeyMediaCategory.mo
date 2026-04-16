@@ -1,6 +1,6 @@
+/// The media category of media
 
 // PreviewImageMediaKeyMediaCategory.mo
-/// The media category of media
 /// Enum values: #tweetimage
 
 module {

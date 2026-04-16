@@ -1,8 +1,8 @@
+/// The location tagged on the Tweet, if the user provided one.
 
 import { type Point; JSON = Point } "./Point";
 
 // TweetGeo.mo
-/// The location tagged on the Tweet, if the user provided one.
 
 module {
     // User-facing type: what application code uses

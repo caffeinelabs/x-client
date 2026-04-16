@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type CreateDmConversationRequest; JSON = CreateDmConversationRequest } "../Models/CreateDmConversationRequest";
 import { type CreateDmEventResponse; JSON = CreateDmEventResponse } "../Models/CreateDmEventResponse";
 import { type CreateMessageRequest; JSON = CreateMessageRequest } "../Models/CreateMessageRequest";
@@ -27,7 +27,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -64,6 +64,7 @@ module {
 
 
     /// Create DM message by conversation ID
+    ///
     /// Sends a new direct message to a specific conversation by its ID.
     public func createDirectMessagesByConversationId(config : Config, dmConversationId : Text, createMessageRequest : CreateMessageRequest) : async* CreateDmEventResponse {
         let {baseUrl; cycles} = config;
@@ -107,7 +108,7 @@ module {
             body = do ? {
                 let jsonValue = CreateMessageRequest.toJSON(createMessageRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["attachments", "text"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -172,6 +173,7 @@ module {
     };
 
     /// Create DM message by participant ID
+    ///
     /// Sends a new direct message to a specific participant by their ID.
     public func createDirectMessagesByParticipantId(config : Config, participantId : Text, createMessageRequest : CreateMessageRequest) : async* CreateDmEventResponse {
         let {baseUrl; cycles} = config;
@@ -215,7 +217,7 @@ module {
             body = do ? {
                 let jsonValue = CreateMessageRequest.toJSON(createMessageRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["attachments", "text"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -280,6 +282,7 @@ module {
     };
 
     /// Create DM conversation
+    ///
     /// Initiates a new direct message conversation with specified participants.
     public func createDirectMessagesConversation(config : Config, createDmConversationRequest : CreateDmConversationRequest) : async* CreateDmEventResponse {
         let {baseUrl; cycles} = config;
@@ -322,7 +325,7 @@ module {
             body = do ? {
                 let jsonValue = CreateDmConversationRequest.toJSON(createDmConversationRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["conversation_type", "message", "participant_ids"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -387,6 +390,7 @@ module {
     };
 
     /// Delete DM event
+    ///
     /// Deletes a specific direct message event by its ID, if owned by the authenticated user.
     public func deleteDirectMessagesEvents(config : Config, eventId : Text) : async* DeleteDmResponse {
         let {baseUrl; cycles} = config;
@@ -490,6 +494,7 @@ module {
     };
 
     /// Get DM events
+    ///
     /// Retrieves a list of recent direct message events across all conversations.
     public func getDirectMessagesEvents(config : Config, maxResults : Nat, paginationToken : Text, eventTypes : [GetDirectMessagesEventsByParticipantIdEventTypesParameterInner], dmEventPeriodfields : [GetDirectMessagesEventsByParticipantIdDmEventFieldsParameterInner], expansions : [GetDirectMessagesEventsByParticipantIdExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2DmEventsResponse {
         let {baseUrl; cycles} = config;
@@ -593,6 +598,7 @@ module {
     };
 
     /// Get DM events for a DM conversation
+    ///
     /// Retrieves direct message events for a specific conversation.
     public func getDirectMessagesEventsByConversationId(config : Config, id : Text, maxResults : Nat, paginationToken : Text, eventTypes : [GetDirectMessagesEventsByParticipantIdEventTypesParameterInner], dmEventPeriodfields : [GetDirectMessagesEventsByParticipantIdDmEventFieldsParameterInner], expansions : [GetDirectMessagesEventsByParticipantIdExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2DmConversationsIdDmEventsResponse {
         let {baseUrl; cycles} = config;
@@ -697,6 +703,7 @@ module {
     };
 
     /// Get DM event by ID
+    ///
     /// Retrieves details of a specific direct message event by its ID.
     public func getDirectMessagesEventsById(config : Config, eventId : Text, dmEventPeriodfields : [GetDirectMessagesEventsByParticipantIdDmEventFieldsParameterInner], expansions : [GetDirectMessagesEventsByParticipantIdExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2DmEventsEventIdResponse {
         let {baseUrl; cycles} = config;
@@ -801,6 +808,7 @@ module {
     };
 
     /// Get DM events for a DM conversation
+    ///
     /// Retrieves direct message events for a specific conversation.
     public func getDirectMessagesEventsByParticipantId(config : Config, participantId : Text, maxResults : Nat, paginationToken : Text, eventTypes : [GetDirectMessagesEventsByParticipantIdEventTypesParameterInner], dmEventPeriodfields : [GetDirectMessagesEventsByParticipantIdDmEventFieldsParameterInner], expansions : [GetDirectMessagesEventsByParticipantIdExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2DmConversationsWithParticipantIdDmEventsResponse {
         let {baseUrl; cycles} = config;
@@ -918,48 +926,56 @@ module {
 
     public module class DirectMessagesApi(config : Config) {
         /// Create DM message by conversation ID
+        ///
         /// Sends a new direct message to a specific conversation by its ID.
         public func createDirectMessagesByConversationId(dmConversationId : Text, createMessageRequest : CreateMessageRequest) : async CreateDmEventResponse {
             await* operations__.createDirectMessagesByConversationId(config, dmConversationId, createMessageRequest)
         };
 
         /// Create DM message by participant ID
+        ///
         /// Sends a new direct message to a specific participant by their ID.
         public func createDirectMessagesByParticipantId(participantId : Text, createMessageRequest : CreateMessageRequest) : async CreateDmEventResponse {
             await* operations__.createDirectMessagesByParticipantId(config, participantId, createMessageRequest)
         };
 
         /// Create DM conversation
+        ///
         /// Initiates a new direct message conversation with specified participants.
         public func createDirectMessagesConversation(createDmConversationRequest : CreateDmConversationRequest) : async CreateDmEventResponse {
             await* operations__.createDirectMessagesConversation(config, createDmConversationRequest)
         };
 
         /// Delete DM event
+        ///
         /// Deletes a specific direct message event by its ID, if owned by the authenticated user.
         public func deleteDirectMessagesEvents(eventId : Text) : async DeleteDmResponse {
             await* operations__.deleteDirectMessagesEvents(config, eventId)
         };
 
         /// Get DM events
+        ///
         /// Retrieves a list of recent direct message events across all conversations.
         public func getDirectMessagesEvents(maxResults : Nat, paginationToken : Text, eventTypes : [GetDirectMessagesEventsByParticipantIdEventTypesParameterInner], dmEventPeriodfields : [GetDirectMessagesEventsByParticipantIdDmEventFieldsParameterInner], expansions : [GetDirectMessagesEventsByParticipantIdExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2DmEventsResponse {
             await* operations__.getDirectMessagesEvents(config, maxResults, paginationToken, eventTypes, dmEventPeriodfields, expansions, mediaPeriodfields, userPeriodfields, tweetPeriodfields)
         };
 
         /// Get DM events for a DM conversation
+        ///
         /// Retrieves direct message events for a specific conversation.
         public func getDirectMessagesEventsByConversationId(id : Text, maxResults : Nat, paginationToken : Text, eventTypes : [GetDirectMessagesEventsByParticipantIdEventTypesParameterInner], dmEventPeriodfields : [GetDirectMessagesEventsByParticipantIdDmEventFieldsParameterInner], expansions : [GetDirectMessagesEventsByParticipantIdExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2DmConversationsIdDmEventsResponse {
             await* operations__.getDirectMessagesEventsByConversationId(config, id, maxResults, paginationToken, eventTypes, dmEventPeriodfields, expansions, mediaPeriodfields, userPeriodfields, tweetPeriodfields)
         };
 
         /// Get DM event by ID
+        ///
         /// Retrieves details of a specific direct message event by its ID.
         public func getDirectMessagesEventsById(eventId : Text, dmEventPeriodfields : [GetDirectMessagesEventsByParticipantIdDmEventFieldsParameterInner], expansions : [GetDirectMessagesEventsByParticipantIdExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2DmEventsEventIdResponse {
             await* operations__.getDirectMessagesEventsById(config, eventId, dmEventPeriodfields, expansions, mediaPeriodfields, userPeriodfields, tweetPeriodfields)
         };
 
         /// Get DM events for a DM conversation
+        ///
         /// Retrieves direct message events for a specific conversation.
         public func getDirectMessagesEventsByParticipantId(participantId : Text, maxResults : Nat, paginationToken : Text, eventTypes : [GetDirectMessagesEventsByParticipantIdEventTypesParameterInner], dmEventPeriodfields : [GetDirectMessagesEventsByParticipantIdDmEventFieldsParameterInner], expansions : [GetDirectMessagesEventsByParticipantIdExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2DmConversationsWithParticipantIdDmEventsResponse {
             await* operations__.getDirectMessagesEventsByParticipantId(config, participantId, maxResults, paginationToken, eventTypes, dmEventPeriodfields, expansions, mediaPeriodfields, userPeriodfields, tweetPeriodfields)

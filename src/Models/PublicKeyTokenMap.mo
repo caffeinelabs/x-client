@@ -1,8 +1,8 @@
+/// Juicebox configuration.
 
 import { type PublicKeyTokenMapRealmsInner; JSON = PublicKeyTokenMapRealmsInner } "./PublicKeyTokenMapRealmsInner";
 
 // PublicKeyTokenMap.mo
-/// Juicebox configuration.
 
 module {
     // User-facing type: what application code uses

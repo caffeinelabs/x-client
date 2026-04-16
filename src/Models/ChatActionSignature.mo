@@ -1,8 +1,8 @@
+/// Cryptographic signature for a chat action.
 
 import { type ChatMessageEventSignature; JSON = ChatMessageEventSignature } "./ChatMessageEventSignature";
 
 // ChatActionSignature.mo
-/// Cryptographic signature for a chat action.
 
 module {
     // User-facing type: what application code uses

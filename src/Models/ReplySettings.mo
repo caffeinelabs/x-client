@@ -1,6 +1,6 @@
+/// Shows who can reply a Tweet. Fields returned are everyone, mentioned_users, and following.
 
 // ReplySettings.mo
-/// Shows who can reply a Tweet. Fields returned are everyone, mentioned_users, and following.
 /// Enum values: #everyone, #mentionedusers, #following, #other
 
 module {

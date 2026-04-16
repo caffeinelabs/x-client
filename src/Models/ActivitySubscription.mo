@@ -1,8 +1,8 @@
+/// An XActivity subscription.
 
 import { type ActivitySubscriptionFilter; JSON = ActivitySubscriptionFilter } "./ActivitySubscriptionFilter";
 
 // ActivitySubscription.mo
-/// An XActivity subscription.
 
 module {
     // User-facing type: what application code uses

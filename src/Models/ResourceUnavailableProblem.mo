@@ -1,10 +1,10 @@
+/// A problem that indicates a particular Tweet, User, etc. is not available to you.
 
 import { type DisallowedResourceProblemAllOfResourceType; JSON = DisallowedResourceProblemAllOfResourceType } "./DisallowedResourceProblemAllOfResourceType";
 
 import { type Problem; JSON = Problem } "./Problem";
 
 // ResourceUnavailableProblem.mo
-/// A problem that indicates a particular Tweet, User, etc. is not available to you.
 
 module {
     // User-facing type: what application code uses

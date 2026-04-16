@@ -1,3 +1,4 @@
+/// A problem that indicates that you are not allowed to see a particular field on a Tweet, User, etc.
 
 import { type DisallowedResourceProblemAllOfResourceType; JSON = DisallowedResourceProblemAllOfResourceType } "./DisallowedResourceProblemAllOfResourceType";
 
@@ -6,7 +7,6 @@ import { type DisallowedResourceProblemAllOfSection; JSON = DisallowedResourcePr
 import { type Problem; JSON = Problem } "./Problem";
 
 // FieldUnauthorizedProblem.mo
-/// A problem that indicates that you are not allowed to see a particular field on a Tweet, User, etc.
 
 module {
     // User-facing type: what application code uses

@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type Error_; JSON = Error_ } "../Models/Error_";
 import { type Problem; JSON = Problem } "../Models/Problem";
 import { type ReplayJobCreateResponse; JSON = ReplayJobCreateResponse } "../Models/ReplayJobCreateResponse";
@@ -19,7 +19,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -56,6 +56,7 @@ module {
 
 
     /// Create replay job
+    ///
     /// Creates a replay job to retrieve activities from up to the past 5 days for all subscriptions associated with a given webhook.
     public func createAccountActivityReplayJob(config : Config, webhookId : Text, fromDate : Text, toDate : Text) : async* ReplayJobCreateResponse {
         let {baseUrl; cycles} = config;
@@ -160,6 +161,7 @@ module {
     };
 
     /// Create subscription
+    ///
     /// Creates an Account Activity subscription for the user and the given webhook.
     public func createAccountActivitySubscription(config : Config, webhookId : Text, body : Any) : async* SubscriptionsCreateResponse {
         let {baseUrl; cycles} = config;
@@ -268,6 +270,7 @@ module {
     };
 
     /// Delete subscription
+    ///
     /// Deletes an Account Activity subscription for the given webhook and user ID.
     public func deleteAccountActivitySubscription(config : Config, webhookId : Text, userId : Text) : async* SubscriptionsDeleteResponse {
         let {baseUrl; cycles} = config;
@@ -372,6 +375,7 @@ module {
     };
 
     /// Get subscription count
+    ///
     /// Retrieves a count of currently active Account Activity subscriptions.
     public func getAccountActivitySubscriptionCount(config : Config) : async* SubscriptionsCountGetResponse {
         let {baseUrl; cycles} = config;
@@ -474,6 +478,7 @@ module {
     };
 
     /// Get subscriptions
+    ///
     /// Retrieves a list of all active subscriptions for a given webhook.
     public func getAccountActivitySubscriptions(config : Config, webhookId : Text) : async* SubscriptionsListGetResponse {
         let {baseUrl; cycles} = config;
@@ -577,6 +582,7 @@ module {
     };
 
     /// Validate subscription
+    ///
     /// Checks a user’s Account Activity subscription for a given webhook.
     public func validateAccountActivitySubscription(config : Config, webhookId : Text) : async* SubscriptionsGetResponse {
         let {baseUrl; cycles} = config;
@@ -691,36 +697,42 @@ module {
 
     public module class AccountActivityApi(config : Config) {
         /// Create replay job
+        ///
         /// Creates a replay job to retrieve activities from up to the past 5 days for all subscriptions associated with a given webhook.
         public func createAccountActivityReplayJob(webhookId : Text, fromDate : Text, toDate : Text) : async ReplayJobCreateResponse {
             await* operations__.createAccountActivityReplayJob(config, webhookId, fromDate, toDate)
         };
 
         /// Create subscription
+        ///
         /// Creates an Account Activity subscription for the user and the given webhook.
         public func createAccountActivitySubscription(webhookId : Text, body : Any) : async SubscriptionsCreateResponse {
             await* operations__.createAccountActivitySubscription(config, webhookId, body)
         };
 
         /// Delete subscription
+        ///
         /// Deletes an Account Activity subscription for the given webhook and user ID.
         public func deleteAccountActivitySubscription(webhookId : Text, userId : Text) : async SubscriptionsDeleteResponse {
             await* operations__.deleteAccountActivitySubscription(config, webhookId, userId)
         };
 
         /// Get subscription count
+        ///
         /// Retrieves a count of currently active Account Activity subscriptions.
         public func getAccountActivitySubscriptionCount() : async SubscriptionsCountGetResponse {
             await* operations__.getAccountActivitySubscriptionCount(config)
         };
 
         /// Get subscriptions
+        ///
         /// Retrieves a list of all active subscriptions for a given webhook.
         public func getAccountActivitySubscriptions(webhookId : Text) : async SubscriptionsListGetResponse {
             await* operations__.getAccountActivitySubscriptions(config, webhookId)
         };
 
         /// Validate subscription
+        ///
         /// Checks a user’s Account Activity subscription for a given webhook.
         public func validateAccountActivitySubscription(webhookId : Text) : async SubscriptionsGetResponse {
             await* operations__.validateAccountActivitySubscription(config, webhookId)

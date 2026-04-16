@@ -1,8 +1,8 @@
+/// Request body for initializing a Chat media upload.
 
 import Int "mo:core/Int";
 
 // ChatMediaUploadInitializeRequest.mo
-/// Request body for initializing a Chat media upload.
 
 module {
     // User-facing type: what application code uses

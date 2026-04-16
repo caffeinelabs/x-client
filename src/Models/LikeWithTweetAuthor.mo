@@ -1,6 +1,6 @@
+/// A Like event, with the tweet author user and the tweet being liked
 
 // LikeWithTweetAuthor.mo
-/// A Like event, with the tweet author user and the tweet being liked
 
 module {
     // User-facing type: what application code uses

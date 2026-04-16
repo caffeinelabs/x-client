@@ -1,8 +1,8 @@
+/// Response from finalizing a Chat media upload.
 
 import { type ChatMediaUploadFinalizeResponseData; JSON = ChatMediaUploadFinalizeResponseData } "./ChatMediaUploadFinalizeResponseData";
 
 // ChatMediaUploadFinalizeResponse.mo
-/// Response from finalizing a Chat media upload.
 
 module {
     // User-facing type: what application code uses

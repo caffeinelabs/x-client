@@ -1,6 +1,6 @@
+/// Type of connection between users.
 
 // UserConnectionStatusInner.mo
-/// Type of connection between users.
 /// Enum values: #follow_request_received, #follow_request_sent, #blocking, #followed_by, #following, #muting
 
 module {

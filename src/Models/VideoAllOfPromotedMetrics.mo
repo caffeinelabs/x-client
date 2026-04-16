@@ -1,6 +1,6 @@
+/// Promoted nonpublic engagement metrics for the Media at the time of the request.
 
 // VideoAllOfPromotedMetrics.mo
-/// Promoted nonpublic engagement metrics for the Media at the time of the request.
 
 module {
     // User-facing type: what application code uses

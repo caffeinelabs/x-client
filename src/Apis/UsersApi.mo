@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type BookmarkAddRequest; JSON = BookmarkAddRequest } "../Models/BookmarkAddRequest";
 import { type BookmarkFolderPostsResponse; JSON = BookmarkFolderPostsResponse } "../Models/BookmarkFolderPostsResponse";
 import { type BookmarkFoldersResponse; JSON = BookmarkFoldersResponse } "../Models/BookmarkFoldersResponse";
@@ -73,7 +73,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -110,6 +110,7 @@ module {
 
 
     /// Block DMs
+    ///
     /// Blocks direct messages to or from a specific User by their ID for the authenticated user.
     public func blockUsersDms(config : Config, id : Text) : async* UsersDMBlockCreateResponse {
         let {baseUrl; cycles} = config;
@@ -213,6 +214,7 @@ module {
     };
 
     /// Create Bookmark
+    ///
     /// Adds a post to the authenticated user’s bookmarks.
     public func createUsersBookmark(config : Config, id : Text, bookmarkAddRequest : BookmarkAddRequest) : async* BookmarkMutationResponse {
         let {baseUrl; cycles} = config;
@@ -256,7 +258,7 @@ module {
             body = do ? {
                 let jsonValue = BookmarkAddRequest.toJSON(bookmarkAddRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["tweet_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -321,6 +323,7 @@ module {
     };
 
     /// Delete Bookmark
+    ///
     /// Removes a Post from the authenticated user’s Bookmarks by its ID.
     public func deleteUsersBookmark(config : Config, id : Text, tweetId : Text) : async* BookmarkMutationResponse {
         let {baseUrl; cycles} = config;
@@ -425,6 +428,7 @@ module {
     };
 
     /// Follow List
+    ///
     /// Causes the authenticated user to follow a specific List by its ID.
     public func followList(config : Config, id : Text, listFollowedRequest : ListFollowedRequest) : async* ListFollowedResponse {
         let {baseUrl; cycles} = config;
@@ -468,7 +472,7 @@ module {
             body = do ? {
                 let jsonValue = ListFollowedRequest.toJSON(listFollowedRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["list_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -533,6 +537,7 @@ module {
     };
 
     /// Follow User
+    ///
     /// Causes the authenticated user to follow a specific user by their ID.
     public func followUser(config : Config, id : Text, usersFollowingCreateRequest : UsersFollowingCreateRequest) : async* UsersFollowingCreateResponse {
         let {baseUrl; cycles} = config;
@@ -576,7 +581,7 @@ module {
             body = do ? {
                 let jsonValue = UsersFollowingCreateRequest.toJSON(usersFollowingCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["target_user_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -641,6 +646,7 @@ module {
     };
 
     /// Get List followers
+    ///
     /// Retrieves a list of Users who follow a specific List by its ID.
     public func getListsFollowers(config : Config, id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2ListsIdFollowersResponse {
         let {baseUrl; cycles} = config;
@@ -745,6 +751,7 @@ module {
     };
 
     /// Get List members
+    ///
     /// Retrieves a list of Users who are members of a specific List by its ID.
     public func getListsMembers(config : Config, id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2ListsIdMembersResponse {
         let {baseUrl; cycles} = config;
@@ -849,6 +856,7 @@ module {
     };
 
     /// Get Liking Users
+    ///
     /// Retrieves a list of Users who liked a specific Post by its ID.
     public func getPostsLikingUsers(config : Config, id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2TweetsIdLikingUsersResponse {
         let {baseUrl; cycles} = config;
@@ -953,6 +961,7 @@ module {
     };
 
     /// Get Reposted by
+    ///
     /// Retrieves a list of Users who reposted a specific Post by its ID.
     public func getPostsRepostedBy(config : Config, id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2TweetsIdRetweetedByResponse {
         let {baseUrl; cycles} = config;
@@ -1057,6 +1066,7 @@ module {
     };
 
     /// Get affiliates
+    ///
     /// Retrieves a list of Users who are affiliated with a specific organization User by their ID.
     public func getUsersAffiliates(config : Config, id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2UsersIdAffiliatesResponse {
         let {baseUrl; cycles} = config;
@@ -1161,6 +1171,7 @@ module {
     };
 
     /// Get blocking
+    ///
     /// Retrieves a list of Users blocked by the specified User ID.
     public func getUsersBlocking(config : Config, id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2UsersIdBlockingResponse {
         let {baseUrl; cycles} = config;
@@ -1265,6 +1276,7 @@ module {
     };
 
     /// Get Bookmark folders
+    ///
     /// Retrieves a list of Bookmark folders created by the authenticated user.
     public func getUsersBookmarkFolders(config : Config, id : Text, maxResults : Nat, paginationToken : Text) : async* BookmarkFoldersResponse {
         let {baseUrl; cycles} = config;
@@ -1369,6 +1381,7 @@ module {
     };
 
     /// Get Bookmarks
+    ///
     /// Retrieves a list of Posts bookmarked by the authenticated user.
     public func getUsersBookmarks(config : Config, id : Text, maxResults : Nat, paginationToken : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2UsersIdBookmarksResponse {
         let {baseUrl; cycles} = config;
@@ -1473,6 +1486,7 @@ module {
     };
 
     /// Get Bookmarks by folder ID
+    ///
     /// Retrieves Posts in a specific Bookmark folder by its ID for the authenticated user.
     public func getUsersBookmarksByFolderId(config : Config, id : Text, folderId : Text) : async* BookmarkFolderPostsResponse {
         let {baseUrl; cycles} = config;
@@ -1577,6 +1591,7 @@ module {
     };
 
     /// Get User by ID
+    ///
     /// Retrieves details of a specific User by their ID.
     public func getUsersById(config : Config, id : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2UsersIdResponse {
         let {baseUrl; cycles} = config;
@@ -1681,6 +1696,7 @@ module {
     };
 
     /// Get Users by IDs
+    ///
     /// Retrieves details of multiple Users by their IDs.
     public func getUsersByIds(config : Config, ids : [Text], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2UsersResponse {
         let {baseUrl; cycles} = config;
@@ -1784,6 +1800,7 @@ module {
     };
 
     /// Get User by username
+    ///
     /// Retrieves details of a specific User by their username.
     public func getUsersByUsername(config : Config, username : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2UsersByUsernameUsernameResponse {
         let {baseUrl; cycles} = config;
@@ -1888,6 +1905,7 @@ module {
     };
 
     /// Get Users by usernames
+    ///
     /// Retrieves details of multiple Users by their usernames.
     public func getUsersByUsernames(config : Config, usernames : [Text], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2UsersByResponse {
         let {baseUrl; cycles} = config;
@@ -1991,6 +2009,7 @@ module {
     };
 
     /// Get followed Lists
+    ///
     /// Retrieves a list of Lists followed by a specific User by their ID.
     public func getUsersFollowedLists(config : Config, id : Text, maxResults : Nat, paginationToken : Text, listPeriodfields : [GetListsByIdListFieldsParameterInner], expansions : [GetListsByIdExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async* Get2UsersIdFollowedListsResponse {
         let {baseUrl; cycles} = config;
@@ -2095,6 +2114,7 @@ module {
     };
 
     /// Get followers
+    ///
     /// Retrieves a list of Users who follow a specific User by their ID.
     public func getUsersFollowers(config : Config, id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2UsersIdFollowersResponse {
         let {baseUrl; cycles} = config;
@@ -2199,6 +2219,7 @@ module {
     };
 
     /// Get following
+    ///
     /// Retrieves a list of Users followed by a specific User by their ID.
     public func getUsersFollowing(config : Config, id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2UsersIdFollowingResponse {
         let {baseUrl; cycles} = config;
@@ -2303,6 +2324,7 @@ module {
     };
 
     /// Get liked Posts
+    ///
     /// Retrieves a list of Posts liked by a specific User by their ID.
     public func getUsersLikedPosts(config : Config, id : Text, maxResults : Nat, paginationToken : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2UsersIdLikedTweetsResponse {
         let {baseUrl; cycles} = config;
@@ -2407,6 +2429,7 @@ module {
     };
 
     /// Get List memberships
+    ///
     /// Retrieves a list of Lists that a specific User is a member of by their ID.
     public func getUsersListMemberships(config : Config, id : Text, maxResults : Nat, paginationToken : Text, listPeriodfields : [GetListsByIdListFieldsParameterInner], expansions : [GetListsByIdExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async* Get2UsersIdListMembershipsResponse {
         let {baseUrl; cycles} = config;
@@ -2511,6 +2534,7 @@ module {
     };
 
     /// Get my User
+    ///
     /// Retrieves details of the authenticated user.
     public func getUsersMe(config : Config, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2UsersMeResponse {
         let {baseUrl; cycles} = config;
@@ -2614,6 +2638,7 @@ module {
     };
 
     /// Get mentions
+    ///
     /// Retrieves a list of Posts that mention a specific User by their ID.
     public func getUsersMentions(config : Config, id : Text, sinceId : Text, untilId : Text, maxResults : Nat, paginationToken : Text, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2UsersIdMentionsResponse {
         let {baseUrl; cycles} = config;
@@ -2718,6 +2743,7 @@ module {
     };
 
     /// Get muting
+    ///
     /// Retrieves a list of Users muted by the authenticated user.
     public func getUsersMuting(config : Config, id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2UsersIdMutingResponse {
         let {baseUrl; cycles} = config;
@@ -2822,6 +2848,7 @@ module {
     };
 
     /// Get owned Lists
+    ///
     /// Retrieves a list of Lists owned by a specific User by their ID.
     public func getUsersOwnedLists(config : Config, id : Text, maxResults : Nat, paginationToken : Text, listPeriodfields : [GetListsByIdListFieldsParameterInner], expansions : [GetListsByIdExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async* Get2UsersIdOwnedListsResponse {
         let {baseUrl; cycles} = config;
@@ -2926,6 +2953,7 @@ module {
     };
 
     /// Get pinned Lists
+    ///
     /// Retrieves a list of Lists pinned by the authenticated user.
     public func getUsersPinnedLists(config : Config, id : Text, listPeriodfields : [GetListsByIdListFieldsParameterInner], expansions : [GetListsByIdExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async* Get2UsersIdPinnedListsResponse {
         let {baseUrl; cycles} = config;
@@ -3030,6 +3058,7 @@ module {
     };
 
     /// Get Posts
+    ///
     /// Retrieves a list of posts authored by a specific User by their ID.
     public func getUsersPosts(config : Config, id : Text, sinceId : Text, untilId : Text, maxResults : Nat, paginationToken : Text, exclude : [GetPostsQuotedPostsExcludeParameterInner], startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2UsersIdTweetsResponse {
         let {baseUrl; cycles} = config;
@@ -3134,6 +3163,7 @@ module {
     };
 
     /// Get user public keys
+    ///
     /// Returns the public keys and Juicebox configuration for the specified user.
     public func getUsersPublicKey(config : Config, id : Text, publicKeyPeriodfields : [GetUsersPublicKeysPublicKeyFieldsParameterInner]) : async* Get2UsersIdPublicKeysResponse {
         let {baseUrl; cycles} = config;
@@ -3238,6 +3268,7 @@ module {
     };
 
     /// Get public keys for multiple users
+    ///
     /// Returns the public keys and Juicebox configuration for the specified users.
     public func getUsersPublicKeys(config : Config, ids : [Text], publicKeyPeriodfields : [GetUsersPublicKeysPublicKeyFieldsParameterInner]) : async* Get2UsersPublicKeysResponse {
         let {baseUrl; cycles} = config;
@@ -3341,6 +3372,7 @@ module {
     };
 
     /// Get Reposts of me
+    ///
     /// Retrieves a list of Posts that repost content from the authenticated user.
     public func getUsersRepostsOfMe(config : Config, maxResults : Nat, paginationToken : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2UsersRepostsOfMeResponse {
         let {baseUrl; cycles} = config;
@@ -3444,6 +3476,7 @@ module {
     };
 
     /// Get Timeline
+    ///
     /// Retrieves a reverse chronological list of Posts in the authenticated User’s Timeline.
     public func getUsersTimeline(config : Config, id : Text, sinceId : Text, untilId : Text, maxResults : Nat, paginationToken : Text, exclude : [GetPostsQuotedPostsExcludeParameterInner], startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2UsersIdTimelinesReverseChronologicalResponse {
         let {baseUrl; cycles} = config;
@@ -3548,6 +3581,7 @@ module {
     };
 
     /// Like Post
+    ///
     /// Causes the authenticated user to Like a specific Post by its ID.
     public func likePost(config : Config, id : Text, usersLikesCreateRequest : UsersLikesCreateRequest) : async* UsersLikesCreateResponse {
         let {baseUrl; cycles} = config;
@@ -3591,7 +3625,7 @@ module {
             body = do ? {
                 let jsonValue = UsersLikesCreateRequest.toJSON(usersLikesCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["tweet_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -3656,6 +3690,7 @@ module {
     };
 
     /// Mute User
+    ///
     /// Causes the authenticated user to mute a specific User by their ID.
     public func muteUser(config : Config, id : Text, muteUserRequest : MuteUserRequest) : async* MuteUserMutationResponse {
         let {baseUrl; cycles} = config;
@@ -3699,7 +3734,7 @@ module {
             body = do ? {
                 let jsonValue = MuteUserRequest.toJSON(muteUserRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["target_user_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -3764,6 +3799,7 @@ module {
     };
 
     /// Pin List
+    ///
     /// Causes the authenticated user to pin a specific List by its ID.
     public func pinList(config : Config, id : Text, listPinnedRequest : ListPinnedRequest) : async* ListPinnedResponse {
         let {baseUrl; cycles} = config;
@@ -3807,7 +3843,7 @@ module {
             body = do ? {
                 let jsonValue = ListPinnedRequest.toJSON(listPinnedRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["list_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -3872,6 +3908,7 @@ module {
     };
 
     /// Repost Post
+    ///
     /// Causes the authenticated user to repost a specific Post by its ID.
     public func repostPost(config : Config, id : Text, usersRetweetsCreateRequest : UsersRetweetsCreateRequest) : async* UsersRetweetsCreateResponse {
         let {baseUrl; cycles} = config;
@@ -3915,7 +3952,7 @@ module {
             body = do ? {
                 let jsonValue = UsersRetweetsCreateRequest.toJSON(usersRetweetsCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["tweet_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -3980,6 +4017,7 @@ module {
     };
 
     /// Search Users
+    ///
     /// Retrieves a list of Users matching a search query.
     public func searchUsers(config : Config, query_ : Text, maxResults : Nat, nextToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2UsersSearchResponse {
         let {baseUrl; cycles} = config;
@@ -4083,6 +4121,7 @@ module {
     };
 
     /// Unblock DMs
+    ///
     /// Unblocks direct messages to or from a specific User by their ID for the authenticated user.
     public func unblockUsersDms(config : Config, id : Text) : async* UsersDMUnBlockCreateResponse {
         let {baseUrl; cycles} = config;
@@ -4186,6 +4225,7 @@ module {
     };
 
     /// Unfollow List
+    ///
     /// Causes the authenticated user to unfollow a specific List by its ID.
     public func unfollowList(config : Config, id : Text, listId : Text) : async* ListFollowedResponse {
         let {baseUrl; cycles} = config;
@@ -4290,6 +4330,7 @@ module {
     };
 
     /// Unfollow User
+    ///
     /// Causes the authenticated user to unfollow a specific user by their ID.
     public func unfollowUser(config : Config, sourceUserId : Text, targetUserId : Text) : async* UsersFollowingDeleteResponse {
         let {baseUrl; cycles} = config;
@@ -4394,6 +4435,7 @@ module {
     };
 
     /// Unlike Post
+    ///
     /// Causes the authenticated user to Unlike a specific Post by its ID.
     public func unlikePost(config : Config, id : Text, tweetId : Text) : async* UsersLikesDeleteResponse {
         let {baseUrl; cycles} = config;
@@ -4498,6 +4540,7 @@ module {
     };
 
     /// Unmute User
+    ///
     /// Causes the authenticated user to unmute a specific user by their ID.
     public func unmuteUser(config : Config, sourceUserId : Text, targetUserId : Text) : async* MuteUserMutationResponse {
         let {baseUrl; cycles} = config;
@@ -4602,6 +4645,7 @@ module {
     };
 
     /// Unpin List
+    ///
     /// Causes the authenticated user to unpin a specific List by its ID.
     public func unpinList(config : Config, id : Text, listId : Text) : async* ListUnpinResponse {
         let {baseUrl; cycles} = config;
@@ -4706,6 +4750,7 @@ module {
     };
 
     /// Unrepost Post
+    ///
     /// Causes the authenticated user to unrepost a specific Post by its ID.
     public func unrepostPost(config : Config, id : Text, sourceTweetId : Text) : async* UsersRetweetsDeleteResponse {
         let {baseUrl; cycles} = config;
@@ -4860,270 +4905,315 @@ module {
 
     public module class UsersApi(config : Config) {
         /// Block DMs
+        ///
         /// Blocks direct messages to or from a specific User by their ID for the authenticated user.
         public func blockUsersDms(id : Text) : async UsersDMBlockCreateResponse {
             await* operations__.blockUsersDms(config, id)
         };
 
         /// Create Bookmark
+        ///
         /// Adds a post to the authenticated user’s bookmarks.
         public func createUsersBookmark(id : Text, bookmarkAddRequest : BookmarkAddRequest) : async BookmarkMutationResponse {
             await* operations__.createUsersBookmark(config, id, bookmarkAddRequest)
         };
 
         /// Delete Bookmark
+        ///
         /// Removes a Post from the authenticated user’s Bookmarks by its ID.
         public func deleteUsersBookmark(id : Text, tweetId : Text) : async BookmarkMutationResponse {
             await* operations__.deleteUsersBookmark(config, id, tweetId)
         };
 
         /// Follow List
+        ///
         /// Causes the authenticated user to follow a specific List by its ID.
         public func followList(id : Text, listFollowedRequest : ListFollowedRequest) : async ListFollowedResponse {
             await* operations__.followList(config, id, listFollowedRequest)
         };
 
         /// Follow User
+        ///
         /// Causes the authenticated user to follow a specific user by their ID.
         public func followUser(id : Text, usersFollowingCreateRequest : UsersFollowingCreateRequest) : async UsersFollowingCreateResponse {
             await* operations__.followUser(config, id, usersFollowingCreateRequest)
         };
 
         /// Get List followers
+        ///
         /// Retrieves a list of Users who follow a specific List by its ID.
         public func getListsFollowers(id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2ListsIdFollowersResponse {
             await* operations__.getListsFollowers(config, id, maxResults, paginationToken, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get List members
+        ///
         /// Retrieves a list of Users who are members of a specific List by its ID.
         public func getListsMembers(id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2ListsIdMembersResponse {
             await* operations__.getListsMembers(config, id, maxResults, paginationToken, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get Liking Users
+        ///
         /// Retrieves a list of Users who liked a specific Post by its ID.
         public func getPostsLikingUsers(id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2TweetsIdLikingUsersResponse {
             await* operations__.getPostsLikingUsers(config, id, maxResults, paginationToken, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get Reposted by
+        ///
         /// Retrieves a list of Users who reposted a specific Post by its ID.
         public func getPostsRepostedBy(id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2TweetsIdRetweetedByResponse {
             await* operations__.getPostsRepostedBy(config, id, maxResults, paginationToken, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get affiliates
+        ///
         /// Retrieves a list of Users who are affiliated with a specific organization User by their ID.
         public func getUsersAffiliates(id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2UsersIdAffiliatesResponse {
             await* operations__.getUsersAffiliates(config, id, maxResults, paginationToken, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get blocking
+        ///
         /// Retrieves a list of Users blocked by the specified User ID.
         public func getUsersBlocking(id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2UsersIdBlockingResponse {
             await* operations__.getUsersBlocking(config, id, maxResults, paginationToken, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get Bookmark folders
+        ///
         /// Retrieves a list of Bookmark folders created by the authenticated user.
         public func getUsersBookmarkFolders(id : Text, maxResults : Nat, paginationToken : Text) : async BookmarkFoldersResponse {
             await* operations__.getUsersBookmarkFolders(config, id, maxResults, paginationToken)
         };
 
         /// Get Bookmarks
+        ///
         /// Retrieves a list of Posts bookmarked by the authenticated user.
         public func getUsersBookmarks(id : Text, maxResults : Nat, paginationToken : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2UsersIdBookmarksResponse {
             await* operations__.getUsersBookmarks(config, id, maxResults, paginationToken, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Get Bookmarks by folder ID
+        ///
         /// Retrieves Posts in a specific Bookmark folder by its ID for the authenticated user.
         public func getUsersBookmarksByFolderId(id : Text, folderId : Text) : async BookmarkFolderPostsResponse {
             await* operations__.getUsersBookmarksByFolderId(config, id, folderId)
         };
 
         /// Get User by ID
+        ///
         /// Retrieves details of a specific User by their ID.
         public func getUsersById(id : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2UsersIdResponse {
             await* operations__.getUsersById(config, id, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get Users by IDs
+        ///
         /// Retrieves details of multiple Users by their IDs.
         public func getUsersByIds(ids : [Text], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2UsersResponse {
             await* operations__.getUsersByIds(config, ids, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get User by username
+        ///
         /// Retrieves details of a specific User by their username.
         public func getUsersByUsername(username : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2UsersByUsernameUsernameResponse {
             await* operations__.getUsersByUsername(config, username, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get Users by usernames
+        ///
         /// Retrieves details of multiple Users by their usernames.
         public func getUsersByUsernames(usernames : [Text], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2UsersByResponse {
             await* operations__.getUsersByUsernames(config, usernames, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get followed Lists
+        ///
         /// Retrieves a list of Lists followed by a specific User by their ID.
         public func getUsersFollowedLists(id : Text, maxResults : Nat, paginationToken : Text, listPeriodfields : [GetListsByIdListFieldsParameterInner], expansions : [GetListsByIdExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async Get2UsersIdFollowedListsResponse {
             await* operations__.getUsersFollowedLists(config, id, maxResults, paginationToken, listPeriodfields, expansions, userPeriodfields)
         };
 
         /// Get followers
+        ///
         /// Retrieves a list of Users who follow a specific User by their ID.
         public func getUsersFollowers(id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2UsersIdFollowersResponse {
             await* operations__.getUsersFollowers(config, id, maxResults, paginationToken, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get following
+        ///
         /// Retrieves a list of Users followed by a specific User by their ID.
         public func getUsersFollowing(id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2UsersIdFollowingResponse {
             await* operations__.getUsersFollowing(config, id, maxResults, paginationToken, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get liked Posts
+        ///
         /// Retrieves a list of Posts liked by a specific User by their ID.
         public func getUsersLikedPosts(id : Text, maxResults : Nat, paginationToken : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2UsersIdLikedTweetsResponse {
             await* operations__.getUsersLikedPosts(config, id, maxResults, paginationToken, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Get List memberships
+        ///
         /// Retrieves a list of Lists that a specific User is a member of by their ID.
         public func getUsersListMemberships(id : Text, maxResults : Nat, paginationToken : Text, listPeriodfields : [GetListsByIdListFieldsParameterInner], expansions : [GetListsByIdExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async Get2UsersIdListMembershipsResponse {
             await* operations__.getUsersListMemberships(config, id, maxResults, paginationToken, listPeriodfields, expansions, userPeriodfields)
         };
 
         /// Get my User
+        ///
         /// Retrieves details of the authenticated user.
         public func getUsersMe(userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2UsersMeResponse {
             await* operations__.getUsersMe(config, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get mentions
+        ///
         /// Retrieves a list of Posts that mention a specific User by their ID.
         public func getUsersMentions(id : Text, sinceId : Text, untilId : Text, maxResults : Nat, paginationToken : Text, startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2UsersIdMentionsResponse {
             await* operations__.getUsersMentions(config, id, sinceId, untilId, maxResults, paginationToken, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Get muting
+        ///
         /// Retrieves a list of Users muted by the authenticated user.
         public func getUsersMuting(id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2UsersIdMutingResponse {
             await* operations__.getUsersMuting(config, id, maxResults, paginationToken, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get owned Lists
+        ///
         /// Retrieves a list of Lists owned by a specific User by their ID.
         public func getUsersOwnedLists(id : Text, maxResults : Nat, paginationToken : Text, listPeriodfields : [GetListsByIdListFieldsParameterInner], expansions : [GetListsByIdExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async Get2UsersIdOwnedListsResponse {
             await* operations__.getUsersOwnedLists(config, id, maxResults, paginationToken, listPeriodfields, expansions, userPeriodfields)
         };
 
         /// Get pinned Lists
+        ///
         /// Retrieves a list of Lists pinned by the authenticated user.
         public func getUsersPinnedLists(id : Text, listPeriodfields : [GetListsByIdListFieldsParameterInner], expansions : [GetListsByIdExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async Get2UsersIdPinnedListsResponse {
             await* operations__.getUsersPinnedLists(config, id, listPeriodfields, expansions, userPeriodfields)
         };
 
         /// Get Posts
+        ///
         /// Retrieves a list of posts authored by a specific User by their ID.
         public func getUsersPosts(id : Text, sinceId : Text, untilId : Text, maxResults : Nat, paginationToken : Text, exclude : [GetPostsQuotedPostsExcludeParameterInner], startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2UsersIdTweetsResponse {
             await* operations__.getUsersPosts(config, id, sinceId, untilId, maxResults, paginationToken, exclude, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Get user public keys
+        ///
         /// Returns the public keys and Juicebox configuration for the specified user.
         public func getUsersPublicKey(id : Text, publicKeyPeriodfields : [GetUsersPublicKeysPublicKeyFieldsParameterInner]) : async Get2UsersIdPublicKeysResponse {
             await* operations__.getUsersPublicKey(config, id, publicKeyPeriodfields)
         };
 
         /// Get public keys for multiple users
+        ///
         /// Returns the public keys and Juicebox configuration for the specified users.
         public func getUsersPublicKeys(ids : [Text], publicKeyPeriodfields : [GetUsersPublicKeysPublicKeyFieldsParameterInner]) : async Get2UsersPublicKeysResponse {
             await* operations__.getUsersPublicKeys(config, ids, publicKeyPeriodfields)
         };
 
         /// Get Reposts of me
+        ///
         /// Retrieves a list of Posts that repost content from the authenticated user.
         public func getUsersRepostsOfMe(maxResults : Nat, paginationToken : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2UsersRepostsOfMeResponse {
             await* operations__.getUsersRepostsOfMe(config, maxResults, paginationToken, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Get Timeline
+        ///
         /// Retrieves a reverse chronological list of Posts in the authenticated User’s Timeline.
         public func getUsersTimeline(id : Text, sinceId : Text, untilId : Text, maxResults : Nat, paginationToken : Text, exclude : [GetPostsQuotedPostsExcludeParameterInner], startTime : Text, endTime : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2UsersIdTimelinesReverseChronologicalResponse {
             await* operations__.getUsersTimeline(config, id, sinceId, untilId, maxResults, paginationToken, exclude, startTime, endTime, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Like Post
+        ///
         /// Causes the authenticated user to Like a specific Post by its ID.
         public func likePost(id : Text, usersLikesCreateRequest : UsersLikesCreateRequest) : async UsersLikesCreateResponse {
             await* operations__.likePost(config, id, usersLikesCreateRequest)
         };
 
         /// Mute User
+        ///
         /// Causes the authenticated user to mute a specific User by their ID.
         public func muteUser(id : Text, muteUserRequest : MuteUserRequest) : async MuteUserMutationResponse {
             await* operations__.muteUser(config, id, muteUserRequest)
         };
 
         /// Pin List
+        ///
         /// Causes the authenticated user to pin a specific List by its ID.
         public func pinList(id : Text, listPinnedRequest : ListPinnedRequest) : async ListPinnedResponse {
             await* operations__.pinList(config, id, listPinnedRequest)
         };
 
         /// Repost Post
+        ///
         /// Causes the authenticated user to repost a specific Post by its ID.
         public func repostPost(id : Text, usersRetweetsCreateRequest : UsersRetweetsCreateRequest) : async UsersRetweetsCreateResponse {
             await* operations__.repostPost(config, id, usersRetweetsCreateRequest)
         };
 
         /// Search Users
+        ///
         /// Retrieves a list of Users matching a search query.
         public func searchUsers(query_ : Text, maxResults : Nat, nextToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2UsersSearchResponse {
             await* operations__.searchUsers(config, query_, maxResults, nextToken, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Unblock DMs
+        ///
         /// Unblocks direct messages to or from a specific User by their ID for the authenticated user.
         public func unblockUsersDms(id : Text) : async UsersDMUnBlockCreateResponse {
             await* operations__.unblockUsersDms(config, id)
         };
 
         /// Unfollow List
+        ///
         /// Causes the authenticated user to unfollow a specific List by its ID.
         public func unfollowList(id : Text, listId : Text) : async ListFollowedResponse {
             await* operations__.unfollowList(config, id, listId)
         };
 
         /// Unfollow User
+        ///
         /// Causes the authenticated user to unfollow a specific user by their ID.
         public func unfollowUser(sourceUserId : Text, targetUserId : Text) : async UsersFollowingDeleteResponse {
             await* operations__.unfollowUser(config, sourceUserId, targetUserId)
         };
 
         /// Unlike Post
+        ///
         /// Causes the authenticated user to Unlike a specific Post by its ID.
         public func unlikePost(id : Text, tweetId : Text) : async UsersLikesDeleteResponse {
             await* operations__.unlikePost(config, id, tweetId)
         };
 
         /// Unmute User
+        ///
         /// Causes the authenticated user to unmute a specific user by their ID.
         public func unmuteUser(sourceUserId : Text, targetUserId : Text) : async MuteUserMutationResponse {
             await* operations__.unmuteUser(config, sourceUserId, targetUserId)
         };
 
         /// Unpin List
+        ///
         /// Causes the authenticated user to unpin a specific List by its ID.
         public func unpinList(id : Text, listId : Text) : async ListUnpinResponse {
             await* operations__.unpinList(config, id, listId)
         };
 
         /// Unrepost Post
+        ///
         /// Causes the authenticated user to unrepost a specific Post by its ID.
         public func unrepostPost(id : Text, sourceTweetId : Text) : async UsersRetweetsDeleteResponse {
             await* operations__.unrepostPost(config, id, sourceTweetId)

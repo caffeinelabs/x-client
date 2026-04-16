@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type CreateNoteRequest; JSON = CreateNoteRequest } "../Models/CreateNoteRequest";
 import { type CreateNoteResponse; JSON = CreateNoteResponse } "../Models/CreateNoteResponse";
 import { type DeleteNoteResponse; JSON = DeleteNoteResponse } "../Models/DeleteNoteResponse";
@@ -27,7 +27,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -64,6 +64,7 @@ module {
 
 
     /// Create a Community Note
+    ///
     /// Creates a community note endpoint for LLM use case.
     public func createCommunityNotes(config : Config, createNoteRequest : CreateNoteRequest) : async* CreateNoteResponse {
         let {baseUrl; cycles} = config;
@@ -106,7 +107,7 @@ module {
             body = do ? {
                 let jsonValue = CreateNoteRequest.toJSON(createNoteRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["info", "post_id", "test_mode"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -171,6 +172,7 @@ module {
     };
 
     /// Delete a Community Note
+    ///
     /// Deletes a community note.
     public func deleteCommunityNotes(config : Config, id : Text) : async* DeleteNoteResponse {
         let {baseUrl; cycles} = config;
@@ -274,6 +276,7 @@ module {
     };
 
     /// Evaluate a Community Note
+    ///
     /// Endpoint to evaluate a community note.
     public func evaluateCommunityNotes(config : Config, evaluateNoteRequest : EvaluateNoteRequest) : async* EvaluateNoteResponse {
         let {baseUrl; cycles} = config;
@@ -316,7 +319,7 @@ module {
             body = do ? {
                 let jsonValue = EvaluateNoteRequest.toJSON(evaluateNoteRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["note_text", "post_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -381,6 +384,7 @@ module {
     };
 
     /// Search for Community Notes Written
+    ///
     /// Returns all the community notes written by the user.
     public func searchCommunityNotesWritten(config : Config, testMode : Bool, paginationToken : Text, maxResults : Nat, notePeriodfields : [SearchCommunityNotesWrittenNoteFieldsParameterInner]) : async* Get2NotesSearchNotesWrittenResponse {
         let {baseUrl; cycles} = config;
@@ -484,6 +488,7 @@ module {
     };
 
     /// Search for Posts Eligible for Community Notes
+    ///
     /// Returns all the posts that are eligible for community notes.
     public func searchEligiblePosts(config : Config, testMode : Bool, paginationToken : Text, maxResults : Nat, postSelection : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2NotesSearchPostsEligibleForNotesResponse {
         let {baseUrl; cycles} = config;
@@ -597,30 +602,35 @@ module {
 
     public module class CommunityNotesApi(config : Config) {
         /// Create a Community Note
+        ///
         /// Creates a community note endpoint for LLM use case.
         public func createCommunityNotes(createNoteRequest : CreateNoteRequest) : async CreateNoteResponse {
             await* operations__.createCommunityNotes(config, createNoteRequest)
         };
 
         /// Delete a Community Note
+        ///
         /// Deletes a community note.
         public func deleteCommunityNotes(id : Text) : async DeleteNoteResponse {
             await* operations__.deleteCommunityNotes(config, id)
         };
 
         /// Evaluate a Community Note
+        ///
         /// Endpoint to evaluate a community note.
         public func evaluateCommunityNotes(evaluateNoteRequest : EvaluateNoteRequest) : async EvaluateNoteResponse {
             await* operations__.evaluateCommunityNotes(config, evaluateNoteRequest)
         };
 
         /// Search for Community Notes Written
+        ///
         /// Returns all the community notes written by the user.
         public func searchCommunityNotesWritten(testMode : Bool, paginationToken : Text, maxResults : Nat, notePeriodfields : [SearchCommunityNotesWrittenNoteFieldsParameterInner]) : async Get2NotesSearchNotesWrittenResponse {
             await* operations__.searchCommunityNotesWritten(config, testMode, paginationToken, maxResults, notePeriodfields)
         };
 
         /// Search for Posts Eligible for Community Notes
+        ///
         /// Returns all the posts that are eligible for community notes.
         public func searchEligiblePosts(testMode : Bool, paginationToken : Text, maxResults : Nat, postSelection : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2NotesSearchPostsEligibleForNotesResponse {
             await* operations__.searchEligiblePosts(config, testMode, paginationToken, maxResults, postSelection, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)

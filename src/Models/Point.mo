@@ -1,8 +1,8 @@
+/// A [GeoJson Point](https://tools.ietf.org/html/rfc7946#section-3.1.2) geometry object.
 
 import { type PointType; JSON = PointType } "./PointType";
 
 // Point.mo
-/// A [GeoJson Point](https://tools.ietf.org/html/rfc7946#section-3.1.2) geometry object.
 
 module {
     // User-facing type: what application code uses

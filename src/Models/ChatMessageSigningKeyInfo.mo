@@ -1,6 +1,6 @@
+/// Signing key information for message verification.
 
 // ChatMessageSigningKeyInfo.mo
-/// Signing key information for message verification.
 
 module {
     // User-facing type: what application code uses

@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type Error_; JSON = Error_ } "../Models/Error_";
 import { type Get2SpacesByCreatorIdsResponse; JSON = Get2SpacesByCreatorIdsResponse } "../Models/Get2SpacesByCreatorIdsResponse";
 import { type Get2SpacesIdBuyersResponse; JSON = Get2SpacesIdBuyersResponse } "../Models/Get2SpacesIdBuyersResponse";
@@ -30,7 +30,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -67,6 +67,7 @@ module {
 
 
     /// Get Space ticket buyers
+    ///
     /// Retrieves a list of Users who purchased tickets to a specific Space by its ID.
     public func getSpacesBuyers(config : Config, id : Text, paginationToken : Text, maxResults : Nat, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2SpacesIdBuyersResponse {
         let {baseUrl; cycles} = config;
@@ -171,6 +172,7 @@ module {
     };
 
     /// Get Spaces by creator IDs
+    ///
     /// Retrieves details of Spaces created by specified User IDs.
     public func getSpacesByCreatorIds(config : Config, userIds : [Text], spacePeriodfields : [GetSpacesByIdsSpaceFieldsParameterInner], expansions : [GetSpacesByIdsExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], topicPeriodfields : [GetSpacesByIdsTopicFieldsParameterInner]) : async* Get2SpacesByCreatorIdsResponse {
         let {baseUrl; cycles} = config;
@@ -274,6 +276,7 @@ module {
     };
 
     /// Get space by ID
+    ///
     /// Retrieves details of a specific space by its ID.
     public func getSpacesById(config : Config, id : Text, spacePeriodfields : [GetSpacesByIdsSpaceFieldsParameterInner], expansions : [GetSpacesByIdsExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], topicPeriodfields : [GetSpacesByIdsTopicFieldsParameterInner]) : async* Get2SpacesIdResponse {
         let {baseUrl; cycles} = config;
@@ -378,6 +381,7 @@ module {
     };
 
     /// Get Spaces by IDs
+    ///
     /// Retrieves details of multiple Spaces by their IDs.
     public func getSpacesByIds(config : Config, ids : [Text], spacePeriodfields : [GetSpacesByIdsSpaceFieldsParameterInner], expansions : [GetSpacesByIdsExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], topicPeriodfields : [GetSpacesByIdsTopicFieldsParameterInner]) : async* Get2SpacesResponse {
         let {baseUrl; cycles} = config;
@@ -481,6 +485,7 @@ module {
     };
 
     /// Get Space Posts
+    ///
     /// Retrieves a list of Posts shared in a specific Space by its ID.
     public func getSpacesPosts(config : Config, id : Text, maxResults : Nat, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2SpacesIdTweetsResponse {
         let {baseUrl; cycles} = config;
@@ -585,6 +590,7 @@ module {
     };
 
     /// Search Spaces
+    ///
     /// Retrieves a list of Spaces matching the specified search query.
     public func searchSpaces(config : Config, query_ : Text, state : SearchSpacesStateParameter, maxResults : Nat, spacePeriodfields : [GetSpacesByIdsSpaceFieldsParameterInner], expansions : [GetSpacesByIdsExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], topicPeriodfields : [GetSpacesByIdsTopicFieldsParameterInner]) : async* Get2SpacesSearchResponse {
         let {baseUrl; cycles} = config;
@@ -699,36 +705,42 @@ module {
 
     public module class SpacesApi(config : Config) {
         /// Get Space ticket buyers
+        ///
         /// Retrieves a list of Users who purchased tickets to a specific Space by its ID.
         public func getSpacesBuyers(id : Text, paginationToken : Text, maxResults : Nat, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2SpacesIdBuyersResponse {
             await* operations__.getSpacesBuyers(config, id, paginationToken, maxResults, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get Spaces by creator IDs
+        ///
         /// Retrieves details of Spaces created by specified User IDs.
         public func getSpacesByCreatorIds(userIds : [Text], spacePeriodfields : [GetSpacesByIdsSpaceFieldsParameterInner], expansions : [GetSpacesByIdsExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], topicPeriodfields : [GetSpacesByIdsTopicFieldsParameterInner]) : async Get2SpacesByCreatorIdsResponse {
             await* operations__.getSpacesByCreatorIds(config, userIds, spacePeriodfields, expansions, userPeriodfields, topicPeriodfields)
         };
 
         /// Get space by ID
+        ///
         /// Retrieves details of a specific space by its ID.
         public func getSpacesById(id : Text, spacePeriodfields : [GetSpacesByIdsSpaceFieldsParameterInner], expansions : [GetSpacesByIdsExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], topicPeriodfields : [GetSpacesByIdsTopicFieldsParameterInner]) : async Get2SpacesIdResponse {
             await* operations__.getSpacesById(config, id, spacePeriodfields, expansions, userPeriodfields, topicPeriodfields)
         };
 
         /// Get Spaces by IDs
+        ///
         /// Retrieves details of multiple Spaces by their IDs.
         public func getSpacesByIds(ids : [Text], spacePeriodfields : [GetSpacesByIdsSpaceFieldsParameterInner], expansions : [GetSpacesByIdsExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], topicPeriodfields : [GetSpacesByIdsTopicFieldsParameterInner]) : async Get2SpacesResponse {
             await* operations__.getSpacesByIds(config, ids, spacePeriodfields, expansions, userPeriodfields, topicPeriodfields)
         };
 
         /// Get Space Posts
+        ///
         /// Retrieves a list of Posts shared in a specific Space by its ID.
         public func getSpacesPosts(id : Text, maxResults : Nat, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2SpacesIdTweetsResponse {
             await* operations__.getSpacesPosts(config, id, maxResults, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Search Spaces
+        ///
         /// Retrieves a list of Spaces matching the specified search query.
         public func searchSpaces(query_ : Text, state : SearchSpacesStateParameter, maxResults : Nat, spacePeriodfields : [GetSpacesByIdsSpaceFieldsParameterInner], expansions : [GetSpacesByIdsExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], topicPeriodfields : [GetSpacesByIdsTopicFieldsParameterInner]) : async Get2SpacesSearchResponse {
             await* operations__.searchSpaces(config, query_, state, maxResults, spacePeriodfields, expansions, userPeriodfields, topicPeriodfields)

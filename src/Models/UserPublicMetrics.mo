@@ -1,6 +1,6 @@
+/// A list of metrics for this User.
 
 // UserPublicMetrics.mo
-/// A list of metrics for this User.
 
 module {
     // User-facing type: what application code uses

@@ -1,6 +1,6 @@
+/// Community Note classification type.
 
 // NoteClassification.mo
-/// Community Note classification type.
 /// Enum values: #misinformed_or_potentially_misleading, #not_misleading
 
 module {

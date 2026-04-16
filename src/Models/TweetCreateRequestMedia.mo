@@ -1,6 +1,6 @@
+/// Media information being attached to created Tweet. This is mutually exclusive from Quote Tweet Id, Poll, and Card URI.
 
 // TweetCreateRequestMedia.mo
-/// Media information being attached to created Tweet. This is mutually exclusive from Quote Tweet Id, Poll, and Card URI.
 
 module {
     // User-facing type: what application code uses

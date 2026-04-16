@@ -1,6 +1,6 @@
+/// Tweet information of the Tweet being replied to.
 
 // TweetCreateRequestReply.mo
-/// Tweet information of the Tweet being replied to.
 
 module {
     // User-facing type: what application code uses

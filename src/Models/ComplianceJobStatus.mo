@@ -1,6 +1,6 @@
+/// Status of a compliance job.
 
 // ComplianceJobStatus.mo
-/// Status of a compliance job.
 /// Enum values: #created, #in_progress, #failed, #complete, #expired
 
 module {

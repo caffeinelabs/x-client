@@ -1,6 +1,6 @@
+/// Confirmation that the replay job request was accepted.
 
 // ReplayJobCreateResponse.mo
-/// Confirmation that the replay job request was accepted.
 
 module {
     // User-facing type: what application code uses

@@ -1,6 +1,6 @@
+/// The count of active subscriptions across all webhooks
 
 // SubscriptionsCountGetResponseData.mo
-/// The count of active subscriptions across all webhooks
 
 module {
     // User-facing type: what application code uses

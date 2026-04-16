@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type CreateComplianceJobRequest; JSON = CreateComplianceJobRequest } "../Models/CreateComplianceJobRequest";
 import { type CreateComplianceJobResponse; JSON = CreateComplianceJobResponse } "../Models/CreateComplianceJobResponse";
 import { type Error_; JSON = Error_ } "../Models/Error_";
@@ -24,7 +24,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -61,6 +61,7 @@ module {
 
 
     /// Create Compliance Job
+    ///
     /// Creates a new Compliance Job for the specified job type.
     public func createComplianceJobs(config : Config, createComplianceJobRequest : CreateComplianceJobRequest) : async* CreateComplianceJobResponse {
         let {baseUrl; cycles} = config;
@@ -103,7 +104,7 @@ module {
             body = do ? {
                 let jsonValue = CreateComplianceJobRequest.toJSON(createComplianceJobRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["name", "resumable", "type"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -168,6 +169,7 @@ module {
     };
 
     /// Get Compliance Jobs
+    ///
     /// Retrieves a list of Compliance Jobs filtered by job type and optional status.
     public func getComplianceJobs(config : Config, type_ : GetComplianceJobsTypeParameter, status : GetComplianceJobsStatusParameter, complianceJobPeriodfields : [GetComplianceJobsComplianceJobFieldsParameterInner]) : async* Get2ComplianceJobsResponse {
         let {baseUrl; cycles} = config;
@@ -271,6 +273,7 @@ module {
     };
 
     /// Get Compliance Job by ID
+    ///
     /// Retrieves details of a specific Compliance Job by its ID.
     public func getComplianceJobsById(config : Config, id : Text, complianceJobPeriodfields : [GetComplianceJobsComplianceJobFieldsParameterInner]) : async* Get2ComplianceJobsIdResponse {
         let {baseUrl; cycles} = config;
@@ -375,6 +378,7 @@ module {
     };
 
     /// Stream Post labels
+    ///
     /// Streams all labeling events applied to Posts.
     public func streamLabelsCompliance(config : Config, backfillMinutes : Nat, startTime : Text, endTime : Text) : async* TweetLabelStreamResponse {
         let {baseUrl; cycles} = config;
@@ -478,6 +482,7 @@ module {
     };
 
     /// Stream Likes compliance data
+    ///
     /// Streams all compliance data related to Likes for Users.
     public func streamLikesCompliance(config : Config, backfillMinutes : Nat, startTime : Text, endTime : Text) : async* LikesComplianceStreamResponse {
         let {baseUrl; cycles} = config;
@@ -581,6 +586,7 @@ module {
     };
 
     /// Stream Posts compliance data
+    ///
     /// Streams all compliance data related to Posts.
     public func streamPostsCompliance(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text) : async* TweetComplianceStreamResponse {
         let {baseUrl; cycles} = config;
@@ -684,6 +690,7 @@ module {
     };
 
     /// Stream Users compliance data
+    ///
     /// Streams all compliance data related to Users.
     public func streamUsersCompliance(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text) : async* UserComplianceStreamResponse {
         let {baseUrl; cycles} = config;
@@ -799,42 +806,49 @@ module {
 
     public module class ComplianceApi(config : Config) {
         /// Create Compliance Job
+        ///
         /// Creates a new Compliance Job for the specified job type.
         public func createComplianceJobs(createComplianceJobRequest : CreateComplianceJobRequest) : async CreateComplianceJobResponse {
             await* operations__.createComplianceJobs(config, createComplianceJobRequest)
         };
 
         /// Get Compliance Jobs
+        ///
         /// Retrieves a list of Compliance Jobs filtered by job type and optional status.
         public func getComplianceJobs(type_ : GetComplianceJobsTypeParameter, status : GetComplianceJobsStatusParameter, complianceJobPeriodfields : [GetComplianceJobsComplianceJobFieldsParameterInner]) : async Get2ComplianceJobsResponse {
             await* operations__.getComplianceJobs(config, type_, status, complianceJobPeriodfields)
         };
 
         /// Get Compliance Job by ID
+        ///
         /// Retrieves details of a specific Compliance Job by its ID.
         public func getComplianceJobsById(id : Text, complianceJobPeriodfields : [GetComplianceJobsComplianceJobFieldsParameterInner]) : async Get2ComplianceJobsIdResponse {
             await* operations__.getComplianceJobsById(config, id, complianceJobPeriodfields)
         };
 
         /// Stream Post labels
+        ///
         /// Streams all labeling events applied to Posts.
         public func streamLabelsCompliance(backfillMinutes : Nat, startTime : Text, endTime : Text) : async TweetLabelStreamResponse {
             await* operations__.streamLabelsCompliance(config, backfillMinutes, startTime, endTime)
         };
 
         /// Stream Likes compliance data
+        ///
         /// Streams all compliance data related to Likes for Users.
         public func streamLikesCompliance(backfillMinutes : Nat, startTime : Text, endTime : Text) : async LikesComplianceStreamResponse {
             await* operations__.streamLikesCompliance(config, backfillMinutes, startTime, endTime)
         };
 
         /// Stream Posts compliance data
+        ///
         /// Streams all compliance data related to Posts.
         public func streamPostsCompliance(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text) : async TweetComplianceStreamResponse {
             await* operations__.streamPostsCompliance(config, partition, backfillMinutes, startTime, endTime)
         };
 
         /// Stream Users compliance data
+        ///
         /// Streams all compliance data related to Users.
         public func streamUsersCompliance(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text) : async UserComplianceStreamResponse {
             await* operations__.streamUsersCompliance(config, partition, backfillMinutes, startTime, endTime)

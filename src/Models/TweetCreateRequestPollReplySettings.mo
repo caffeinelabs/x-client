@@ -1,6 +1,6 @@
+/// Settings to indicate who can reply to the Tweet.
 
 // TweetCreateRequestPollReplySettings.mo
-/// Settings to indicate who can reply to the Tweet.
 /// Enum values: #following, #mentionedusers, #subscribers, #verified
 
 module {

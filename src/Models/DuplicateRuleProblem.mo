@@ -1,8 +1,8 @@
+/// The rule you have submitted is a duplicate.
 
 import { type Problem; JSON = Problem } "./Problem";
 
 // DuplicateRuleProblem.mo
-/// The rule you have submitted is a duplicate.
 
 module {
     // User-facing type: what application code uses

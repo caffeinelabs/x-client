@@ -1,6 +1,6 @@
+/// Organic nonpublic engagement metrics for the Tweet at the time of the request.
 
 // TweetOrganicMetrics.mo
-/// Organic nonpublic engagement metrics for the Tweet at the time of the request.
 
 module {
     // User-facing type: what application code uses

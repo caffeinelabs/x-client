@@ -1,10 +1,10 @@
+/// An activity event or error that can be returned by the x activity streaming API.
 
 import { type ActivityStreamingResponseData; JSON = ActivityStreamingResponseData } "./ActivityStreamingResponseData";
 
 import { type Problem; JSON = Problem } "./Problem";
 
 // ActivityStreamingResponse.mo
-/// An activity event or error that can be returned by the x activity streaming API.
 
 module {
     // User-facing type: what application code uses

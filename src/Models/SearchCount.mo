@@ -1,6 +1,6 @@
+/// Represent a Search Count Result.
 
 // SearchCount.mo
-/// Represent a Search Count Result.
 
 module {
     // User-facing type: what application code uses

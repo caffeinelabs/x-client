@@ -1,8 +1,8 @@
+/// Usage per client app
 
 import { type UsageFields; JSON = UsageFields } "./UsageFields";
 
 // ClientAppUsage.mo
-/// Usage per client app
 
 module {
     // User-facing type: what application code uses

@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type Error_; JSON = Error_ } "../Models/Error_";
 import { type Get2UsageTweetsResponse; JSON = Get2UsageTweetsResponse } "../Models/Get2UsageTweetsResponse";
 import { type GetUsageUsageFieldsParameterInner; JSON = GetUsageUsageFieldsParameterInner } "../Models/GetUsageUsageFieldsParameterInner";
@@ -15,7 +15,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -52,6 +52,7 @@ module {
 
 
     /// Get usage
+    ///
     /// Retrieves usage statistics for Posts over a specified number of days.
     public func getUsage(config : Config, days : Nat, usagePeriodfields : [GetUsageUsageFieldsParameterInner]) : async* Get2UsageTweetsResponse {
         let {baseUrl; cycles} = config;
@@ -161,6 +162,7 @@ module {
 
     public module class UsageApi(config : Config) {
         /// Get usage
+        ///
         /// Retrieves usage statistics for Posts over a specified number of days.
         public func getUsage(days : Nat, usagePeriodfields : [GetUsageUsageFieldsParameterInner]) : async Get2UsageTweetsResponse {
             await* operations__.getUsage(config, days, usagePeriodfields)

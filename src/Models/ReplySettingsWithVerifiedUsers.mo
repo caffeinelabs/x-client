@@ -1,6 +1,6 @@
+/// Shows who can reply a Tweet. Fields returned are everyone, mentioned_users, subscribers, verified and following.
 
 // ReplySettingsWithVerifiedUsers.mo
-/// Shows who can reply a Tweet. Fields returned are everyone, mentioned_users, subscribers, verified and following.
 /// Enum values: #everyone, #mentionedusers, #following, #other, #subscribers, #verified
 
 module {

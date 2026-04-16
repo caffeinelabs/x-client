@@ -1,6 +1,6 @@
+/// A Webhook Configuration
 
 // WebhookConfigCreateResponse.mo
-/// A Webhook Configuration
 
 module {
     // User-facing type: what application code uses

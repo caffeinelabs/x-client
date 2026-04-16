@@ -1,8 +1,8 @@
+/// Key recovery configuration for Juicebox-based key storage.
 
 import { type ChatJuiceboxConfigTokenMapInner; JSON = ChatJuiceboxConfigTokenMapInner } "./ChatJuiceboxConfigTokenMapInner";
 
 // ChatJuiceboxConfig.mo
-/// Key recovery configuration for Juicebox-based key storage.
 
 module {
     // User-facing type: what application code uses

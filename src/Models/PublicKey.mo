@@ -1,8 +1,8 @@
+/// Public key information for Chat encryption
 
 import { type PublicKeyTokenMap; JSON = PublicKeyTokenMap } "./PublicKeyTokenMap";
 
 // PublicKey.mo
-/// Public key information for Chat encryption
 
 module {
     // User-facing type: what application code uses

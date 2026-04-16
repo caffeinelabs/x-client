@@ -1,10 +1,10 @@
+/// An AI generated news story.
 
 import { type NewsClusterPostsResultsInner; JSON = NewsClusterPostsResultsInner } "./NewsClusterPostsResultsInner";
 
 import { type NewsContexts; JSON = NewsContexts } "./NewsContexts";
 
 // News.mo
-/// An AI generated news story.
 
 module {
     // User-facing type: what application code uses

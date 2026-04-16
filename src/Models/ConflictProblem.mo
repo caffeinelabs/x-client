@@ -1,8 +1,8 @@
+/// You cannot create a new job if one is already in progress.
 
 import { type Problem; JSON = Problem } "./Problem";
 
 // ConflictProblem.mo
-/// You cannot create a new job if one is already in progress.
 
 module {
     // User-facing type: what application code uses

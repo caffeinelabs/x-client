@@ -1,6 +1,6 @@
+/// The type of image or subtitle.
 
 // MediaUploadRequestOneShotMediaType.mo
-/// The type of image or subtitle.
 /// Enum values: #text_srt, #text_vtt, #image_jpeg, #image_bmp, #image_png, #image_webp, #image_pjpeg, #image_tiff
 
 module {

@@ -1,8 +1,8 @@
+/// Tweet Label event.
 
 import { type TweetLabelData; JSON = TweetLabelData } "./TweetLabelData";
 
 // TweetLabelStreamResponseOneOf.mo
-/// Tweet Label event.
 
 module {
     // User-facing type: what application code uses

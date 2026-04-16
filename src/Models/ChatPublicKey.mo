@@ -1,8 +1,8 @@
+/// A user's public key with associated key recovery configuration.
 
 import { type ChatJuiceboxConfig; JSON = ChatJuiceboxConfig } "./ChatJuiceboxConfig";
 
 // ChatPublicKey.mo
-/// A user's public key with associated key recovery configuration.
 
 module {
     // User-facing type: what application code uses

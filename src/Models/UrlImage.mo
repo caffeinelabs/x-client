@@ -1,8 +1,8 @@
+/// Represent the information for the URL image.
 
 import Int "mo:core/Int";
 
 // UrlImage.mo
-/// Represent the information for the URL image.
 
 module {
     // User-facing type: what application code uses

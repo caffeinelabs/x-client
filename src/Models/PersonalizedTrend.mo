@@ -1,6 +1,6 @@
+/// A trend.
 
 // PersonalizedTrend.mo
-/// A trend.
 
 module {
     // User-facing type: what application code uses

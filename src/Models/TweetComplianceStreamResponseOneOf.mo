@@ -1,8 +1,8 @@
+/// Compliance event.
 
 import { type TweetComplianceData; JSON = TweetComplianceData } "./TweetComplianceData";
 
 // TweetComplianceStreamResponseOneOf.mo
-/// Compliance event.
 
 module {
     // User-facing type: what application code uses

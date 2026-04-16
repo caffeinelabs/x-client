@@ -1,8 +1,8 @@
+/// Annotation for entities based on the Tweet text.
 
 import Int "mo:core/Int";
 
 // FullTextEntitiesAnnotationsInner.mo
-/// Annotation for entities based on the Tweet text.
 
 module {
     // User-facing type: what application code uses

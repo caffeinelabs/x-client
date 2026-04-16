@@ -1,6 +1,6 @@
+/// Indicates whether the content being withheld is the `tweet` or a `user`.
 
 // TweetWithheldScope.mo
-/// Indicates whether the content being withheld is the `tweet` or a `user`.
 /// Enum values: #tweet, #user
 
 module {

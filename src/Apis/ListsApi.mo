@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type Error_; JSON = Error_ } "../Models/Error_";
 import { type Get2ListsIdFollowersResponse; JSON = Get2ListsIdFollowersResponse } "../Models/Get2ListsIdFollowersResponse";
 import { type Get2ListsIdMembersResponse; JSON = Get2ListsIdMembersResponse } "../Models/Get2ListsIdMembersResponse";
@@ -42,7 +42,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -79,6 +79,7 @@ module {
 
 
     /// Add List member
+    ///
     /// Adds a User to a specific List by its ID.
     public func addListsMember(config : Config, id : Text, listAddUserRequest : ListAddUserRequest) : async* ListMutateResponse {
         let {baseUrl; cycles} = config;
@@ -122,7 +123,7 @@ module {
             body = do ? {
                 let jsonValue = ListAddUserRequest.toJSON(listAddUserRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["user_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -187,6 +188,7 @@ module {
     };
 
     /// Create List
+    ///
     /// Creates a new List for the authenticated user.
     public func createLists(config : Config, listCreateRequest : ListCreateRequest) : async* ListCreateResponse {
         let {baseUrl; cycles} = config;
@@ -229,7 +231,7 @@ module {
             body = do ? {
                 let jsonValue = ListCreateRequest.toJSON(listCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["description", "name", "private"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -294,6 +296,7 @@ module {
     };
 
     /// Delete List
+    ///
     /// Deletes a specific List owned by the authenticated user by its ID.
     public func deleteLists(config : Config, id : Text) : async* ListDeleteResponse {
         let {baseUrl; cycles} = config;
@@ -397,6 +400,7 @@ module {
     };
 
     /// Follow List
+    ///
     /// Causes the authenticated user to follow a specific List by its ID.
     public func followList(config : Config, id : Text, listFollowedRequest : ListFollowedRequest) : async* ListFollowedResponse {
         let {baseUrl; cycles} = config;
@@ -440,7 +444,7 @@ module {
             body = do ? {
                 let jsonValue = ListFollowedRequest.toJSON(listFollowedRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["list_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -505,6 +509,7 @@ module {
     };
 
     /// Get List by ID
+    ///
     /// Retrieves details of a specific List by its ID.
     public func getListsById(config : Config, id : Text, listPeriodfields : [GetListsByIdListFieldsParameterInner], expansions : [GetListsByIdExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async* Get2ListsIdResponse {
         let {baseUrl; cycles} = config;
@@ -609,6 +614,7 @@ module {
     };
 
     /// Get List followers
+    ///
     /// Retrieves a list of Users who follow a specific List by its ID.
     public func getListsFollowers(config : Config, id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2ListsIdFollowersResponse {
         let {baseUrl; cycles} = config;
@@ -713,6 +719,7 @@ module {
     };
 
     /// Get List members
+    ///
     /// Retrieves a list of Users who are members of a specific List by its ID.
     public func getListsMembers(config : Config, id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* Get2ListsIdMembersResponse {
         let {baseUrl; cycles} = config;
@@ -817,6 +824,7 @@ module {
     };
 
     /// Get List Posts
+    ///
     /// Retrieves a list of Posts associated with a specific List by its ID.
     public func getListsPosts(config : Config, id : Text, maxResults : Nat, paginationToken : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async* Get2ListsIdTweetsResponse {
         let {baseUrl; cycles} = config;
@@ -921,6 +929,7 @@ module {
     };
 
     /// Get followed Lists
+    ///
     /// Retrieves a list of Lists followed by a specific User by their ID.
     public func getUsersFollowedLists(config : Config, id : Text, maxResults : Nat, paginationToken : Text, listPeriodfields : [GetListsByIdListFieldsParameterInner], expansions : [GetListsByIdExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async* Get2UsersIdFollowedListsResponse {
         let {baseUrl; cycles} = config;
@@ -1025,6 +1034,7 @@ module {
     };
 
     /// Get List memberships
+    ///
     /// Retrieves a list of Lists that a specific User is a member of by their ID.
     public func getUsersListMemberships(config : Config, id : Text, maxResults : Nat, paginationToken : Text, listPeriodfields : [GetListsByIdListFieldsParameterInner], expansions : [GetListsByIdExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async* Get2UsersIdListMembershipsResponse {
         let {baseUrl; cycles} = config;
@@ -1129,6 +1139,7 @@ module {
     };
 
     /// Get owned Lists
+    ///
     /// Retrieves a list of Lists owned by a specific User by their ID.
     public func getUsersOwnedLists(config : Config, id : Text, maxResults : Nat, paginationToken : Text, listPeriodfields : [GetListsByIdListFieldsParameterInner], expansions : [GetListsByIdExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async* Get2UsersIdOwnedListsResponse {
         let {baseUrl; cycles} = config;
@@ -1233,6 +1244,7 @@ module {
     };
 
     /// Get pinned Lists
+    ///
     /// Retrieves a list of Lists pinned by the authenticated user.
     public func getUsersPinnedLists(config : Config, id : Text, listPeriodfields : [GetListsByIdListFieldsParameterInner], expansions : [GetListsByIdExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async* Get2UsersIdPinnedListsResponse {
         let {baseUrl; cycles} = config;
@@ -1337,6 +1349,7 @@ module {
     };
 
     /// Pin List
+    ///
     /// Causes the authenticated user to pin a specific List by its ID.
     public func pinList(config : Config, id : Text, listPinnedRequest : ListPinnedRequest) : async* ListPinnedResponse {
         let {baseUrl; cycles} = config;
@@ -1380,7 +1393,7 @@ module {
             body = do ? {
                 let jsonValue = ListPinnedRequest.toJSON(listPinnedRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["list_id"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -1445,6 +1458,7 @@ module {
     };
 
     /// Remove List member
+    ///
     /// Removes a User from a specific List by its ID and the User’s ID.
     public func removeListsMemberByUserId(config : Config, id : Text, userId : Text) : async* ListMutateResponse {
         let {baseUrl; cycles} = config;
@@ -1549,6 +1563,7 @@ module {
     };
 
     /// Unfollow List
+    ///
     /// Causes the authenticated user to unfollow a specific List by its ID.
     public func unfollowList(config : Config, id : Text, listId : Text) : async* ListFollowedResponse {
         let {baseUrl; cycles} = config;
@@ -1653,6 +1668,7 @@ module {
     };
 
     /// Unpin List
+    ///
     /// Causes the authenticated user to unpin a specific List by its ID.
     public func unpinList(config : Config, id : Text, listId : Text) : async* ListUnpinResponse {
         let {baseUrl; cycles} = config;
@@ -1757,6 +1773,7 @@ module {
     };
 
     /// Update List
+    ///
     /// Updates the details of a specific List owned by the authenticated user by its ID.
     public func updateLists(config : Config, id : Text, listUpdateRequest : ListUpdateRequest) : async* ListUpdateResponse {
         let {baseUrl; cycles} = config;
@@ -1800,7 +1817,7 @@ module {
             body = do ? {
                 let jsonValue = ListUpdateRequest.toJSON(listUpdateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["description", "name", "private"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -1887,102 +1904,119 @@ module {
 
     public module class ListsApi(config : Config) {
         /// Add List member
+        ///
         /// Adds a User to a specific List by its ID.
         public func addListsMember(id : Text, listAddUserRequest : ListAddUserRequest) : async ListMutateResponse {
             await* operations__.addListsMember(config, id, listAddUserRequest)
         };
 
         /// Create List
+        ///
         /// Creates a new List for the authenticated user.
         public func createLists(listCreateRequest : ListCreateRequest) : async ListCreateResponse {
             await* operations__.createLists(config, listCreateRequest)
         };
 
         /// Delete List
+        ///
         /// Deletes a specific List owned by the authenticated user by its ID.
         public func deleteLists(id : Text) : async ListDeleteResponse {
             await* operations__.deleteLists(config, id)
         };
 
         /// Follow List
+        ///
         /// Causes the authenticated user to follow a specific List by its ID.
         public func followList(id : Text, listFollowedRequest : ListFollowedRequest) : async ListFollowedResponse {
             await* operations__.followList(config, id, listFollowedRequest)
         };
 
         /// Get List by ID
+        ///
         /// Retrieves details of a specific List by its ID.
         public func getListsById(id : Text, listPeriodfields : [GetListsByIdListFieldsParameterInner], expansions : [GetListsByIdExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async Get2ListsIdResponse {
             await* operations__.getListsById(config, id, listPeriodfields, expansions, userPeriodfields)
         };
 
         /// Get List followers
+        ///
         /// Retrieves a list of Users who follow a specific List by its ID.
         public func getListsFollowers(id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2ListsIdFollowersResponse {
             await* operations__.getListsFollowers(config, id, maxResults, paginationToken, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get List members
+        ///
         /// Retrieves a list of Users who are members of a specific List by its ID.
         public func getListsMembers(id : Text, maxResults : Nat, paginationToken : Text, userPeriodfields : [GetChatConversationsUserFieldsParameterInner], expansions : [GetListsFollowersExpansionsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async Get2ListsIdMembersResponse {
             await* operations__.getListsMembers(config, id, maxResults, paginationToken, userPeriodfields, expansions, tweetPeriodfields)
         };
 
         /// Get List Posts
+        ///
         /// Retrieves a list of Posts associated with a specific List by its ID.
         public func getListsPosts(id : Text, maxResults : Nat, paginationToken : Text, tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner], expansions : [GetListsPostsExpansionsParameterInner], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner], pollPeriodfields : [GetListsPostsPollFieldsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], placePeriodfields : [GetListsPostsPlaceFieldsParameterInner]) : async Get2ListsIdTweetsResponse {
             await* operations__.getListsPosts(config, id, maxResults, paginationToken, tweetPeriodfields, expansions, mediaPeriodfields, pollPeriodfields, userPeriodfields, placePeriodfields)
         };
 
         /// Get followed Lists
+        ///
         /// Retrieves a list of Lists followed by a specific User by their ID.
         public func getUsersFollowedLists(id : Text, maxResults : Nat, paginationToken : Text, listPeriodfields : [GetListsByIdListFieldsParameterInner], expansions : [GetListsByIdExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async Get2UsersIdFollowedListsResponse {
             await* operations__.getUsersFollowedLists(config, id, maxResults, paginationToken, listPeriodfields, expansions, userPeriodfields)
         };
 
         /// Get List memberships
+        ///
         /// Retrieves a list of Lists that a specific User is a member of by their ID.
         public func getUsersListMemberships(id : Text, maxResults : Nat, paginationToken : Text, listPeriodfields : [GetListsByIdListFieldsParameterInner], expansions : [GetListsByIdExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async Get2UsersIdListMembershipsResponse {
             await* operations__.getUsersListMemberships(config, id, maxResults, paginationToken, listPeriodfields, expansions, userPeriodfields)
         };
 
         /// Get owned Lists
+        ///
         /// Retrieves a list of Lists owned by a specific User by their ID.
         public func getUsersOwnedLists(id : Text, maxResults : Nat, paginationToken : Text, listPeriodfields : [GetListsByIdListFieldsParameterInner], expansions : [GetListsByIdExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async Get2UsersIdOwnedListsResponse {
             await* operations__.getUsersOwnedLists(config, id, maxResults, paginationToken, listPeriodfields, expansions, userPeriodfields)
         };
 
         /// Get pinned Lists
+        ///
         /// Retrieves a list of Lists pinned by the authenticated user.
         public func getUsersPinnedLists(id : Text, listPeriodfields : [GetListsByIdListFieldsParameterInner], expansions : [GetListsByIdExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner]) : async Get2UsersIdPinnedListsResponse {
             await* operations__.getUsersPinnedLists(config, id, listPeriodfields, expansions, userPeriodfields)
         };
 
         /// Pin List
+        ///
         /// Causes the authenticated user to pin a specific List by its ID.
         public func pinList(id : Text, listPinnedRequest : ListPinnedRequest) : async ListPinnedResponse {
             await* operations__.pinList(config, id, listPinnedRequest)
         };
 
         /// Remove List member
+        ///
         /// Removes a User from a specific List by its ID and the User’s ID.
         public func removeListsMemberByUserId(id : Text, userId : Text) : async ListMutateResponse {
             await* operations__.removeListsMemberByUserId(config, id, userId)
         };
 
         /// Unfollow List
+        ///
         /// Causes the authenticated user to unfollow a specific List by its ID.
         public func unfollowList(id : Text, listId : Text) : async ListFollowedResponse {
             await* operations__.unfollowList(config, id, listId)
         };
 
         /// Unpin List
+        ///
         /// Causes the authenticated user to unpin a specific List by its ID.
         public func unpinList(id : Text, listId : Text) : async ListUnpinResponse {
             await* operations__.unpinList(config, id, listId)
         };
 
         /// Update List
+        ///
         /// Updates the details of a specific List owned by the authenticated user by its ID.
         public func updateLists(id : Text, listUpdateRequest : ListUpdateRequest) : async ListUpdateResponse {
             await* operations__.updateLists(config, id, listUpdateRequest)

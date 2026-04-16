@@ -1,6 +1,6 @@
+/// State of upload
 
 // ProcessingInfoState.mo
-/// State of upload
 /// Enum values: #succeeded, #in_progress, #pending, #failed
 
 module {

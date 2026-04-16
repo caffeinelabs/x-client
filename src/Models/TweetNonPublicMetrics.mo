@@ -1,6 +1,6 @@
+/// Nonpublic engagement metrics for the Tweet at the time of the request.
 
 // TweetNonPublicMetrics.mo
-/// Nonpublic engagement metrics for the Tweet at the time of the request.
 
 module {
     // User-facing type: what application code uses

@@ -1,6 +1,6 @@
+/// Options for editing an existing Post. When provided, this request will edit the specified Post instead of creating a new one.
 
 // TweetCreateRequestEditOptions.mo
-/// Options for editing an existing Post. When provided, this request will edit the specified Post instead of creating a new one.
 
 module {
     // User-facing type: what application code uses

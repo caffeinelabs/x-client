@@ -1,6 +1,6 @@
+/// Telephone information for the account holder.
 
 // PlaidTelephone.mo
-/// Telephone information for the account holder.
 
 module {
     // User-facing type: what application code uses

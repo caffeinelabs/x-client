@@ -1,6 +1,6 @@
+/// Name information for the account holder.
 
 // PlaidName.mo
-/// Name information for the account holder.
 
 module {
     // User-facing type: what application code uses

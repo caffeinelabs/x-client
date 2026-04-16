@@ -1,10 +1,10 @@
+/// A problem that indicates your client is forbidden from making this request.
 
 import { type ClientForbiddenProblemAllOfReason; JSON = ClientForbiddenProblemAllOfReason } "./ClientForbiddenProblemAllOfReason";
 
 import { type Problem; JSON = Problem } "./Problem";
 
 // ClientForbiddenProblem.mo
-/// A problem that indicates your client is forbidden from making this request.
 
 module {
     // User-facing type: what application code uses

@@ -1,6 +1,6 @@
+/// Address information for the account holder.
 
 // PlaidAddress.mo
-/// Address information for the account holder.
 
 module {
     // User-facing type: what application code uses

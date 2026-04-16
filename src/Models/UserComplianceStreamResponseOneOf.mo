@@ -1,8 +1,8 @@
+/// User compliance event.
 
 import { type UserComplianceData; JSON = UserComplianceData } "./UserComplianceData";
 
 // UserComplianceStreamResponseOneOf.mo
-/// User compliance event.
 
 module {
     // User-facing type: what application code uses

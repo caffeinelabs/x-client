@@ -1,6 +1,6 @@
+/// Public key registration payload.
 
 // ChatAddPublicKeyRequestPublicKey.mo
-/// Public key registration payload.
 
 module {
     // User-facing type: what application code uses

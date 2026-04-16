@@ -1,8 +1,8 @@
+/// You have exceeded the maximum number of rules.
 
 import { type Problem; JSON = Problem } "./Problem";
 
 // RulesCapProblem.mo
-/// You have exceeded the maximum number of rules.
 
 module {
     // User-facing type: what application code uses

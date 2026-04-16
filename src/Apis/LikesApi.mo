@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type Error_; JSON = Error_ } "../Models/Error_";
 import { type GetChatConversationsUserFieldsParameterInner; JSON = GetChatConversationsUserFieldsParameterInner } "../Models/GetChatConversationsUserFieldsParameterInner";
 import { type GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner; JSON = GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner } "../Models/GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner";
@@ -18,7 +18,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -55,6 +55,7 @@ module {
 
 
     /// Stream all Likes
+    ///
     /// Streams all public Likes in real-time.
     public func streamLikesFirehose(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, likeWithTweetAuthorPeriodfields : [StreamLikesFirehoseLikeWithTweetAuthorFieldsParameterInner], expansions : [StreamLikesFirehoseExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* StreamingLikeResponseV2 {
         let {baseUrl; cycles} = config;
@@ -158,6 +159,7 @@ module {
     };
 
     /// Stream sampled Likes
+    ///
     /// Streams a 10% sample of public Likes in real-time.
     public func streamLikesSample10(config : Config, partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, likeWithTweetAuthorPeriodfields : [StreamLikesFirehoseLikeWithTweetAuthorFieldsParameterInner], expansions : [StreamLikesFirehoseExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async* StreamingLikeResponseV2 {
         let {baseUrl; cycles} = config;
@@ -268,12 +270,14 @@ module {
 
     public module class LikesApi(config : Config) {
         /// Stream all Likes
+        ///
         /// Streams all public Likes in real-time.
         public func streamLikesFirehose(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, likeWithTweetAuthorPeriodfields : [StreamLikesFirehoseLikeWithTweetAuthorFieldsParameterInner], expansions : [StreamLikesFirehoseExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async StreamingLikeResponseV2 {
             await* operations__.streamLikesFirehose(config, partition, backfillMinutes, startTime, endTime, likeWithTweetAuthorPeriodfields, expansions, userPeriodfields, tweetPeriodfields)
         };
 
         /// Stream sampled Likes
+        ///
         /// Streams a 10% sample of public Likes in real-time.
         public func streamLikesSample10(partition : Nat, backfillMinutes : Nat, startTime : Text, endTime : Text, likeWithTweetAuthorPeriodfields : [StreamLikesFirehoseLikeWithTweetAuthorFieldsParameterInner], expansions : [StreamLikesFirehoseExpansionsParameterInner], userPeriodfields : [GetChatConversationsUserFieldsParameterInner], tweetPeriodfields : [GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner]) : async StreamingLikeResponseV2 {
             await* operations__.streamLikesSample10(config, partition, backfillMinutes, startTime, endTime, likeWithTweetAuthorPeriodfields, expansions, userPeriodfields, tweetPeriodfields)

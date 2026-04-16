@@ -1,3 +1,4 @@
+/// The X User object.
 
 import { type UserAffiliation; JSON = UserAffiliation } "./UserAffiliation";
 
@@ -14,7 +15,6 @@ import { type UserVerifiedType; JSON = UserVerifiedType } "./UserVerifiedType";
 import { type UserWithheld; JSON = UserWithheld } "./UserWithheld";
 
 // User.mo
-/// The X User object.
 
 module {
     // User-facing type: what application code uses

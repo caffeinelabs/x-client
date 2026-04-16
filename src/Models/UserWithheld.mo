@@ -1,8 +1,8 @@
+/// Indicates withholding details for [withheld content](https://help.twitter.com/en/rules-and-policies/tweet-withheld-by-country).
 
 import { type UserWithheldScope; JSON = UserWithheldScope } "./UserWithheldScope";
 
 // UserWithheld.mo
-/// Indicates withholding details for [withheld content](https://help.twitter.com/en/rules-and-policies/tweet-withheld-by-country).
 
 module {
     // User-facing type: what application code uses

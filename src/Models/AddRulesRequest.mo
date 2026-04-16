@@ -1,8 +1,8 @@
+/// A request to add a user-specified stream filtering rule.
 
 import { type RuleNoId; JSON = RuleNoId } "./RuleNoId";
 
 // AddRulesRequest.mo
-/// A request to add a user-specified stream filtering rule.
 
 module {
     // User-facing type: what application code uses

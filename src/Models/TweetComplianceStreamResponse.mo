@@ -1,3 +1,4 @@
+/// Tweet compliance stream events.
 
 import { type LikesComplianceStreamResponseOneOf1; JSON = LikesComplianceStreamResponseOneOf1 } "./LikesComplianceStreamResponseOneOf1";
 
@@ -8,7 +9,6 @@ import { type TweetComplianceData; JSON = TweetComplianceData } "./TweetComplian
 import { type TweetComplianceStreamResponseOneOf; JSON = TweetComplianceStreamResponseOneOf } "./TweetComplianceStreamResponseOneOf";
 
 // TweetComplianceStreamResponse.mo
-/// Tweet compliance stream events.
 import Runtime "mo:core/Runtime";
 
 module {

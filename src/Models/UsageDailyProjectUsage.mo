@@ -1,8 +1,8 @@
+/// The daily usage breakdown for a project
 
 import { type UsageFields; JSON = UsageFields } "./UsageFields";
 
 // UsageDailyProjectUsage.mo
-/// The daily usage breakdown for a project
 
 module {
     // User-facing type: what application code uses

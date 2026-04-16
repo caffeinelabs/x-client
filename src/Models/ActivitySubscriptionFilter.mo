@@ -1,8 +1,8 @@
+/// An XAA subscription filter.
 
 import { type ActivitySubscriptionFilterDirection; JSON = ActivitySubscriptionFilterDirection } "./ActivitySubscriptionFilterDirection";
 
 // ActivitySubscriptionFilter.mo
-/// An XAA subscription filter.
 
 module {
     // User-facing type: what application code uses

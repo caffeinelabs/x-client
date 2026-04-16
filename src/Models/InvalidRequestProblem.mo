@@ -1,10 +1,10 @@
+/// A problem that indicates this request is invalid.
 
 import { type InvalidRequestProblemAllOfErrors; JSON = InvalidRequestProblemAllOfErrors } "./InvalidRequestProblemAllOfErrors";
 
 import { type Problem; JSON = Problem } "./Problem";
 
 // InvalidRequestProblem.mo
-/// A problem that indicates this request is invalid.
 
 module {
     // User-facing type: what application code uses

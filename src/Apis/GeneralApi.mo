@@ -6,12 +6,12 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -48,6 +48,7 @@ module {
 
 
     /// Get OpenAPI Spec.
+    ///
     /// Retrieves the full OpenAPI Specification in JSON format. (See https://github.com/OAI/OpenAPI-Specification/blob/master/README.md)
     public func getOpenApiSpec(config : Config) : async* Any {
         let {baseUrl; cycles} = config;
@@ -130,6 +131,7 @@ module {
 
     public module class GeneralApi(config : Config) {
         /// Get OpenAPI Spec.
+        ///
         /// Retrieves the full OpenAPI Specification in JSON format. (See https://github.com/OAI/OpenAPI-Specification/blob/master/README.md)
         public func getOpenApiSpec() : async Any {
             await* operations__.getOpenApiSpec(config)

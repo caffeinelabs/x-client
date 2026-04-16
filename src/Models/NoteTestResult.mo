@@ -1,6 +1,6 @@
+/// The evaluation result of a community note.
 
 // NoteTestResult.mo
-/// The evaluation result of a community note.
 
 module {
     // User-facing type: what application code uses

@@ -1,6 +1,6 @@
+/// A user-provided stream filtering rule.
 
 // Rule.mo
-/// A user-provided stream filtering rule.
 
 module {
     // User-facing type: what application code uses

@@ -1,3 +1,4 @@
+/// Represent a Poll attached to a Tweet.
 
 import { type PollOption; JSON = PollOption } "./PollOption";
 
@@ -6,7 +7,6 @@ import { type PollVotingStatus; JSON = PollVotingStatus } "./PollVotingStatus";
 import Int "mo:core/Int";
 
 // Poll.mo
-/// Represent a Poll attached to a Tweet.
 
 module {
     // User-facing type: what application code uses

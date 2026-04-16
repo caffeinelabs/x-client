@@ -1,6 +1,6 @@
+/// A summary of the results of the addition of user-specified stream filtering rules.
 
 // RulesRequestSummaryOneOf.mo
-/// A summary of the results of the addition of user-specified stream filtering rules.
 
 module {
     // User-facing type: what application code uses

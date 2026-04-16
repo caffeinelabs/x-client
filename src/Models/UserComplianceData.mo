@@ -1,3 +1,4 @@
+/// User compliance data.
 
 import { type UserComplianceSchema; JSON = UserComplianceSchema } "./UserComplianceSchema";
 
@@ -26,7 +27,6 @@ import { type UserUnsuspendComplianceSchema; JSON = UserUnsuspendComplianceSchem
 import { type UserWithheldComplianceSchema; JSON = UserWithheldComplianceSchema } "./UserWithheldComplianceSchema";
 
 // UserComplianceData.mo
-/// User compliance data.
 import Runtime "mo:core/Runtime";
 
 module {

@@ -1,6 +1,6 @@
+/// Currency information.
 
 // PlaidCurrency.mo
-/// Currency information.
 
 module {
     // User-facing type: what application code uses

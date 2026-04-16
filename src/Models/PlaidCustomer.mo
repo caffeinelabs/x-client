@@ -1,6 +1,6 @@
+/// A user id for the plaid customer
 
 // PlaidCustomer.mo
-/// A user id for the plaid customer
 
 module {
     // User-facing type: what application code uses

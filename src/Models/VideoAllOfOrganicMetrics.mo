@@ -1,6 +1,6 @@
+/// Organic nonpublic engagement metrics for the Media at the time of the request.
 
 // VideoAllOfOrganicMetrics.mo
-/// Organic nonpublic engagement metrics for the Media at the time of the request.
 
 module {
     // User-facing type: what application code uses

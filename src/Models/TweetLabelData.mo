@@ -1,3 +1,4 @@
+/// Tweet label data.
 
 import { type TweetNotice; JSON = TweetNotice } "./TweetNotice";
 
@@ -8,7 +9,6 @@ import { type TweetUnviewable; JSON = TweetUnviewable } "./TweetUnviewable";
 import { type TweetUnviewableSchema; JSON = TweetUnviewableSchema } "./TweetUnviewableSchema";
 
 // TweetLabelData.mo
-/// Tweet label data.
 import Runtime "mo:core/Runtime";
 
 module {

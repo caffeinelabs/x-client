@@ -1,8 +1,8 @@
+/// A count of user-provided stream filtering rules at the application and project levels.
 
 import { type AppRulesCount; JSON = AppRulesCount } "./AppRulesCount";
 
 // RulesCount.mo
-/// A count of user-provided stream filtering rules at the application and project levels.
 
 module {
     // User-facing type: what application code uses

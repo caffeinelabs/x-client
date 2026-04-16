@@ -1,8 +1,8 @@
+/// Message event signature for verification.
 
 import { type ChatMessageSigningKeyInfo; JSON = ChatMessageSigningKeyInfo } "./ChatMessageSigningKeyInfo";
 
 // ChatMessageEventSignature.mo
-/// Message event signature for verification.
 
 module {
     // User-facing type: what application code uses

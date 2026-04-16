@@ -1,6 +1,6 @@
+/// Payment network details associated with the account.
 
 // PlaidAccountPaymentNetwork.mo
-/// Payment network details associated with the account.
 
 module {
     // User-facing type: what application code uses

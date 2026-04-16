@@ -1,10 +1,10 @@
+/// Usage per client app
 
 import { type ClientAppUsage; JSON = ClientAppUsage } "./ClientAppUsage";
 
 import { type UsageDailyProjectUsage; JSON = UsageDailyProjectUsage } "./UsageDailyProjectUsage";
 
 // Usage.mo
-/// Usage per client app
 
 module {
     // User-facing type: what application code uses

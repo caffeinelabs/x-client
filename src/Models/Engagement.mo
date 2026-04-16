@@ -1,10 +1,10 @@
+/// An Engagement Api Response.
 
 import { type EngagementErrorsInner; JSON = EngagementErrorsInner } "./EngagementErrorsInner";
 
 import { type EngagementMeasurement; JSON = EngagementMeasurement } "./EngagementMeasurement";
 
 // Engagement.mo
-/// An Engagement Api Response.
 
 module {
     // User-facing type: what application code uses

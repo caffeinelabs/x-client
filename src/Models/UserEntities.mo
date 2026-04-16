@@ -1,10 +1,10 @@
+/// A list of metadata found in the User's profile description.
 
 import { type FullTextEntities; JSON = FullTextEntities } "./FullTextEntities";
 
 import { type UserEntitiesUrl; JSON = UserEntitiesUrl } "./UserEntitiesUrl";
 
 // UserEntities.mo
-/// A list of metadata found in the User's profile description.
 
 module {
     // User-facing type: what application code uses

@@ -1,6 +1,6 @@
+/// Represents the data for the context annotation entity.
 
 // ContextAnnotationEntityFields.mo
-/// Represents the data for the context annotation entity.
 
 module {
     // User-facing type: what application code uses

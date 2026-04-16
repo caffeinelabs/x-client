@@ -1,6 +1,6 @@
+/// The type of media.
 
 // MediaUploadConfigRequestMediaType.mo
-/// The type of media.
 /// Enum values: #video_mp4, #video_webm, #video_mp2t, #video_quicktime, #text_srt, #text_vtt, #image_jpeg, #image_gif, #image_bmp, #image_png, #image_webp, #image_pjpeg, #image_tiff, #model_gltf_binary, #model_vnd_usdz_zip
 
 module {

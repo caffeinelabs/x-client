@@ -1,6 +1,6 @@
+/// The media category of uploaded media to which subtitles should be added/deleted
 
 // MediaCategorySubtitles.mo
-/// The media category of uploaded media to which subtitles should be added/deleted
 /// Enum values: #amplifyvideo, #tweetvideo
 
 module {

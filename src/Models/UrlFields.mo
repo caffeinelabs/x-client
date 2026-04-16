@@ -1,10 +1,10 @@
+/// Represent the portion of text recognized as a URL.
 
 import { type UrlImage; JSON = UrlImage } "./UrlImage";
 
 import Int "mo:core/Int";
 
 // UrlFields.mo
-/// Represent the portion of text recognized as a URL.
 
 module {
     // User-facing type: what application code uses

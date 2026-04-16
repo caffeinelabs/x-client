@@ -1,8 +1,8 @@
+/// The rule you have submitted is invalid.
 
 import { type Problem; JSON = Problem } "./Problem";
 
 // InvalidRuleProblem.mo
-/// The rule you have submitted is invalid.
 
 module {
     // User-facing type: what application code uses

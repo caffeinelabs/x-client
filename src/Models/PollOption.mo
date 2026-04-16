@@ -1,6 +1,6 @@
+/// Describes a choice in a Poll object.
 
 // PollOption.mo
-/// Describes a choice in a Poll object.
 
 module {
     // User-facing type: what application code uses

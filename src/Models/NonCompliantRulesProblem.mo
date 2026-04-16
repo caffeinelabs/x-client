@@ -1,8 +1,8 @@
+/// A problem that indicates the user's rule set is not compliant.
 
 import { type Problem; JSON = Problem } "./Problem";
 
 // NonCompliantRulesProblem.mo
-/// A problem that indicates the user's rule set is not compliant.
 
 module {
     // User-facing type: what application code uses

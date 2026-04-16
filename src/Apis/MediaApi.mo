@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type Error_; JSON = Error_ } "../Models/Error_";
 import { type Get2MediaMediaKeyResponse; JSON = Get2MediaMediaKeyResponse } "../Models/Get2MediaMediaKeyResponse";
 import { type Get2MediaResponse; JSON = Get2MediaResponse } "../Models/Get2MediaResponse";
@@ -31,7 +31,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -68,6 +68,7 @@ module {
 
 
     /// Append Media upload
+    ///
     /// Appends data to a Media upload request.
     public func appendMediaUpload(config : Config, id : Text, mediaUploadAppendRequest : MediaUploadAppendRequest) : async* MediaUploadAppendResponse {
         let {baseUrl; cycles} = config;
@@ -111,7 +112,7 @@ module {
             body = do ? {
                 let jsonValue = MediaUploadAppendRequest.toJSON(mediaUploadAppendRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["media", "segment_index"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -176,6 +177,7 @@ module {
     };
 
     /// Create Media metadata
+    ///
     /// Creates metadata for a Media file.
     public func createMediaMetadata(config : Config, metadataCreateRequest : MetadataCreateRequest) : async* MetadataCreateResponse {
         let {baseUrl; cycles} = config;
@@ -218,7 +220,7 @@ module {
             body = do ? {
                 let jsonValue = MetadataCreateRequest.toJSON(metadataCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["id", "metadata"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -283,6 +285,7 @@ module {
     };
 
     /// Create Media subtitles
+    ///
     /// Creates subtitles for a specific Media file.
     public func createMediaSubtitles(config : Config, subtitlesCreateRequest : SubtitlesCreateRequest) : async* SubtitlesCreateResponse {
         let {baseUrl; cycles} = config;
@@ -325,7 +328,7 @@ module {
             body = do ? {
                 let jsonValue = SubtitlesCreateRequest.toJSON(subtitlesCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["id", "media_category", "subtitles"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -390,6 +393,7 @@ module {
     };
 
     /// Delete Media subtitles
+    ///
     /// Deletes subtitles for a specific Media file.
     public func deleteMediaSubtitles(config : Config, subtitlesDeleteRequest : SubtitlesDeleteRequest) : async* SubtitlesDeleteResponse {
         let {baseUrl; cycles} = config;
@@ -432,7 +436,7 @@ module {
             body = do ? {
                 let jsonValue = SubtitlesDeleteRequest.toJSON(subtitlesDeleteRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["id", "language_code", "media_category"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -497,6 +501,7 @@ module {
     };
 
     /// Finalize Media upload
+    ///
     /// Finalizes a Media upload request.
     public func finalizeMediaUpload(config : Config, id : Text) : async* MediaUploadResponse {
         let {baseUrl; cycles} = config;
@@ -600,6 +605,7 @@ module {
     };
 
     /// Get Media analytics
+    ///
     /// Retrieves analytics data for media.
     public func getMediaAnalytics(config : Config, mediaKeys : [Text], endTime : Text, startTime : Text, granularity : GetMediaAnalyticsGranularityParameter, mediaAnalyticsPeriodfields : [GetMediaAnalyticsMediaAnalyticsFieldsParameterInner]) : async* MediaAnalytics {
         let {baseUrl; cycles} = config;
@@ -703,6 +709,7 @@ module {
     };
 
     /// Get Media by media key
+    ///
     /// Retrieves details of a specific Media file by its media key.
     public func getMediaByMediaKey(config : Config, mediaKey : Text, mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner]) : async* Get2MediaMediaKeyResponse {
         let {baseUrl; cycles} = config;
@@ -807,6 +814,7 @@ module {
     };
 
     /// Get Media by media keys
+    ///
     /// Retrieves details of Media files by their media keys.
     public func getMediaByMediaKeys(config : Config, mediaKeys : [Text], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner]) : async* Get2MediaResponse {
         let {baseUrl; cycles} = config;
@@ -910,6 +918,7 @@ module {
     };
 
     /// Get Media upload status
+    ///
     /// Retrieves the status of a Media upload by its ID.
     public func getMediaUploadStatus(config : Config, mediaId : Text, command : GetMediaUploadStatusCommandParameter) : async* MediaUploadResponse {
         let {baseUrl; cycles} = config;
@@ -1013,6 +1022,7 @@ module {
     };
 
     /// Initialize media upload
+    ///
     /// Initializes a media upload.
     public func initializeMediaUpload(config : Config, mediaUploadConfigRequest : MediaUploadConfigRequest) : async* MediaUploadResponse {
         let {baseUrl; cycles} = config;
@@ -1055,7 +1065,7 @@ module {
             body = do ? {
                 let jsonValue = MediaUploadConfigRequest.toJSON(mediaUploadConfigRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["additional_owners", "media_category", "media_type", "shared", "total_bytes"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -1120,6 +1130,7 @@ module {
     };
 
     /// Upload media
+    ///
     /// Uploads a media file for use in posts or other content.
     public func mediaUpload(config : Config, mediaUploadRequestOneShot : MediaUploadRequestOneShot) : async* MediaUploadResponse {
         let {baseUrl; cycles} = config;
@@ -1162,7 +1173,7 @@ module {
             body = do ? {
                 let jsonValue = MediaUploadRequestOneShot.toJSON(mediaUploadRequestOneShot);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, [], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["additional_owners", "media", "media_category", "media_type", "shared"], null) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -1243,66 +1254,77 @@ module {
 
     public module class MediaApi(config : Config) {
         /// Append Media upload
+        ///
         /// Appends data to a Media upload request.
         public func appendMediaUpload(id : Text, mediaUploadAppendRequest : MediaUploadAppendRequest) : async MediaUploadAppendResponse {
             await* operations__.appendMediaUpload(config, id, mediaUploadAppendRequest)
         };
 
         /// Create Media metadata
+        ///
         /// Creates metadata for a Media file.
         public func createMediaMetadata(metadataCreateRequest : MetadataCreateRequest) : async MetadataCreateResponse {
             await* operations__.createMediaMetadata(config, metadataCreateRequest)
         };
 
         /// Create Media subtitles
+        ///
         /// Creates subtitles for a specific Media file.
         public func createMediaSubtitles(subtitlesCreateRequest : SubtitlesCreateRequest) : async SubtitlesCreateResponse {
             await* operations__.createMediaSubtitles(config, subtitlesCreateRequest)
         };
 
         /// Delete Media subtitles
+        ///
         /// Deletes subtitles for a specific Media file.
         public func deleteMediaSubtitles(subtitlesDeleteRequest : SubtitlesDeleteRequest) : async SubtitlesDeleteResponse {
             await* operations__.deleteMediaSubtitles(config, subtitlesDeleteRequest)
         };
 
         /// Finalize Media upload
+        ///
         /// Finalizes a Media upload request.
         public func finalizeMediaUpload(id : Text) : async MediaUploadResponse {
             await* operations__.finalizeMediaUpload(config, id)
         };
 
         /// Get Media analytics
+        ///
         /// Retrieves analytics data for media.
         public func getMediaAnalytics(mediaKeys : [Text], endTime : Text, startTime : Text, granularity : GetMediaAnalyticsGranularityParameter, mediaAnalyticsPeriodfields : [GetMediaAnalyticsMediaAnalyticsFieldsParameterInner]) : async MediaAnalytics {
             await* operations__.getMediaAnalytics(config, mediaKeys, endTime, startTime, granularity, mediaAnalyticsPeriodfields)
         };
 
         /// Get Media by media key
+        ///
         /// Retrieves details of a specific Media file by its media key.
         public func getMediaByMediaKey(mediaKey : Text, mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner]) : async Get2MediaMediaKeyResponse {
             await* operations__.getMediaByMediaKey(config, mediaKey, mediaPeriodfields)
         };
 
         /// Get Media by media keys
+        ///
         /// Retrieves details of Media files by their media keys.
         public func getMediaByMediaKeys(mediaKeys : [Text], mediaPeriodfields : [GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner]) : async Get2MediaResponse {
             await* operations__.getMediaByMediaKeys(config, mediaKeys, mediaPeriodfields)
         };
 
         /// Get Media upload status
+        ///
         /// Retrieves the status of a Media upload by its ID.
         public func getMediaUploadStatus(mediaId : Text, command : GetMediaUploadStatusCommandParameter) : async MediaUploadResponse {
             await* operations__.getMediaUploadStatus(config, mediaId, command)
         };
 
         /// Initialize media upload
+        ///
         /// Initializes a media upload.
         public func initializeMediaUpload(mediaUploadConfigRequest : MediaUploadConfigRequest) : async MediaUploadResponse {
             await* operations__.initializeMediaUpload(config, mediaUploadConfigRequest)
         };
 
         /// Upload media
+        ///
         /// Uploads a media file for use in posts or other content.
         public func mediaUpload(mediaUploadRequestOneShot : MediaUploadRequestOneShot) : async MediaUploadResponse {
             await* operations__.mediaUpload(config, mediaUploadRequestOneShot)

@@ -1,8 +1,8 @@
+/// A response from deleting user-specified stream filtering rules.
 
 import { type DeleteRulesRequestDelete; JSON = DeleteRulesRequestDelete } "./DeleteRulesRequestDelete";
 
 // DeleteRulesRequest.mo
-/// A response from deleting user-specified stream filtering rules.
 
 module {
     // User-facing type: what application code uses

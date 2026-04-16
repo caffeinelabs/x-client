@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde-core";
+import { JSON } "mo:serde";
 import { type Error_; JSON = Error_ } "../Models/Error_";
 import { type Get2CommunitiesIdResponse; JSON = Get2CommunitiesIdResponse } "../Models/Get2CommunitiesIdResponse";
 import { type Get2CommunitiesSearchResponse; JSON = Get2CommunitiesSearchResponse } "../Models/Get2CommunitiesSearchResponse";
@@ -16,7 +16,7 @@ import { type Config } "../Config";
 
 module {
     // Management Canister interface for HTTP outcalls
-    // Based on types in https://github.com/dfinity/sdk/blob/master/src/dfx/src/util/ic.did
+    // Based on https://github.com/dfinity/interface-spec/blob/master/spec/ic.did
     type http_header = {
         name : Text;
         value : Text;
@@ -53,6 +53,7 @@ module {
 
 
     /// Get Community by ID
+    ///
     /// Retrieves details of a specific Community by its ID.
     public func getCommunitiesById(config : Config, id : Text, communityPeriodfields : [SearchCommunitiesCommunityFieldsParameterInner]) : async* Get2CommunitiesIdResponse {
         let {baseUrl; cycles} = config;
@@ -157,6 +158,7 @@ module {
     };
 
     /// Search Communities
+    ///
     /// Retrieves a list of Communities matching the specified search query.
     public func searchCommunities(config : Config, query_ : Text, maxResults : Nat, nextToken : Text, paginationToken : Text, communityPeriodfields : [SearchCommunitiesCommunityFieldsParameterInner]) : async* Get2CommunitiesSearchResponse {
         let {baseUrl; cycles} = config;
@@ -267,12 +269,14 @@ module {
 
     public module class CommunitiesApi(config : Config) {
         /// Get Community by ID
+        ///
         /// Retrieves details of a specific Community by its ID.
         public func getCommunitiesById(id : Text, communityPeriodfields : [SearchCommunitiesCommunityFieldsParameterInner]) : async Get2CommunitiesIdResponse {
             await* operations__.getCommunitiesById(config, id, communityPeriodfields)
         };
 
         /// Search Communities
+        ///
         /// Retrieves a list of Communities matching the specified search query.
         public func searchCommunities(query_ : Text, maxResults : Nat, nextToken : Text, paginationToken : Text, communityPeriodfields : [SearchCommunitiesCommunityFieldsParameterInner]) : async Get2CommunitiesSearchResponse {
             await* operations__.searchCommunities(config, query_, maxResults, nextToken, paginationToken, communityPeriodfields)

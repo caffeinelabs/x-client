@@ -1,6 +1,6 @@
+/// The topic of a Space, as selected by its creator.
 
 // Topic.mo
-/// The topic of a Space, as selected by its creator.
 
 module {
     // User-facing type: what application code uses

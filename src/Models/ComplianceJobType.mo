@@ -1,6 +1,6 @@
+/// Type of compliance job to list.
 
 // ComplianceJobType.mo
-/// Type of compliance job to list.
 /// Enum values: #tweets, #users
 
 module {

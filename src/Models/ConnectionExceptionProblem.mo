@@ -1,10 +1,10 @@
+/// A problem that indicates something is wrong with the connection.
 
 import { type ConnectionExceptionProblemAllOfConnectionIssue; JSON = ConnectionExceptionProblemAllOfConnectionIssue } "./ConnectionExceptionProblemAllOfConnectionIssue";
 
 import { type Problem; JSON = Problem } "./Problem";
 
 // ConnectionExceptionProblem.mo
-/// A problem that indicates something is wrong with the connection.
 
 module {
     // User-facing type: what application code uses

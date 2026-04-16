@@ -1,10 +1,10 @@
+/// Poll options for a Tweet with a poll. This is mutually exclusive from Media, Quote Tweet Id, and Card URI.
 
 import { type TweetCreateRequestPollReplySettings; JSON = TweetCreateRequestPollReplySettings } "./TweetCreateRequestPollReplySettings";
 
 import Int "mo:core/Int";
 
 // TweetCreateRequestPoll.mo
-/// Poll options for a Tweet with a poll. This is mutually exclusive from Media, Quote Tweet Id, and Card URI.
 
 module {
     // User-facing type: what application code uses
