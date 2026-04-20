@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde";
+import { JSON; Candid } "mo:serde-core";
 import { type Error_; JSON = Error_ } "../Models/Error_";
 import { type Get2ListsIdFollowersResponse; JSON = Get2ListsIdFollowersResponse } "../Models/Get2ListsIdFollowersResponse";
 import { type Get2ListsIdMembersResponse; JSON = Get2ListsIdMembersResponse } "../Models/Get2ListsIdMembersResponse";
@@ -123,7 +123,7 @@ module {
             body = do ? {
                 let jsonValue = ListAddUserRequest.toJSON(listAddUserRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["user_id"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["user_id"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -231,7 +231,7 @@ module {
             body = do ? {
                 let jsonValue = ListCreateRequest.toJSON(listCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["description", "name", "private"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["description", "name", "private"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -444,7 +444,7 @@ module {
             body = do ? {
                 let jsonValue = ListFollowedRequest.toJSON(listFollowedRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["list_id"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["list_id"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -1393,7 +1393,7 @@ module {
             body = do ? {
                 let jsonValue = ListPinnedRequest.toJSON(listPinnedRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["list_id"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["list_id"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -1817,7 +1817,7 @@ module {
             body = do ? {
                 let jsonValue = ListUpdateRequest.toJSON(listUpdateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["description", "name", "private"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["description", "name", "private"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };

@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde";
+import { JSON; Candid } "mo:serde-core";
 import { type Error_; JSON = Error_ } "../Models/Error_";
 import { type Get2WebhooksResponse; JSON = Get2WebhooksResponse } "../Models/Get2WebhooksResponse";
 import { type GetWebhooksWebhookConfigFieldsParameterInner; JSON = GetWebhooksWebhookConfigFieldsParameterInner } "../Models/GetWebhooksWebhookConfigFieldsParameterInner";
@@ -104,7 +104,7 @@ module {
             body = do ? {
                 let jsonValue = WebhookReplayCreateRequest.toJSON(webhookReplayCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["from_date", "to_date", "webhook_id"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["from_date", "to_date", "webhook_id"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -212,7 +212,7 @@ module {
             body = do ? {
                 let jsonValue = WebhookConfigCreateRequest.toJSON(webhookConfigCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["url"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["url"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };

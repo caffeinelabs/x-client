@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde";
+import { JSON; Candid } "mo:serde-core";
 import { type Error_; JSON = Error_ } "../Models/Error_";
 import { type Get2MediaMediaKeyResponse; JSON = Get2MediaMediaKeyResponse } "../Models/Get2MediaMediaKeyResponse";
 import { type Get2MediaResponse; JSON = Get2MediaResponse } "../Models/Get2MediaResponse";
@@ -112,7 +112,7 @@ module {
             body = do ? {
                 let jsonValue = MediaUploadAppendRequest.toJSON(mediaUploadAppendRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["media", "segment_index"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["media", "segment_index"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -220,7 +220,7 @@ module {
             body = do ? {
                 let jsonValue = MetadataCreateRequest.toJSON(metadataCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["id", "metadata"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["id", "metadata"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -328,7 +328,7 @@ module {
             body = do ? {
                 let jsonValue = SubtitlesCreateRequest.toJSON(subtitlesCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["id", "media_category", "subtitles"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["id", "media_category", "subtitles"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -436,7 +436,7 @@ module {
             body = do ? {
                 let jsonValue = SubtitlesDeleteRequest.toJSON(subtitlesDeleteRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["id", "language_code", "media_category"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["id", "language_code", "media_category"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -1065,7 +1065,7 @@ module {
             body = do ? {
                 let jsonValue = MediaUploadConfigRequest.toJSON(mediaUploadConfigRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["additional_owners", "media_category", "media_type", "shared", "total_bytes"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["additional_owners", "media_category", "media_type", "shared", "total_bytes"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -1173,7 +1173,7 @@ module {
             body = do ? {
                 let jsonValue = MediaUploadRequestOneShot.toJSON(mediaUploadRequestOneShot);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["additional_owners", "media", "media_category", "media_type", "shared"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["additional_owners", "media", "media_category", "media_type", "shared"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };

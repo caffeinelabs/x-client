@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde";
+import { JSON; Candid } "mo:serde-core";
 import { type CreateNoteRequest; JSON = CreateNoteRequest } "../Models/CreateNoteRequest";
 import { type CreateNoteResponse; JSON = CreateNoteResponse } "../Models/CreateNoteResponse";
 import { type DeleteNoteResponse; JSON = DeleteNoteResponse } "../Models/DeleteNoteResponse";
@@ -107,7 +107,7 @@ module {
             body = do ? {
                 let jsonValue = CreateNoteRequest.toJSON(createNoteRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["info", "post_id", "test_mode"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["info", "post_id", "test_mode"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -319,7 +319,7 @@ module {
             body = do ? {
                 let jsonValue = EvaluateNoteRequest.toJSON(evaluateNoteRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["note_text", "post_id"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["note_text", "post_id"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };

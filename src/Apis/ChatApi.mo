@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde";
+import { JSON; Candid } "mo:serde-core";
 import { type ChatAddGroupMembersRequest; JSON = ChatAddGroupMembersRequest } "../Models/ChatAddGroupMembersRequest";
 import { type ChatAddGroupMembersResponse; JSON = ChatAddGroupMembersResponse } "../Models/ChatAddGroupMembersResponse";
 import { type ChatAddPublicKeyRequest; JSON = ChatAddPublicKeyRequest } "../Models/ChatAddPublicKeyRequest";
@@ -123,7 +123,7 @@ module {
             body = do ? {
                 let jsonValue = ChatAddGroupMembersRequest.toJSON(chatAddGroupMembersRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["action_signatures", "conversation_key_version", "conversation_participant_keys", "encrypted_avatar_url", "encrypted_title", "user_ids"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["action_signatures", "conversation_key_version", "conversation_participant_keys", "encrypted_avatar_url", "encrypted_title", "user_ids"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -232,7 +232,7 @@ module {
             body = do ? {
                 let jsonValue = ChatAddPublicKeyRequest.toJSON(chatAddPublicKeyRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["generate_version", "public_key", "version"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["generate_version", "public_key", "version"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -441,7 +441,7 @@ module {
             body = do ? {
                 let jsonValue = ChatMediaUploadAppendRequest.toJSON(chatMediaUploadAppendRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["conversation_id", "media", "media_hash_key", "segment_index"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["conversation_id", "media", "media_hash_key", "segment_index"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -550,7 +550,7 @@ module {
             body = do ? {
                 let jsonValue = ChatMediaUploadFinalizeRequest.toJSON(chatMediaUploadFinalizeRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["conversation_id", "media_hash_key", "message_id", "num_parts", "ttl_msec"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["conversation_id", "media_hash_key", "message_id", "num_parts", "ttl_msec"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -658,7 +658,7 @@ module {
             body = do ? {
                 let jsonValue = ChatMediaUploadInitializeRequest.toJSON(chatMediaUploadInitializeRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["conversation_id", "total_bytes"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["conversation_id", "total_bytes"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -766,7 +766,7 @@ module {
             body = do ? {
                 let jsonValue = ChatCreateConversationRequest.toJSON(chatCreateConversationRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["action_signatures", "base64_encoded_key_rotation", "conversation_id", "conversation_key_version", "conversation_participant_keys", "group_admins", "group_avatar_url", "group_description", "group_members", "group_name", "ttl_msec"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["action_signatures", "base64_encoded_key_rotation", "conversation_id", "conversation_key_version", "conversation_participant_keys", "group_admins", "group_avatar_url", "group_description", "group_members", "group_name", "ttl_msec"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -1293,7 +1293,7 @@ module {
             body = do ? {
                 let jsonValue = ChatInitializeConversationKeysRequest.toJSON(chatInitializeConversationKeysRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["action_signatures", "base64_encoded_key_rotation", "conversation_key_version", "conversation_participant_keys"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["action_signatures", "base64_encoded_key_rotation", "conversation_key_version", "conversation_participant_keys"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -1505,7 +1505,7 @@ module {
             body = do ? {
                 let jsonValue = ChatMarkConversationReadRequest.toJSON(chatMarkConversationReadRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["seen_until_sequence_id"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["seen_until_sequence_id"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -1614,7 +1614,7 @@ module {
             body = do ? {
                 let jsonValue = ChatSendMessageRequest.toJSON(chatSendMessageRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["conversation_token", "encoded_message_create_event", "encoded_message_event_signature", "message_id"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["conversation_token", "encoded_message_create_event", "encoded_message_event_signature", "message_id"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };

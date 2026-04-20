@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde";
+import { JSON; Candid } "mo:serde-core";
 import { type Error_; JSON = Error_ } "../Models/Error_";
 import { type Get2ConnectionsResponse; JSON = Get2ConnectionsResponse } "../Models/Get2ConnectionsResponse";
 import { type GetConnectionHistoryConnectionFieldsParameterInner; JSON = GetConnectionHistoryConnectionFieldsParameterInner } "../Models/GetConnectionHistoryConnectionFieldsParameterInner";
@@ -308,7 +308,7 @@ module {
             body = do ? {
                 let jsonValue = KillConnectionsByUuidsRequest.toJSON(killConnectionsByUuidsRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["uuids"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["uuids"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };

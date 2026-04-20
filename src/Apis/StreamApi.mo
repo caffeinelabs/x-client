@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde";
+import { JSON; Candid } "mo:serde-core";
 import { type ActivityStreamingResponse; JSON = ActivityStreamingResponse } "../Models/ActivityStreamingResponse";
 import { type ActivitySubscriptionCreateRequest; JSON = ActivitySubscriptionCreateRequest } "../Models/ActivitySubscriptionCreateRequest";
 import { type ActivitySubscriptionCreateResponse; JSON = ActivitySubscriptionCreateResponse } "../Models/ActivitySubscriptionCreateResponse";
@@ -224,7 +224,7 @@ module {
             body = do ? {
                 let jsonValue = ActivitySubscriptionCreateRequest.toJSON(activitySubscriptionCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["event_type", "filter", "tag", "webhook_id"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["event_type", "filter", "tag", "webhook_id"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -2309,7 +2309,7 @@ module {
             body = do ? {
                 let jsonValue = AddOrDeleteRulesRequest.toJSON(addOrDeleteRulesRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["add", "delete"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["add", "delete"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };

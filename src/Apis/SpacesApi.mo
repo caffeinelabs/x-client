@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde";
+import { JSON; Candid } "mo:serde-core";
 import { type Error_; JSON = Error_ } "../Models/Error_";
 import { type Get2SpacesByCreatorIdsResponse; JSON = Get2SpacesByCreatorIdsResponse } "../Models/Get2SpacesByCreatorIdsResponse";
 import { type Get2SpacesIdBuyersResponse; JSON = Get2SpacesIdBuyersResponse } "../Models/Get2SpacesIdBuyersResponse";

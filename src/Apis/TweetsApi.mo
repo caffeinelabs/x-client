@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde";
+import { JSON; Candid } "mo:serde-core";
 import { type AddOrDeleteRulesRequest; JSON = AddOrDeleteRulesRequest } "../Models/AddOrDeleteRulesRequest";
 import { type AddOrDeleteRulesResponse; JSON = AddOrDeleteRulesResponse } "../Models/AddOrDeleteRulesResponse";
 import { type Analytics; JSON = Analytics } "../Models/Analytics";
@@ -148,7 +148,7 @@ module {
             body = do ? {
                 let jsonValue = TweetCreateRequest.toJSON(tweetCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["card_uri", "community_id", "direct_message_deep_link", "edit_options", "for_super_followers_only", "geo", "made_with_ai", "media", "nullcast", "paid_partnership", "poll", "quote_tweet_id", "reply", "reply_settings", "share_with_followers", "text"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["card_uri", "community_id", "direct_message_deep_link", "edit_options", "for_super_followers_only", "geo", "made_with_ai", "media", "nullcast", "paid_partnership", "poll", "quote_tweet_id", "reply", "reply_settings", "share_with_followers", "text"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -2453,7 +2453,7 @@ module {
             body = do ? {
                 let jsonValue = TweetHideRequest.toJSON(tweetHideRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["hidden"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["hidden"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -2562,7 +2562,7 @@ module {
             body = do ? {
                 let jsonValue = UsersLikesCreateRequest.toJSON(usersLikesCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["tweet_id"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["tweet_id"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -2671,7 +2671,7 @@ module {
             body = do ? {
                 let jsonValue = UsersRetweetsCreateRequest.toJSON(usersRetweetsCreateRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["tweet_id"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["tweet_id"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -4030,7 +4030,7 @@ module {
             body = do ? {
                 let jsonValue = AddOrDeleteRulesRequest.toJSON(addOrDeleteRulesRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["add", "delete"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["add", "delete"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };

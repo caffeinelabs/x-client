@@ -6,7 +6,7 @@ import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import Error "mo:core/Error";
 import Base64 "mo:core/Base64";
-import { JSON } "mo:serde";
+import { JSON; Candid } "mo:serde-core";
 import { type CreateDmConversationRequest; JSON = CreateDmConversationRequest } "../Models/CreateDmConversationRequest";
 import { type CreateDmEventResponse; JSON = CreateDmEventResponse } "../Models/CreateDmEventResponse";
 import { type CreateMessageRequest; JSON = CreateMessageRequest } "../Models/CreateMessageRequest";
@@ -108,7 +108,7 @@ module {
             body = do ? {
                 let jsonValue = CreateMessageRequest.toJSON(createMessageRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["attachments", "text"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["attachments", "text"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -217,7 +217,7 @@ module {
             body = do ? {
                 let jsonValue = CreateMessageRequest.toJSON(createMessageRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["attachments", "text"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["attachments", "text"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
@@ -325,7 +325,7 @@ module {
             body = do ? {
                 let jsonValue = CreateDmConversationRequest.toJSON(createDmConversationRequest);
                 let candidBlob = to_candid(jsonValue);
-                let #ok(jsonText) = JSON.toText(candidBlob, ["conversation_type", "message", "participant_ids"], null) else throw Error.reject("Failed to serialize to JSON");
+                let #ok(jsonText) = JSON.toText(candidBlob, ["conversation_type", "message", "participant_ids"], ?{ Candid.defaultOptions with skip_null_fields = true }) else throw Error.reject("Failed to serialize to JSON");
                 Text.encodeUtf8(jsonText)
             };
         };
