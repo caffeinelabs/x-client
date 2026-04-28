@@ -4,11 +4,14 @@ import { type MediaCategoryOneShot; JSON = MediaCategoryOneShot } "./MediaCatego
 import { type MediaUploadRequestOneShotMedia; JSON = MediaUploadRequestOneShotMedia } "./MediaUploadRequestOneShotMedia";
 
 import { type MediaUploadRequestOneShotMediaType; JSON = MediaUploadRequestOneShotMediaType } "./MediaUploadRequestOneShotMediaType";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // MediaUploadRequestOneShot.mo
 
 module {
-    // User-facing type: what application code uses
     public type MediaUploadRequestOneShot = {
         additional_owners : ?[Text];
         media : MediaUploadRequestOneShotMedia;
@@ -18,31 +21,64 @@ module {
         shared_ : ?Bool;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer MediaUploadRequestOneShot type
-        public type JSON = {
-            additional_owners : ?[Text];
-            media : MediaUploadRequestOneShotMedia;
-            media_category : MediaCategoryOneShot.JSON;
-            media_type : ?MediaUploadRequestOneShotMediaType.JSON;
-            shared_ : ?Bool;
+        public func toCandidValue(value : MediaUploadRequestOneShot) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.additional_owners) {
+                case (?v__) List.add(buf, ("additional_owners", #Array(Array.map<Text, Candid.Candid>(v__, func(s : Text) : Candid.Candid = #Text(s)))));
+                case null ();
+            };
+            List.add(buf, ("media", MediaUploadRequestOneShotMedia.toCandidValue(value.media)));
+            List.add(buf, ("media_category", MediaCategoryOneShot.toCandidValue(value.media_category)));
+            switch (value.media_type) {
+                case (?v__) List.add(buf, ("media_type", MediaUploadRequestOneShotMediaType.toCandidValue(v__)));
+                case null ();
+            };
+            switch (value.shared_) {
+                case (?v__) List.add(buf, ("shared", #Bool(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : MediaUploadRequestOneShot) : JSON = { value with
-            media_category = MediaCategoryOneShot.toJSON(value.media_category);
-            media_type = do ? { MediaUploadRequestOneShotMediaType.toJSON(value.media_type!) };
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?MediaUploadRequestOneShot {
-            let ?media_category = MediaCategoryOneShot.fromJSON(json.media_category) else return null;
-            ?{ json with
-                media_category;
-                media_type = do ? { MediaUploadRequestOneShotMediaType.fromJSON(json.media_type!)! };
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?MediaUploadRequestOneShot =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let additional_owners : ?[Text] = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "additional_owners")) {
+                        case (?additional_owners_field) ((switch (additional_owners_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<Text>();
+                            for (c__ in xs__.values()) {
+                                let #Text(s__) = c__ else return null;
+                                List.add(buf__, s__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    }));
+                        case null null;
+                    };
+                    let ?media_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "media") else return null;
+                    let ?media = (MediaUploadRequestOneShotMedia.fromCandidValue(media_field.1)) else return null;
+                    let ?media_category_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "media_category") else return null;
+                    let ?media_category = (MediaCategoryOneShot.fromCandidValue(media_category_field.1)) else return null;
+                    let media_type : ?MediaUploadRequestOneShotMediaType = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "media_type")) {
+                        case (?media_type_field) (MediaUploadRequestOneShotMediaType.fromCandidValue(media_type_field.1));
+                        case null null;
+                    };
+                    let shared_ : ?Bool = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "shared")) {
+                        case (?shared__field) ((switch (shared__field.1) { case (#Bool(b)) ?b; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        additional_owners;
+                        media;
+                        media_category;
+                        media_type;
+                        shared_;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

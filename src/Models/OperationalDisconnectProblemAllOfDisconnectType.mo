@@ -1,9 +1,12 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // OperationalDisconnectProblemAllOfDisconnectType.mo
 /// Enum values: #operationaldisconnect, #upstreamoperationaldisconnect, #forcedisconnect, #upstreamuncleandisconnect, #slowreader, #internalerror, #clientapplicationstatedegraded, #invalidrules
 
 module {
-    // User-facing type: type-safe variants for application code
     public type OperationalDisconnectProblemAllOfDisconnectType = {
         #operationaldisconnect;
         #upstreamoperationaldisconnect;
@@ -15,14 +18,33 @@ module {
         #invalidrules;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer OperationalDisconnectProblemAllOfDisconnectType type
-        public type JSON = Text;
+        public func toCandidValue(value : OperationalDisconnectProblemAllOfDisconnectType) : Candid.Candid =
+            switch (value) {
+                case (#operationaldisconnect) #Text("OperationalDisconnect");
+                case (#upstreamoperationaldisconnect) #Text("UpstreamOperationalDisconnect");
+                case (#forcedisconnect) #Text("ForceDisconnect");
+                case (#upstreamuncleandisconnect) #Text("UpstreamUncleanDisconnect");
+                case (#slowreader) #Text("SlowReader");
+                case (#internalerror) #Text("InternalError");
+                case (#clientapplicationstatedegraded) #Text("ClientApplicationStateDegraded");
+                case (#invalidrules) #Text("InvalidRules");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : OperationalDisconnectProblemAllOfDisconnectType) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?OperationalDisconnectProblemAllOfDisconnectType =
+            switch (candid) {
+                case (#Text("OperationalDisconnect")) ?#operationaldisconnect;
+                case (#Text("UpstreamOperationalDisconnect")) ?#upstreamoperationaldisconnect;
+                case (#Text("ForceDisconnect")) ?#forcedisconnect;
+                case (#Text("UpstreamUncleanDisconnect")) ?#upstreamuncleandisconnect;
+                case (#Text("SlowReader")) ?#slowreader;
+                case (#Text("InternalError")) ?#internalerror;
+                case (#Text("ClientApplicationStateDegraded")) ?#clientapplicationstatedegraded;
+                case (#Text("InvalidRules")) ?#invalidrules;
+                case _ null;
+            };
+
+        public func toText(value : OperationalDisconnectProblemAllOfDisconnectType) : Text =
             switch (value) {
                 case (#operationaldisconnect) "OperationalDisconnect";
                 case (#upstreamoperationaldisconnect) "UpstreamOperationalDisconnect";
@@ -33,19 +55,5 @@ module {
                 case (#clientapplicationstatedegraded) "ClientApplicationStateDegraded";
                 case (#invalidrules) "InvalidRules";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?OperationalDisconnectProblemAllOfDisconnectType =
-            switch (json) {
-                case "OperationalDisconnect" ?#operationaldisconnect;
-                case "UpstreamOperationalDisconnect" ?#upstreamoperationaldisconnect;
-                case "ForceDisconnect" ?#forcedisconnect;
-                case "UpstreamUncleanDisconnect" ?#upstreamuncleandisconnect;
-                case "SlowReader" ?#slowreader;
-                case "InternalError" ?#internalerror;
-                case "ClientApplicationStateDegraded" ?#clientapplicationstatedegraded;
-                case "InvalidRules" ?#invalidrules;
-                case _ null;
-            };
-    }
-}
+    };
+};

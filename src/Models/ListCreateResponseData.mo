@@ -1,9 +1,12 @@
 /// A X List is a curated group of accounts.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ListCreateResponseData.mo
 
 module {
-    // User-facing type: what application code uses
     public type ListCreateResponseData = {
         /// The unique identifier of this List.
         id : Text;
@@ -11,19 +14,27 @@ module {
         name : Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ListCreateResponseData type
-        public type JSON = {
-            id : Text;
-            name : Text;
+        public func toCandidValue(value : ListCreateResponseData) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("id", #Text(value.id)));
+            List.add(buf, ("name", #Text(value.name)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ListCreateResponseData) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ListCreateResponseData = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?ListCreateResponseData =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "id") else return null;
+                    let ?id = ((switch (id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?name_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "name") else return null;
+                    let ?name = ((switch (name_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    ?{
+                        id;
+                        name;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

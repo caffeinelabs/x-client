@@ -1,9 +1,12 @@
 /// A trend.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // Trend.mo
 
 module {
-    // User-facing type: what application code uses
     public type Trend = {
         /// Name of the trend.
         trend_name : ?Text;
@@ -11,19 +14,37 @@ module {
         tweet_count : ?Int;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer Trend type
-        public type JSON = {
-            trend_name : ?Text;
-            tweet_count : ?Int;
+        public func toCandidValue(value : Trend) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.trend_name) {
+                case (?v__) List.add(buf, ("trend_name", #Text(v__)));
+                case null ();
+            };
+            switch (value.tweet_count) {
+                case (?v__) List.add(buf, ("tweet_count", #Int(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : Trend) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?Trend = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?Trend =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let trend_name : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "trend_name")) {
+                        case (?trend_name_field) ((switch (trend_name_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let tweet_count : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "tweet_count")) {
+                        case (?tweet_count_field) ((switch (tweet_count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        trend_name;
+                        tweet_count;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

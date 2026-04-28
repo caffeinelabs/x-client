@@ -1,9 +1,12 @@
 /// The evaluation result of a community note.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // NoteTestResult.mo
 
 module {
-    // User-facing type: what application code uses
     public type NoteTestResult = {
         /// Score bucket from the evaluator result.
         evaluator_score_bucket : ?Text;
@@ -11,19 +14,37 @@ module {
         evaluator_type : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer NoteTestResult type
-        public type JSON = {
-            evaluator_score_bucket : ?Text;
-            evaluator_type : ?Text;
+        public func toCandidValue(value : NoteTestResult) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.evaluator_score_bucket) {
+                case (?v__) List.add(buf, ("evaluator_score_bucket", #Text(v__)));
+                case null ();
+            };
+            switch (value.evaluator_type) {
+                case (?v__) List.add(buf, ("evaluator_type", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : NoteTestResult) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?NoteTestResult = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?NoteTestResult =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let evaluator_score_bucket : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "evaluator_score_bucket")) {
+                        case (?evaluator_score_bucket_field) ((switch (evaluator_score_bucket_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let evaluator_type : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "evaluator_type")) {
+                        case (?evaluator_type_field) ((switch (evaluator_type_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        evaluator_score_bucket;
+                        evaluator_type;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

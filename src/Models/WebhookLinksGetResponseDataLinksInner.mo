@@ -1,8 +1,11 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // WebhookLinksGetResponseDataLinksInner.mo
 
 module {
-    // User-facing type: what application code uses
     public type WebhookLinksGetResponseDataLinksInner = {
         /// The application ID
         application_id : ?Text;
@@ -18,23 +21,83 @@ module {
         webhook_id : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer WebhookLinksGetResponseDataLinksInner type
-        public type JSON = {
-            application_id : ?Text;
-            business_user_id : ?Text;
-            created_at : ?Text;
-            fields : ?[Text];
-            instance_id : ?Text;
-            webhook_id : ?Text;
+        public func toCandidValue(value : WebhookLinksGetResponseDataLinksInner) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.application_id) {
+                case (?v__) List.add(buf, ("application_id", #Text(v__)));
+                case null ();
+            };
+            switch (value.business_user_id) {
+                case (?v__) List.add(buf, ("business_user_id", #Text(v__)));
+                case null ();
+            };
+            switch (value.created_at) {
+                case (?v__) List.add(buf, ("created_at", #Text(v__)));
+                case null ();
+            };
+            switch (value.fields) {
+                case (?v__) List.add(buf, ("fields", #Array(Array.map<Text, Candid.Candid>(v__, func(s : Text) : Candid.Candid = #Text(s)))));
+                case null ();
+            };
+            switch (value.instance_id) {
+                case (?v__) List.add(buf, ("instance_id", #Text(v__)));
+                case null ();
+            };
+            switch (value.webhook_id) {
+                case (?v__) List.add(buf, ("webhook_id", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : WebhookLinksGetResponseDataLinksInner) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?WebhookLinksGetResponseDataLinksInner = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?WebhookLinksGetResponseDataLinksInner =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let application_id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "application_id")) {
+                        case (?application_id_field) ((switch (application_id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let business_user_id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "business_user_id")) {
+                        case (?business_user_id_field) ((switch (business_user_id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let created_at : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "created_at")) {
+                        case (?created_at_field) ((switch (created_at_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let fields : ?[Text] = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "fields")) {
+                        case (?fields_field) ((switch (fields_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<Text>();
+                            for (c__ in xs__.values()) {
+                                let #Text(s__) = c__ else return null;
+                                List.add(buf__, s__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    }));
+                        case null null;
+                    };
+                    let instance_id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "instance_id")) {
+                        case (?instance_id_field) ((switch (instance_id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let webhook_id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "webhook_id")) {
+                        case (?webhook_id_field) ((switch (webhook_id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        application_id;
+                        business_user_id;
+                        created_at;
+                        fields;
+                        instance_id;
+                        webhook_id;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

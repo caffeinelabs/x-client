@@ -1,10 +1,13 @@
 
 import { type UserComplianceSchemaUser; JSON = UserComplianceSchemaUser } "./UserComplianceSchemaUser";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // UserTakedownComplianceSchema.mo
 
 module {
-    // User-facing type: what application code uses
     public type UserTakedownComplianceSchema = {
         /// Event time.
         event_at : Text;
@@ -12,20 +15,41 @@ module {
         withheld_in_countries : [Text];
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer UserTakedownComplianceSchema type
-        public type JSON = {
-            event_at : Text;
-            user : UserComplianceSchemaUser;
-            withheld_in_countries : [Text];
+        public func toCandidValue(value : UserTakedownComplianceSchema) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("event_at", #Text(value.event_at)));
+            List.add(buf, ("user", UserComplianceSchemaUser.toCandidValue(value.user)));
+            List.add(buf, ("withheld_in_countries", #Array(Array.map<Text, Candid.Candid>(value.withheld_in_countries, func(s : Text) : Candid.Candid = #Text(s)))));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : UserTakedownComplianceSchema) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?UserTakedownComplianceSchema = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?UserTakedownComplianceSchema =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?event_at_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "event_at") else return null;
+                    let ?event_at = ((switch (event_at_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?user_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "user") else return null;
+                    let ?user = (UserComplianceSchemaUser.fromCandidValue(user_field.1)) else return null;
+                    let ?withheld_in_countries_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "withheld_in_countries") else return null;
+                    let ?withheld_in_countries = ((switch (withheld_in_countries_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<Text>();
+                            for (c__ in xs__.values()) {
+                                let #Text(s__) = c__ else return null;
+                                List.add(buf__, s__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    })) else return null;
+                    ?{
+                        event_at;
+                        user;
+                        withheld_in_countries;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

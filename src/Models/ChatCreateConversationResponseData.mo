@@ -1,8 +1,11 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ChatCreateConversationResponseData.mo
 
 module {
-    // User-facing type: what application code uses
     public type ChatCreateConversationResponseData = {
         /// The ID of the created conversation.
         conversation_id : ?Text;
@@ -10,19 +13,37 @@ module {
         conversation_key_change_sequence_id : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ChatCreateConversationResponseData type
-        public type JSON = {
-            conversation_id : ?Text;
-            conversation_key_change_sequence_id : ?Text;
+        public func toCandidValue(value : ChatCreateConversationResponseData) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.conversation_id) {
+                case (?v__) List.add(buf, ("conversation_id", #Text(v__)));
+                case null ();
+            };
+            switch (value.conversation_key_change_sequence_id) {
+                case (?v__) List.add(buf, ("conversation_key_change_sequence_id", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ChatCreateConversationResponseData) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ChatCreateConversationResponseData = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?ChatCreateConversationResponseData =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let conversation_id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "conversation_id")) {
+                        case (?conversation_id_field) ((switch (conversation_id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let conversation_key_change_sequence_id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "conversation_key_change_sequence_id")) {
+                        case (?conversation_key_change_sequence_id_field) ((switch (conversation_key_change_sequence_id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        conversation_id;
+                        conversation_key_change_sequence_id;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

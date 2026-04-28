@@ -3,11 +3,14 @@
 import { type OperationalDisconnectProblemAllOfDisconnectType; JSON = OperationalDisconnectProblemAllOfDisconnectType } "./OperationalDisconnectProblemAllOfDisconnectType";
 
 import { type Problem; JSON = Problem } "./Problem";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // OperationalDisconnectProblem.mo
 
 module {
-    // User-facing type: what application code uses
     public type OperationalDisconnectProblem = {
         detail : ?Text;
         status : ?Int;
@@ -16,28 +19,54 @@ module {
         disconnect_type : ?OperationalDisconnectProblemAllOfDisconnectType;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer OperationalDisconnectProblem type
-        public type JSON = {
-            detail : ?Text;
-            status : ?Int;
-            title : Text;
-            type_ : Text;
-            disconnect_type : ?OperationalDisconnectProblemAllOfDisconnectType.JSON;
+        public func toCandidValue(value : OperationalDisconnectProblem) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.detail) {
+                case (?v__) List.add(buf, ("detail", #Text(v__)));
+                case null ();
+            };
+            switch (value.status) {
+                case (?v__) List.add(buf, ("status", #Int(v__)));
+                case null ();
+            };
+            List.add(buf, ("title", #Text(value.title)));
+            List.add(buf, ("type", #Text(value.type_)));
+            switch (value.disconnect_type) {
+                case (?v__) List.add(buf, ("disconnect_type", OperationalDisconnectProblemAllOfDisconnectType.toCandidValue(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : OperationalDisconnectProblem) : JSON = { value with
-            disconnect_type = do ? { OperationalDisconnectProblemAllOfDisconnectType.toJSON(value.disconnect_type!) };
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?OperationalDisconnectProblem {
-            ?{ json with
-                disconnect_type = do ? { OperationalDisconnectProblemAllOfDisconnectType.fromJSON(json.disconnect_type!)! };
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?OperationalDisconnectProblem =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let detail : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "detail")) {
+                        case (?detail_field) ((switch (detail_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let status : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "status")) {
+                        case (?status_field) ((switch (status_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let ?title_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "title") else return null;
+                    let ?title = ((switch (title_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?type__field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "type") else return null;
+                    let ?type_ = ((switch (type__field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let disconnect_type : ?OperationalDisconnectProblemAllOfDisconnectType = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "disconnect_type")) {
+                        case (?disconnect_type_field) (OperationalDisconnectProblemAllOfDisconnectType.fromCandidValue(disconnect_type_field.1));
+                        case null null;
+                    };
+                    ?{
+                        detail;
+                        status;
+                        title;
+                        type_;
+                        disconnect_type;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

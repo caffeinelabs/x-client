@@ -1,9 +1,12 @@
 /// Realm connection details.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ChatJuiceboxConfigTokenMapInnerValue.mo
 
 module {
-    // User-facing type: what application code uses
     public type ChatJuiceboxConfigTokenMapInnerValue = {
         /// Realm URL.
         address : ?Text;
@@ -13,20 +16,46 @@ module {
         token : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ChatJuiceboxConfigTokenMapInnerValue type
-        public type JSON = {
-            address : ?Text;
-            public_key : ?Text;
-            token : ?Text;
+        public func toCandidValue(value : ChatJuiceboxConfigTokenMapInnerValue) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.address) {
+                case (?v__) List.add(buf, ("address", #Text(v__)));
+                case null ();
+            };
+            switch (value.public_key) {
+                case (?v__) List.add(buf, ("public_key", #Text(v__)));
+                case null ();
+            };
+            switch (value.token) {
+                case (?v__) List.add(buf, ("token", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ChatJuiceboxConfigTokenMapInnerValue) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ChatJuiceboxConfigTokenMapInnerValue = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?ChatJuiceboxConfigTokenMapInnerValue =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let address : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "address")) {
+                        case (?address_field) ((switch (address_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let public_key : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "public_key")) {
+                        case (?public_key_field) ((switch (public_key_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let token : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "token")) {
+                        case (?token_field) ((switch (token_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        address;
+                        public_key;
+                        token;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

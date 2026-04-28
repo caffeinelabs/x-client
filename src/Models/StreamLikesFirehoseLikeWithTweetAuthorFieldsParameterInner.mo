@@ -1,9 +1,12 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // StreamLikesFirehoseLikeWithTweetAuthorFieldsParameterInner.mo
 /// Enum values: #created_at, #id, #liked_tweet_author_id, #liked_tweet_id, #timestamp_ms
 
 module {
-    // User-facing type: type-safe variants for application code
     public type StreamLikesFirehoseLikeWithTweetAuthorFieldsParameterInner = {
         #created_at;
         #id;
@@ -12,14 +15,27 @@ module {
         #timestamp_ms;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer StreamLikesFirehoseLikeWithTweetAuthorFieldsParameterInner type
-        public type JSON = Text;
+        public func toCandidValue(value : StreamLikesFirehoseLikeWithTweetAuthorFieldsParameterInner) : Candid.Candid =
+            switch (value) {
+                case (#created_at) #Text("created_at");
+                case (#id) #Text("id");
+                case (#liked_tweet_author_id) #Text("liked_tweet_author_id");
+                case (#liked_tweet_id) #Text("liked_tweet_id");
+                case (#timestamp_ms) #Text("timestamp_ms");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : StreamLikesFirehoseLikeWithTweetAuthorFieldsParameterInner) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?StreamLikesFirehoseLikeWithTweetAuthorFieldsParameterInner =
+            switch (candid) {
+                case (#Text("created_at")) ?#created_at;
+                case (#Text("id")) ?#id;
+                case (#Text("liked_tweet_author_id")) ?#liked_tweet_author_id;
+                case (#Text("liked_tweet_id")) ?#liked_tweet_id;
+                case (#Text("timestamp_ms")) ?#timestamp_ms;
+                case _ null;
+            };
+
+        public func toText(value : StreamLikesFirehoseLikeWithTweetAuthorFieldsParameterInner) : Text =
             switch (value) {
                 case (#created_at) "created_at";
                 case (#id) "id";
@@ -27,16 +43,5 @@ module {
                 case (#liked_tweet_id) "liked_tweet_id";
                 case (#timestamp_ms) "timestamp_ms";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?StreamLikesFirehoseLikeWithTweetAuthorFieldsParameterInner =
-            switch (json) {
-                case "created_at" ?#created_at;
-                case "id" ?#id;
-                case "liked_tweet_author_id" ?#liked_tweet_author_id;
-                case "liked_tweet_id" ?#liked_tweet_id;
-                case "timestamp_ms" ?#timestamp_ms;
-                case _ null;
-            };
-    }
-}
+    };
+};

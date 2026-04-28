@@ -1,36 +1,39 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // SearchSpacesStateParameter.mo
 /// Enum values: #live, #scheduled, #all
 
 module {
-    // User-facing type: type-safe variants for application code
     public type SearchSpacesStateParameter = {
         #live;
         #scheduled;
         #all;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer SearchSpacesStateParameter type
-        public type JSON = Text;
+        public func toCandidValue(value : SearchSpacesStateParameter) : Candid.Candid =
+            switch (value) {
+                case (#live) #Text("live");
+                case (#scheduled) #Text("scheduled");
+                case (#all) #Text("all");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : SearchSpacesStateParameter) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?SearchSpacesStateParameter =
+            switch (candid) {
+                case (#Text("live")) ?#live;
+                case (#Text("scheduled")) ?#scheduled;
+                case (#Text("all")) ?#all;
+                case _ null;
+            };
+
+        public func toText(value : SearchSpacesStateParameter) : Text =
             switch (value) {
                 case (#live) "live";
                 case (#scheduled) "scheduled";
                 case (#all) "all";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?SearchSpacesStateParameter =
-            switch (json) {
-                case "live" ?#live;
-                case "scheduled" ?#scheduled;
-                case "all" ?#all;
-                case _ null;
-            };
-    }
-}
+    };
+};

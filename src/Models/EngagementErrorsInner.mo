@@ -1,26 +1,57 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // EngagementErrorsInner.mo
 
 module {
-    // User-facing type: what application code uses
     public type EngagementErrorsInner = {
         error_ : ?Text;
         tweets : ?[Text];
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer EngagementErrorsInner type
-        public type JSON = {
-            error_ : ?Text;
-            tweets : ?[Text];
+        public func toCandidValue(value : EngagementErrorsInner) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.error_) {
+                case (?v__) List.add(buf, ("error", #Text(v__)));
+                case null ();
+            };
+            switch (value.tweets) {
+                case (?v__) List.add(buf, ("tweets", #Array(Array.map<Text, Candid.Candid>(v__, func(s : Text) : Candid.Candid = #Text(s)))));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : EngagementErrorsInner) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?EngagementErrorsInner = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?EngagementErrorsInner =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let error_ : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "error")) {
+                        case (?error__field) ((switch (error__field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let tweets : ?[Text] = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "tweets")) {
+                        case (?tweets_field) ((switch (tweets_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<Text>();
+                            for (c__ in xs__.values()) {
+                                let #Text(s__) = c__ else return null;
+                                List.add(buf__, s__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    }));
+                        case null null;
+                    };
+                    ?{
+                        error_;
+                        tweets;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

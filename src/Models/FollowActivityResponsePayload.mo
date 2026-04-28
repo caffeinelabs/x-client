@@ -1,36 +1,49 @@
 
 import { type User; JSON = User } "./User";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // FollowActivityResponsePayload.mo
 
 module {
-    // User-facing type: what application code uses
     public type FollowActivityResponsePayload = {
         source : ?User;
         target : ?User;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer FollowActivityResponsePayload type
-        public type JSON = {
-            source : ?User.JSON;
-            target : ?User.JSON;
+        public func toCandidValue(value : FollowActivityResponsePayload) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.source) {
+                case (?v__) List.add(buf, ("source", User.toCandidValue(v__)));
+                case null ();
+            };
+            switch (value.target) {
+                case (?v__) List.add(buf, ("target", User.toCandidValue(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : FollowActivityResponsePayload) : JSON = {
-            source = do ? { User.toJSON(value.source!) };
-            target = do ? { User.toJSON(value.target!) };
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?FollowActivityResponsePayload {
-            ?{
-                source = do ? { User.fromJSON(json.source!)! };
-                target = do ? { User.fromJSON(json.target!)! };
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?FollowActivityResponsePayload =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let source : ?User = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "source")) {
+                        case (?source_field) (User.fromCandidValue(source_field.1));
+                        case null null;
+                    };
+                    let target : ?User = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "target")) {
+                        case (?target_field) (User.fromCandidValue(target_field.1));
+                        case null null;
+                    };
+                    ?{
+                        source;
+                        target;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

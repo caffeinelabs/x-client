@@ -1,9 +1,12 @@
 /// Media information being attached to created Tweet. This is mutually exclusive from Quote Tweet Id, Poll, and Card URI.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // TweetCreateRequestMedia.mo
 
 module {
-    // User-facing type: what application code uses
     public type TweetCreateRequestMedia = {
         /// A list of Media Ids to be attached to a created Tweet.
         media_ids : [Text];
@@ -11,19 +14,52 @@ module {
         tagged_user_ids : ?[Text];
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer TweetCreateRequestMedia type
-        public type JSON = {
-            media_ids : [Text];
-            tagged_user_ids : ?[Text];
+        public func toCandidValue(value : TweetCreateRequestMedia) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("media_ids", #Array(Array.map<Text, Candid.Candid>(value.media_ids, func(s : Text) : Candid.Candid = #Text(s)))));
+            switch (value.tagged_user_ids) {
+                case (?v__) List.add(buf, ("tagged_user_ids", #Array(Array.map<Text, Candid.Candid>(v__, func(s : Text) : Candid.Candid = #Text(s)))));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : TweetCreateRequestMedia) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?TweetCreateRequestMedia = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?TweetCreateRequestMedia =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?media_ids_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "media_ids") else return null;
+                    let ?media_ids = ((switch (media_ids_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<Text>();
+                            for (c__ in xs__.values()) {
+                                let #Text(s__) = c__ else return null;
+                                List.add(buf__, s__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    })) else return null;
+                    let tagged_user_ids : ?[Text] = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "tagged_user_ids")) {
+                        case (?tagged_user_ids_field) ((switch (tagged_user_ids_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<Text>();
+                            for (c__ in xs__.values()) {
+                                let #Text(s__) = c__ else return null;
+                                List.add(buf__, s__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    }));
+                        case null null;
+                    };
+                    ?{
+                        media_ids;
+                        tagged_user_ids;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

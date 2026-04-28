@@ -2,29 +2,70 @@
 import { type MediaAnalyticsDataInner; JSON = MediaAnalyticsDataInner } "./MediaAnalyticsDataInner";
 
 import { type Problem; JSON = Problem } "./Problem";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // MediaAnalytics.mo
 
 module {
-    // User-facing type: what application code uses
     public type MediaAnalytics = {
         data : ?[MediaAnalyticsDataInner];
         errors : ?[Problem];
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer MediaAnalytics type
-        public type JSON = {
-            data : ?[MediaAnalyticsDataInner];
-            errors : ?[Problem];
+        public func toCandidValue(value : MediaAnalytics) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.data) {
+                case (?v__) List.add(buf, ("data", #Array(Array.map<MediaAnalyticsDataInner, Candid.Candid>(v__, MediaAnalyticsDataInner.toCandidValue))));
+                case null ();
+            };
+            switch (value.errors) {
+                case (?v__) List.add(buf, ("errors", #Array(Array.map<Problem, Candid.Candid>(v__, Problem.toCandidValue))));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : MediaAnalytics) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?MediaAnalytics = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?MediaAnalytics =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let data : ?[MediaAnalyticsDataInner] = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "data")) {
+                        case (?data_field) ((switch (data_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<MediaAnalyticsDataInner>();
+                            for (c__ in xs__.values()) {
+                                let ?m__ = MediaAnalyticsDataInner.fromCandidValue(c__) else return null;
+                                List.add(buf__, m__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    }));
+                        case null null;
+                    };
+                    let errors : ?[Problem] = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "errors")) {
+                        case (?errors_field) ((switch (errors_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<Problem>();
+                            for (c__ in xs__.values()) {
+                                let ?m__ = Problem.fromCandidValue(c__) else return null;
+                                List.add(buf__, m__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    }));
+                        case null null;
+                    };
+                    ?{
+                        data;
+                        errors;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

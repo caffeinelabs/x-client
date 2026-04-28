@@ -1,24 +1,37 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // UsersDMBlockCreateResponseData.mo
 
 module {
-    // User-facing type: what application code uses
     public type UsersDMBlockCreateResponseData = {
         blocked : ?Bool;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer UsersDMBlockCreateResponseData type
-        public type JSON = {
-            blocked : ?Bool;
+        public func toCandidValue(value : UsersDMBlockCreateResponseData) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.blocked) {
+                case (?v__) List.add(buf, ("blocked", #Bool(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : UsersDMBlockCreateResponseData) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?UsersDMBlockCreateResponseData = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?UsersDMBlockCreateResponseData =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let blocked : ?Bool = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "blocked")) {
+                        case (?blocked_field) ((switch (blocked_field.1) { case (#Bool(b)) ?b; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        blocked;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

@@ -1,9 +1,12 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // GetConnectionHistoryConnectionFieldsParameterInner.mo
 /// Enum values: #client_ip, #connected_at, #disconnect_reason, #disconnected_at, #endpoint_name, #id
 
 module {
-    // User-facing type: type-safe variants for application code
     public type GetConnectionHistoryConnectionFieldsParameterInner = {
         #client_ip;
         #connected_at;
@@ -13,14 +16,29 @@ module {
         #id;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer GetConnectionHistoryConnectionFieldsParameterInner type
-        public type JSON = Text;
+        public func toCandidValue(value : GetConnectionHistoryConnectionFieldsParameterInner) : Candid.Candid =
+            switch (value) {
+                case (#client_ip) #Text("client_ip");
+                case (#connected_at) #Text("connected_at");
+                case (#disconnect_reason) #Text("disconnect_reason");
+                case (#disconnected_at) #Text("disconnected_at");
+                case (#endpoint_name) #Text("endpoint_name");
+                case (#id) #Text("id");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : GetConnectionHistoryConnectionFieldsParameterInner) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?GetConnectionHistoryConnectionFieldsParameterInner =
+            switch (candid) {
+                case (#Text("client_ip")) ?#client_ip;
+                case (#Text("connected_at")) ?#connected_at;
+                case (#Text("disconnect_reason")) ?#disconnect_reason;
+                case (#Text("disconnected_at")) ?#disconnected_at;
+                case (#Text("endpoint_name")) ?#endpoint_name;
+                case (#Text("id")) ?#id;
+                case _ null;
+            };
+
+        public func toText(value : GetConnectionHistoryConnectionFieldsParameterInner) : Text =
             switch (value) {
                 case (#client_ip) "client_ip";
                 case (#connected_at) "connected_at";
@@ -29,17 +47,5 @@ module {
                 case (#endpoint_name) "endpoint_name";
                 case (#id) "id";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?GetConnectionHistoryConnectionFieldsParameterInner =
-            switch (json) {
-                case "client_ip" ?#client_ip;
-                case "connected_at" ?#connected_at;
-                case "disconnect_reason" ?#disconnect_reason;
-                case "disconnected_at" ?#disconnected_at;
-                case "endpoint_name" ?#endpoint_name;
-                case "id" ?#id;
-                case _ null;
-            };
-    }
-}
+    };
+};

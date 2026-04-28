@@ -1,25 +1,33 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ListFollowedRequest.mo
 
 module {
-    // User-facing type: what application code uses
     public type ListFollowedRequest = {
         /// The unique identifier of this List.
         list_id : Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ListFollowedRequest type
-        public type JSON = {
-            list_id : Text;
+        public func toCandidValue(value : ListFollowedRequest) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("list_id", #Text(value.list_id)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ListFollowedRequest) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ListFollowedRequest = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?ListFollowedRequest =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?list_id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "list_id") else return null;
+                    let ?list_id = ((switch (list_id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    ?{
+                        list_id;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

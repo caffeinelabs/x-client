@@ -1,26 +1,34 @@
 /// Currency information.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // PlaidCurrency.mo
 
 module {
-    // User-facing type: what application code uses
     public type PlaidCurrency = {
         /// The ISO 4217 currency code.
         currencyCode : Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer PlaidCurrency type
-        public type JSON = {
-            currencyCode : Text;
+        public func toCandidValue(value : PlaidCurrency) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("currencyCode", #Text(value.currencyCode)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : PlaidCurrency) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?PlaidCurrency = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?PlaidCurrency =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?currencyCode_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "currencyCode") else return null;
+                    let ?currencyCode = ((switch (currencyCode_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    ?{
+                        currencyCode;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

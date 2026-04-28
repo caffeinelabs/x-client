@@ -1,8 +1,11 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // CreateDmEventResponseData.mo
 
 module {
-    // User-facing type: what application code uses
     public type CreateDmEventResponseData = {
         /// Unique identifier of a DM conversation. This can either be a numeric string, or a pair of numeric strings separated by a '-' character in the case of one-on-one DM Conversations.
         dm_conversation_id : Text;
@@ -10,19 +13,27 @@ module {
         dm_event_id : Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer CreateDmEventResponseData type
-        public type JSON = {
-            dm_conversation_id : Text;
-            dm_event_id : Text;
+        public func toCandidValue(value : CreateDmEventResponseData) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("dm_conversation_id", #Text(value.dm_conversation_id)));
+            List.add(buf, ("dm_event_id", #Text(value.dm_event_id)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : CreateDmEventResponseData) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?CreateDmEventResponseData = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?CreateDmEventResponseData =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?dm_conversation_id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "dm_conversation_id") else return null;
+                    let ?dm_conversation_id = ((switch (dm_conversation_id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?dm_event_id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "dm_event_id") else return null;
+                    let ?dm_event_id = ((switch (dm_event_id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    ?{
+                        dm_conversation_id;
+                        dm_event_id;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

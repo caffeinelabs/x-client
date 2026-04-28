@@ -1,35 +1,50 @@
 
 import { type MetadataCreateRequestMetadata; JSON = MetadataCreateRequestMetadata } "./MetadataCreateRequestMetadata";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // MetadataCreateResponseData.mo
 
 module {
-    // User-facing type: what application code uses
     public type MetadataCreateResponseData = {
         associated_metadata : ?MetadataCreateRequestMetadata;
         /// The unique identifier of this Media.
         id : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer MetadataCreateResponseData type
-        public type JSON = {
-            associated_metadata : ?MetadataCreateRequestMetadata.JSON;
-            id : ?Text;
+        public func toCandidValue(value : MetadataCreateResponseData) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.associated_metadata) {
+                case (?v__) List.add(buf, ("associated_metadata", MetadataCreateRequestMetadata.toCandidValue(v__)));
+                case null ();
+            };
+            switch (value.id) {
+                case (?v__) List.add(buf, ("id", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : MetadataCreateResponseData) : JSON = { value with
-            associated_metadata = do ? { MetadataCreateRequestMetadata.toJSON(value.associated_metadata!) };
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?MetadataCreateResponseData {
-            ?{ json with
-                associated_metadata = do ? { MetadataCreateRequestMetadata.fromJSON(json.associated_metadata!)! };
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?MetadataCreateResponseData =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let associated_metadata : ?MetadataCreateRequestMetadata = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "associated_metadata")) {
+                        case (?associated_metadata_field) (MetadataCreateRequestMetadata.fromCandidValue(associated_metadata_field.1));
+                        case null null;
+                    };
+                    let id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "id")) {
+                        case (?id_field) ((switch (id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        associated_metadata;
+                        id;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

@@ -1,29 +1,50 @@
 
 import { type Metrics; JSON = Metrics } "./Metrics";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // TimestampedMetrics.mo
 
 module {
-    // User-facing type: what application code uses
     public type TimestampedMetrics = {
         metrics : ?Metrics;
         /// ISO8601 Time
         timestamp : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer TimestampedMetrics type
-        public type JSON = {
-            metrics : ?Metrics;
-            timestamp : ?Text;
+        public func toCandidValue(value : TimestampedMetrics) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.metrics) {
+                case (?v__) List.add(buf, ("metrics", Metrics.toCandidValue(v__)));
+                case null ();
+            };
+            switch (value.timestamp) {
+                case (?v__) List.add(buf, ("timestamp", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : TimestampedMetrics) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?TimestampedMetrics = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?TimestampedMetrics =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let metrics : ?Metrics = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "metrics")) {
+                        case (?metrics_field) (Metrics.fromCandidValue(metrics_field.1));
+                        case null null;
+                    };
+                    let timestamp : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "timestamp")) {
+                        case (?timestamp_field) ((switch (timestamp_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        metrics;
+                        timestamp;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

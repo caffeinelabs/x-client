@@ -327,7 +327,6 @@ src/Models/LikeWithTweetAuthor.mo
 src/Models/LikesComplianceStreamResponse.mo
 src/Models/LikesComplianceStreamResponseOneOf.mo
 src/Models/LikesComplianceStreamResponseOneOf1.mo
-src/Models/List.mo
 src/Models/ListAddUserRequest.mo
 src/Models/ListCreateRequest.mo
 src/Models/ListCreateResponse.mo
@@ -521,6 +520,7 @@ src/Models/TweetUnviewableSchema.mo
 src/Models/TweetWithheld.mo
 src/Models/TweetWithheldComplianceSchema.mo
 src/Models/TweetWithheldScope.mo
+src/Models/TwitterList.mo
 src/Models/UnlikeComplianceSchema.mo
 src/Models/UnlikeComplianceSchemaFavorite.mo
 src/Models/UnsupportedAuthenticationProblem.mo

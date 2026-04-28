@@ -1,10 +1,12 @@
-
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 import Int "mo:core/Int";
 
 // Media.mo
 
 module {
-    // User-facing type: what application code uses
     public type Media = {
         /// The height of the media in pixels.
         height : ?Nat;
@@ -15,33 +17,50 @@ module {
         width : ?Nat;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer Media type
-        public type JSON = {
-            height : ?Int;
-            media_key : ?Text;
-            type_ : Text;
-            width : ?Int;
+        public func toCandidValue(value : Media) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.height) {
+                case (?v__) List.add(buf, ("height", #Nat(v__)));
+                case null ();
+            };
+            switch (value.media_key) {
+                case (?v__) List.add(buf, ("media_key", #Text(v__)));
+                case null ();
+            };
+            List.add(buf, ("type", #Text(value.type_)));
+            switch (value.width) {
+                case (?v__) List.add(buf, ("width", #Nat(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : Media) : JSON = {
-            height = value.height;
-            media_key = value.media_key;
-            type_ = value.type_;
-            width = value.width;
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?Media {
-            ?{
-                height = do ? { let v = json.height!; if (v < 0) return null else Int.abs(v) };
-                media_key = json.media_key;
-                type_ = json.type_;
-                width = do ? { let v = json.width!; if (v < 0) return null else Int.abs(v) };
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?Media =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let height : ?Nat = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "height")) {
+                        case (?height_field) ((switch (height_field.1) { case (#Nat(n)) ?n; case (#Int(i)) (if (i < 0) null else ?Int.abs(i)); case _ null }));
+                        case null null;
+                    };
+                    let media_key : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "media_key")) {
+                        case (?media_key_field) ((switch (media_key_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let ?type__field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "type") else return null;
+                    let ?type_ = ((switch (type__field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let width : ?Nat = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "width")) {
+                        case (?width_field) ((switch (width_field.1) { case (#Nat(n)) ?n; case (#Int(i)) (if (i < 0) null else ?Int.abs(i)); case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        height;
+                        media_key;
+                        type_;
+                        width;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

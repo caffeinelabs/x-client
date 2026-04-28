@@ -1,10 +1,13 @@
 /// State of upload
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ProcessingInfoState.mo
 /// Enum values: #succeeded, #in_progress, #pending, #failed
 
 module {
-    // User-facing type: type-safe variants for application code
     public type ProcessingInfoState = {
         #succeeded;
         #in_progress;
@@ -12,29 +15,30 @@ module {
         #failed;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ProcessingInfoState type
-        public type JSON = Text;
+        public func toCandidValue(value : ProcessingInfoState) : Candid.Candid =
+            switch (value) {
+                case (#succeeded) #Text("succeeded");
+                case (#in_progress) #Text("in_progress");
+                case (#pending) #Text("pending");
+                case (#failed) #Text("failed");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ProcessingInfoState) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?ProcessingInfoState =
+            switch (candid) {
+                case (#Text("succeeded")) ?#succeeded;
+                case (#Text("in_progress")) ?#in_progress;
+                case (#Text("pending")) ?#pending;
+                case (#Text("failed")) ?#failed;
+                case _ null;
+            };
+
+        public func toText(value : ProcessingInfoState) : Text =
             switch (value) {
                 case (#succeeded) "succeeded";
                 case (#in_progress) "in_progress";
                 case (#pending) "pending";
                 case (#failed) "failed";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ProcessingInfoState =
-            switch (json) {
-                case "succeeded" ?#succeeded;
-                case "in_progress" ?#in_progress;
-                case "pending" ?#pending;
-                case "failed" ?#failed;
-                case _ null;
-            };
-    }
-}
+    };
+};

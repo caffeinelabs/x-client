@@ -1,27 +1,45 @@
 
 import { type Sticker; JSON = Sticker } "./Sticker";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // StickerInfo.mo
 
 module {
-    // User-facing type: what application code uses
     public type StickerInfo = {
         /// Stickers list must not be empty and should not exceed 25
         stickers : [Sticker];
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer StickerInfo type
-        public type JSON = {
-            stickers : [Sticker];
+        public func toCandidValue(value : StickerInfo) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("stickers", #Array(Array.map<Sticker, Candid.Candid>(value.stickers, Sticker.toCandidValue))));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : StickerInfo) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?StickerInfo = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?StickerInfo =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?stickers_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "stickers") else return null;
+                    let ?stickers = ((switch (stickers_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<Sticker>();
+                            for (c__ in xs__.values()) {
+                                let ?m__ = Sticker.fromCandidValue(c__) else return null;
+                                List.add(buf__, m__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    })) else return null;
+                    ?{
+                        stickers;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

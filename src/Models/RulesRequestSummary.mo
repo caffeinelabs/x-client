@@ -2,18 +2,21 @@
 import { type RulesRequestSummaryOneOf; JSON = RulesRequestSummaryOneOf } "./RulesRequestSummaryOneOf";
 
 import { type RulesRequestSummaryOneOf1; JSON = RulesRequestSummaryOneOf1 } "./RulesRequestSummaryOneOf1";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // RulesRequestSummary.mo
+// Generic oneOf (no discriminator, no flatten) — wire form is `{"#tag": ...}`.
 import Runtime "mo:core/Runtime";
 
 module {
-    // User-facing type: discriminated union (oneOf)
     public type RulesRequestSummary = {
         #RulesRequestSummaryOneOf : RulesRequestSummaryOneOf;
         #RulesRequestSummaryOneOf1 : RulesRequestSummaryOneOf1;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
         // Convert oneOf variant to Text for URL parameters
         public func toText(value : RulesRequestSummary) : Text =
@@ -22,25 +25,28 @@ module {
                 case (#RulesRequestSummaryOneOf1(v)) Runtime.unreachable();
             };
 
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer RulesRequestSummary type
-        public type JSON = {
-            #RulesRequestSummaryOneOf : RulesRequestSummaryOneOf;
-            #RulesRequestSummaryOneOf1 : RulesRequestSummaryOneOf1;
-        };
-
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : RulesRequestSummary) : JSON =
+        public func toCandidValue(value : RulesRequestSummary) : Candid.Candid =
             switch (value) {
-                case (#RulesRequestSummaryOneOf(v)) #RulesRequestSummaryOneOf(v);
-                case (#RulesRequestSummaryOneOf1(v)) #RulesRequestSummaryOneOf1(v);
+                case (#RulesRequestSummaryOneOf(v)) #Variant(("RulesRequestSummaryOneOf", RulesRequestSummaryOneOf.toCandidValue(v)));
+                case (#RulesRequestSummaryOneOf1(v)) #Variant(("RulesRequestSummaryOneOf1", RulesRequestSummaryOneOf1.toCandidValue(v)));
             };
 
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?RulesRequestSummary =
-            switch (json) {
-                case (#RulesRequestSummaryOneOf(v)) ?#RulesRequestSummaryOneOf(v);
-                case (#RulesRequestSummaryOneOf1(v)) ?#RulesRequestSummaryOneOf1(v);
+        public func fromCandidValue(candid : Candid.Candid) : ?RulesRequestSummary =
+            switch (candid) {
+                case (#Variant(tagAndVal)) {
+                    switch (tagAndVal.0) {
+                        case ("RulesRequestSummaryOneOf") {
+                            let ?inner = RulesRequestSummaryOneOf.fromCandidValue(tagAndVal.1) else return null;
+                            ?#RulesRequestSummaryOneOf(inner)
+                        };
+                        case ("RulesRequestSummaryOneOf1") {
+                            let ?inner = RulesRequestSummaryOneOf1.fromCandidValue(tagAndVal.1) else return null;
+                            ?#RulesRequestSummaryOneOf1(inner)
+                        };
+                        case _ null;
+                    };
+                };
+                case _ null;
             };
-    }
-}
+    };
+};

@@ -1,9 +1,12 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // GetUsersPublicKeysPublicKeyFieldsParameterInner.mo
 /// Enum values: #juicebox_config, #public_key, #signing_public_key, #version
 
 module {
-    // User-facing type: type-safe variants for application code
     public type GetUsersPublicKeysPublicKeyFieldsParameterInner = {
         #juicebox_config;
         #public_key;
@@ -11,29 +14,30 @@ module {
         #version;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer GetUsersPublicKeysPublicKeyFieldsParameterInner type
-        public type JSON = Text;
+        public func toCandidValue(value : GetUsersPublicKeysPublicKeyFieldsParameterInner) : Candid.Candid =
+            switch (value) {
+                case (#juicebox_config) #Text("juicebox_config");
+                case (#public_key) #Text("public_key");
+                case (#signing_public_key) #Text("signing_public_key");
+                case (#version) #Text("version");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : GetUsersPublicKeysPublicKeyFieldsParameterInner) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?GetUsersPublicKeysPublicKeyFieldsParameterInner =
+            switch (candid) {
+                case (#Text("juicebox_config")) ?#juicebox_config;
+                case (#Text("public_key")) ?#public_key;
+                case (#Text("signing_public_key")) ?#signing_public_key;
+                case (#Text("version")) ?#version;
+                case _ null;
+            };
+
+        public func toText(value : GetUsersPublicKeysPublicKeyFieldsParameterInner) : Text =
             switch (value) {
                 case (#juicebox_config) "juicebox_config";
                 case (#public_key) "public_key";
                 case (#signing_public_key) "signing_public_key";
                 case (#version) "version";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?GetUsersPublicKeysPublicKeyFieldsParameterInner =
-            switch (json) {
-                case "juicebox_config" ?#juicebox_config;
-                case "public_key" ?#public_key;
-                case "signing_public_key" ?#signing_public_key;
-                case "version" ?#version;
-                case _ null;
-            };
-    }
-}
+    };
+};

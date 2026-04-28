@@ -1,10 +1,13 @@
 /// Status of a compliance job.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ComplianceJobStatus.mo
 /// Enum values: #created, #in_progress, #failed, #complete, #expired
 
 module {
-    // User-facing type: type-safe variants for application code
     public type ComplianceJobStatus = {
         #created;
         #in_progress;
@@ -13,14 +16,27 @@ module {
         #expired;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ComplianceJobStatus type
-        public type JSON = Text;
+        public func toCandidValue(value : ComplianceJobStatus) : Candid.Candid =
+            switch (value) {
+                case (#created) #Text("created");
+                case (#in_progress) #Text("in_progress");
+                case (#failed) #Text("failed");
+                case (#complete) #Text("complete");
+                case (#expired) #Text("expired");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ComplianceJobStatus) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?ComplianceJobStatus =
+            switch (candid) {
+                case (#Text("created")) ?#created;
+                case (#Text("in_progress")) ?#in_progress;
+                case (#Text("failed")) ?#failed;
+                case (#Text("complete")) ?#complete;
+                case (#Text("expired")) ?#expired;
+                case _ null;
+            };
+
+        public func toText(value : ComplianceJobStatus) : Text =
             switch (value) {
                 case (#created) "created";
                 case (#in_progress) "in_progress";
@@ -28,16 +44,5 @@ module {
                 case (#complete) "complete";
                 case (#expired) "expired";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ComplianceJobStatus =
-            switch (json) {
-                case "created" ?#created;
-                case "in_progress" ?#in_progress;
-                case "failed" ?#failed;
-                case "complete" ?#complete;
-                case "expired" ?#expired;
-                case _ null;
-            };
-    }
-}
+    };
+};

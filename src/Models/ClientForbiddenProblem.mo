@@ -3,11 +3,14 @@
 import { type ClientForbiddenProblemAllOfReason; JSON = ClientForbiddenProblemAllOfReason } "./ClientForbiddenProblemAllOfReason";
 
 import { type Problem; JSON = Problem } "./Problem";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ClientForbiddenProblem.mo
 
 module {
-    // User-facing type: what application code uses
     public type ClientForbiddenProblem = {
         detail : ?Text;
         status : ?Int;
@@ -17,29 +20,63 @@ module {
         registration_url : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ClientForbiddenProblem type
-        public type JSON = {
-            detail : ?Text;
-            status : ?Int;
-            title : Text;
-            type_ : Text;
-            reason : ?ClientForbiddenProblemAllOfReason.JSON;
-            registration_url : ?Text;
+        public func toCandidValue(value : ClientForbiddenProblem) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.detail) {
+                case (?v__) List.add(buf, ("detail", #Text(v__)));
+                case null ();
+            };
+            switch (value.status) {
+                case (?v__) List.add(buf, ("status", #Int(v__)));
+                case null ();
+            };
+            List.add(buf, ("title", #Text(value.title)));
+            List.add(buf, ("type", #Text(value.type_)));
+            switch (value.reason) {
+                case (?v__) List.add(buf, ("reason", ClientForbiddenProblemAllOfReason.toCandidValue(v__)));
+                case null ();
+            };
+            switch (value.registration_url) {
+                case (?v__) List.add(buf, ("registration_url", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ClientForbiddenProblem) : JSON = { value with
-            reason = do ? { ClientForbiddenProblemAllOfReason.toJSON(value.reason!) };
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ClientForbiddenProblem {
-            ?{ json with
-                reason = do ? { ClientForbiddenProblemAllOfReason.fromJSON(json.reason!)! };
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?ClientForbiddenProblem =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let detail : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "detail")) {
+                        case (?detail_field) ((switch (detail_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let status : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "status")) {
+                        case (?status_field) ((switch (status_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let ?title_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "title") else return null;
+                    let ?title = ((switch (title_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?type__field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "type") else return null;
+                    let ?type_ = ((switch (type__field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let reason : ?ClientForbiddenProblemAllOfReason = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "reason")) {
+                        case (?reason_field) (ClientForbiddenProblemAllOfReason.fromCandidValue(reason_field.1));
+                        case null null;
+                    };
+                    let registration_url : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "registration_url")) {
+                        case (?registration_url_field) ((switch (registration_url_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        detail;
+                        status;
+                        title;
+                        type_;
+                        reason;
+                        registration_url;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

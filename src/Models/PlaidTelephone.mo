@@ -1,9 +1,12 @@
 /// Telephone information for the account holder.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // PlaidTelephone.mo
 
 module {
-    // User-facing type: what application code uses
     public type PlaidTelephone = {
         /// The country code for the phone number (e.g., '+1').
         country : Text;
@@ -13,20 +16,31 @@ module {
         type_ : Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer PlaidTelephone type
-        public type JSON = {
-            country : Text;
-            number : Text;
-            type_ : Text;
+        public func toCandidValue(value : PlaidTelephone) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("country", #Text(value.country)));
+            List.add(buf, ("number", #Text(value.number)));
+            List.add(buf, ("type", #Text(value.type_)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : PlaidTelephone) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?PlaidTelephone = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?PlaidTelephone =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?country_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "country") else return null;
+                    let ?country = ((switch (country_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?number_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "number") else return null;
+                    let ?number = ((switch (number_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?type__field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "type") else return null;
+                    let ?type_ = ((switch (type__field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    ?{
+                        country;
+                        number;
+                        type_;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

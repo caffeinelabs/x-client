@@ -1,25 +1,38 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ChatInitializeGroupResponseData.mo
 
 module {
-    // User-facing type: what application code uses
     public type ChatInitializeGroupResponseData = {
         /// The unique identifier for the initialized group conversation. This ID is prefixed with 'g' (e.g., 'g1234567890123456789'). Use this ID when calling POST /chat/conversations to create the group.
         conversation_id : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ChatInitializeGroupResponseData type
-        public type JSON = {
-            conversation_id : ?Text;
+        public func toCandidValue(value : ChatInitializeGroupResponseData) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.conversation_id) {
+                case (?v__) List.add(buf, ("conversation_id", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ChatInitializeGroupResponseData) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ChatInitializeGroupResponseData = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?ChatInitializeGroupResponseData =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let conversation_id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "conversation_id")) {
+                        case (?conversation_id_field) ((switch (conversation_id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        conversation_id;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

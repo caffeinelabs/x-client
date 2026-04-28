@@ -1,10 +1,13 @@
 /// Community Note misleading tags type.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // MisleadingTags.mo
 /// Enum values: #disputed_claim_as_fact, #factual_error, #manipulated_media, #misinterpreted_satire, #missing_important_context, #other, #outdated_information
 
 module {
-    // User-facing type: type-safe variants for application code
     public type MisleadingTags = {
         #disputed_claim_as_fact;
         #factual_error;
@@ -15,14 +18,31 @@ module {
         #outdated_information;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer MisleadingTags type
-        public type JSON = Text;
+        public func toCandidValue(value : MisleadingTags) : Candid.Candid =
+            switch (value) {
+                case (#disputed_claim_as_fact) #Text("disputed_claim_as_fact");
+                case (#factual_error) #Text("factual_error");
+                case (#manipulated_media) #Text("manipulated_media");
+                case (#misinterpreted_satire) #Text("misinterpreted_satire");
+                case (#missing_important_context) #Text("missing_important_context");
+                case (#other) #Text("other");
+                case (#outdated_information) #Text("outdated_information");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : MisleadingTags) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?MisleadingTags =
+            switch (candid) {
+                case (#Text("disputed_claim_as_fact")) ?#disputed_claim_as_fact;
+                case (#Text("factual_error")) ?#factual_error;
+                case (#Text("manipulated_media")) ?#manipulated_media;
+                case (#Text("misinterpreted_satire")) ?#misinterpreted_satire;
+                case (#Text("missing_important_context")) ?#missing_important_context;
+                case (#Text("other")) ?#other;
+                case (#Text("outdated_information")) ?#outdated_information;
+                case _ null;
+            };
+
+        public func toText(value : MisleadingTags) : Text =
             switch (value) {
                 case (#disputed_claim_as_fact) "disputed_claim_as_fact";
                 case (#factual_error) "factual_error";
@@ -32,18 +52,5 @@ module {
                 case (#other) "other";
                 case (#outdated_information) "outdated_information";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?MisleadingTags =
-            switch (json) {
-                case "disputed_claim_as_fact" ?#disputed_claim_as_fact;
-                case "factual_error" ?#factual_error;
-                case "manipulated_media" ?#manipulated_media;
-                case "misinterpreted_satire" ?#misinterpreted_satire;
-                case "missing_important_context" ?#missing_important_context;
-                case "other" ?#other;
-                case "outdated_information" ?#outdated_information;
-                case _ null;
-            };
-    }
-}
+    };
+};

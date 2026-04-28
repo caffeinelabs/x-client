@@ -1,9 +1,12 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // GetPostsAnalyticsGranularityParameter.mo
 /// Enum values: #hourly, #daily, #weekly, #total
 
 module {
-    // User-facing type: type-safe variants for application code
     public type GetPostsAnalyticsGranularityParameter = {
         #hourly;
         #daily;
@@ -11,29 +14,30 @@ module {
         #total;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer GetPostsAnalyticsGranularityParameter type
-        public type JSON = Text;
+        public func toCandidValue(value : GetPostsAnalyticsGranularityParameter) : Candid.Candid =
+            switch (value) {
+                case (#hourly) #Text("hourly");
+                case (#daily) #Text("daily");
+                case (#weekly) #Text("weekly");
+                case (#total) #Text("total");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : GetPostsAnalyticsGranularityParameter) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?GetPostsAnalyticsGranularityParameter =
+            switch (candid) {
+                case (#Text("hourly")) ?#hourly;
+                case (#Text("daily")) ?#daily;
+                case (#Text("weekly")) ?#weekly;
+                case (#Text("total")) ?#total;
+                case _ null;
+            };
+
+        public func toText(value : GetPostsAnalyticsGranularityParameter) : Text =
             switch (value) {
                 case (#hourly) "hourly";
                 case (#daily) "daily";
                 case (#weekly) "weekly";
                 case (#total) "total";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?GetPostsAnalyticsGranularityParameter =
-            switch (json) {
-                case "hourly" ?#hourly;
-                case "daily" ?#daily;
-                case "weekly" ?#weekly;
-                case "total" ?#total;
-                case _ null;
-            };
-    }
-}
+    };
+};

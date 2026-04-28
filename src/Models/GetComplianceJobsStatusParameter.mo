@@ -1,9 +1,12 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // GetComplianceJobsStatusParameter.mo
 /// Enum values: #created, #in_progress, #failed, #complete
 
 module {
-    // User-facing type: type-safe variants for application code
     public type GetComplianceJobsStatusParameter = {
         #created;
         #in_progress;
@@ -11,29 +14,30 @@ module {
         #complete;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer GetComplianceJobsStatusParameter type
-        public type JSON = Text;
+        public func toCandidValue(value : GetComplianceJobsStatusParameter) : Candid.Candid =
+            switch (value) {
+                case (#created) #Text("created");
+                case (#in_progress) #Text("in_progress");
+                case (#failed) #Text("failed");
+                case (#complete) #Text("complete");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : GetComplianceJobsStatusParameter) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?GetComplianceJobsStatusParameter =
+            switch (candid) {
+                case (#Text("created")) ?#created;
+                case (#Text("in_progress")) ?#in_progress;
+                case (#Text("failed")) ?#failed;
+                case (#Text("complete")) ?#complete;
+                case _ null;
+            };
+
+        public func toText(value : GetComplianceJobsStatusParameter) : Text =
             switch (value) {
                 case (#created) "created";
                 case (#in_progress) "in_progress";
                 case (#failed) "failed";
                 case (#complete) "complete";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?GetComplianceJobsStatusParameter =
-            switch (json) {
-                case "created" ?#created;
-                case "in_progress" ?#in_progress;
-                case "failed" ?#failed;
-                case "complete" ?#complete;
-                case _ null;
-            };
-    }
-}
+    };
+};

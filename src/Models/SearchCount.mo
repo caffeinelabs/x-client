@@ -1,9 +1,12 @@
 /// Represent a Search Count Result.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // SearchCount.mo
 
 module {
-    // User-facing type: what application code uses
     public type SearchCount = {
         /// The end time of the bucket.
         end : Text;
@@ -13,20 +16,31 @@ module {
         tweet_count : Int;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer SearchCount type
-        public type JSON = {
-            end : Text;
-            start : Text;
-            tweet_count : Int;
+        public func toCandidValue(value : SearchCount) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("end", #Text(value.end)));
+            List.add(buf, ("start", #Text(value.start)));
+            List.add(buf, ("tweet_count", #Int(value.tweet_count)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : SearchCount) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?SearchCount = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?SearchCount =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?end_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "end") else return null;
+                    let ?end = ((switch (end_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?start_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "start") else return null;
+                    let ?start = ((switch (start_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?tweet_count_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "tweet_count") else return null;
+                    let ?tweet_count = ((switch (tweet_count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null })) else return null;
+                    ?{
+                        end;
+                        start;
+                        tweet_count;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

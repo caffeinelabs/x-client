@@ -7,18 +7,21 @@ import { type TweetNoticeSchema; JSON = TweetNoticeSchema } "./TweetNoticeSchema
 import { type TweetUnviewable; JSON = TweetUnviewable } "./TweetUnviewable";
 
 import { type TweetUnviewableSchema; JSON = TweetUnviewableSchema } "./TweetUnviewableSchema";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // TweetLabelData.mo
+// Generic oneOf (no discriminator, no flatten) — wire form is `{"#tag": ...}`.
 import Runtime "mo:core/Runtime";
 
 module {
-    // User-facing type: discriminated union (oneOf)
     public type TweetLabelData = {
         #TweetNoticeSchema : TweetNoticeSchema;
         #TweetUnviewableSchema : TweetUnviewableSchema;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
         // Convert oneOf variant to Text for URL parameters
         public func toText(value : TweetLabelData) : Text =
@@ -27,25 +30,28 @@ module {
                 case (#TweetUnviewableSchema(v)) Runtime.unreachable();
             };
 
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer TweetLabelData type
-        public type JSON = {
-            #TweetNoticeSchema : TweetNoticeSchema;
-            #TweetUnviewableSchema : TweetUnviewableSchema;
-        };
-
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : TweetLabelData) : JSON =
+        public func toCandidValue(value : TweetLabelData) : Candid.Candid =
             switch (value) {
-                case (#TweetNoticeSchema(v)) #TweetNoticeSchema(v);
-                case (#TweetUnviewableSchema(v)) #TweetUnviewableSchema(v);
+                case (#TweetNoticeSchema(v)) #Variant(("TweetNoticeSchema", TweetNoticeSchema.toCandidValue(v)));
+                case (#TweetUnviewableSchema(v)) #Variant(("TweetUnviewableSchema", TweetUnviewableSchema.toCandidValue(v)));
             };
 
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?TweetLabelData =
-            switch (json) {
-                case (#TweetNoticeSchema(v)) ?#TweetNoticeSchema(v);
-                case (#TweetUnviewableSchema(v)) ?#TweetUnviewableSchema(v);
+        public func fromCandidValue(candid : Candid.Candid) : ?TweetLabelData =
+            switch (candid) {
+                case (#Variant(tagAndVal)) {
+                    switch (tagAndVal.0) {
+                        case ("TweetNoticeSchema") {
+                            let ?inner = TweetNoticeSchema.fromCandidValue(tagAndVal.1) else return null;
+                            ?#TweetNoticeSchema(inner)
+                        };
+                        case ("TweetUnviewableSchema") {
+                            let ?inner = TweetUnviewableSchema.fromCandidValue(tagAndVal.1) else return null;
+                            ?#TweetUnviewableSchema(inner)
+                        };
+                        case _ null;
+                    };
+                };
+                case _ null;
             };
-    }
-}
+    };
+};

@@ -1,9 +1,12 @@
 /// Specifies the type of attachments (if any) present in this DM.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // DmEventAttachments.mo
 
 module {
-    // User-facing type: what application code uses
     public type DmEventAttachments = {
         /// A list of card IDs (if cards are attached).
         card_ids : ?[Text];
@@ -11,19 +14,57 @@ module {
         media_keys : ?[Text];
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer DmEventAttachments type
-        public type JSON = {
-            card_ids : ?[Text];
-            media_keys : ?[Text];
+        public func toCandidValue(value : DmEventAttachments) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.card_ids) {
+                case (?v__) List.add(buf, ("card_ids", #Array(Array.map<Text, Candid.Candid>(v__, func(s : Text) : Candid.Candid = #Text(s)))));
+                case null ();
+            };
+            switch (value.media_keys) {
+                case (?v__) List.add(buf, ("media_keys", #Array(Array.map<Text, Candid.Candid>(v__, func(s : Text) : Candid.Candid = #Text(s)))));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : DmEventAttachments) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?DmEventAttachments = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?DmEventAttachments =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let card_ids : ?[Text] = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "card_ids")) {
+                        case (?card_ids_field) ((switch (card_ids_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<Text>();
+                            for (c__ in xs__.values()) {
+                                let #Text(s__) = c__ else return null;
+                                List.add(buf__, s__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    }));
+                        case null null;
+                    };
+                    let media_keys : ?[Text] = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "media_keys")) {
+                        case (?media_keys_field) ((switch (media_keys_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<Text>();
+                            for (c__ in xs__.values()) {
+                                let #Text(s__) = c__ else return null;
+                                List.add(buf__, s__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    }));
+                        case null null;
+                    };
+                    ?{
+                        card_ids;
+                        media_keys;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

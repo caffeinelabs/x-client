@@ -2,18 +2,21 @@
 import { type GeoRestrictionsOneOf; JSON = GeoRestrictionsOneOf } "./GeoRestrictionsOneOf";
 
 import { type GeoRestrictionsOneOf1; JSON = GeoRestrictionsOneOf1 } "./GeoRestrictionsOneOf1";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // GeoRestrictions.mo
+// Generic oneOf (no discriminator, no flatten) — wire form is `{"#tag": ...}`.
 import Runtime "mo:core/Runtime";
 
 module {
-    // User-facing type: discriminated union (oneOf)
     public type GeoRestrictions = {
         #GeoRestrictionsOneOf : GeoRestrictionsOneOf;
         #GeoRestrictionsOneOf1 : GeoRestrictionsOneOf1;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
         // Convert oneOf variant to Text for URL parameters
         public func toText(value : GeoRestrictions) : Text =
@@ -22,25 +25,28 @@ module {
                 case (#GeoRestrictionsOneOf1(v)) Runtime.unreachable();
             };
 
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer GeoRestrictions type
-        public type JSON = {
-            #GeoRestrictionsOneOf : GeoRestrictionsOneOf;
-            #GeoRestrictionsOneOf1 : GeoRestrictionsOneOf1;
-        };
-
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : GeoRestrictions) : JSON =
+        public func toCandidValue(value : GeoRestrictions) : Candid.Candid =
             switch (value) {
-                case (#GeoRestrictionsOneOf(v)) #GeoRestrictionsOneOf(v);
-                case (#GeoRestrictionsOneOf1(v)) #GeoRestrictionsOneOf1(v);
+                case (#GeoRestrictionsOneOf(v)) #Variant(("GeoRestrictionsOneOf", GeoRestrictionsOneOf.toCandidValue(v)));
+                case (#GeoRestrictionsOneOf1(v)) #Variant(("GeoRestrictionsOneOf1", GeoRestrictionsOneOf1.toCandidValue(v)));
             };
 
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?GeoRestrictions =
-            switch (json) {
-                case (#GeoRestrictionsOneOf(v)) ?#GeoRestrictionsOneOf(v);
-                case (#GeoRestrictionsOneOf1(v)) ?#GeoRestrictionsOneOf1(v);
+        public func fromCandidValue(candid : Candid.Candid) : ?GeoRestrictions =
+            switch (candid) {
+                case (#Variant(tagAndVal)) {
+                    switch (tagAndVal.0) {
+                        case ("GeoRestrictionsOneOf") {
+                            let ?inner = GeoRestrictionsOneOf.fromCandidValue(tagAndVal.1) else return null;
+                            ?#GeoRestrictionsOneOf(inner)
+                        };
+                        case ("GeoRestrictionsOneOf1") {
+                            let ?inner = GeoRestrictionsOneOf1.fromCandidValue(tagAndVal.1) else return null;
+                            ?#GeoRestrictionsOneOf1(inner)
+                        };
+                        case _ null;
+                    };
+                };
+                case _ null;
             };
-    }
-}
+    };
+};

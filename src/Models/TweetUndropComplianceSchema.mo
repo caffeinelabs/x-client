@@ -1,26 +1,34 @@
 
 import { type TweetComplianceSchema; JSON = TweetComplianceSchema } "./TweetComplianceSchema";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // TweetUndropComplianceSchema.mo
 
 module {
-    // User-facing type: what application code uses
     public type TweetUndropComplianceSchema = {
         undrop : TweetComplianceSchema;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer TweetUndropComplianceSchema type
-        public type JSON = {
-            undrop : TweetComplianceSchema;
+        public func toCandidValue(value : TweetUndropComplianceSchema) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("undrop", TweetComplianceSchema.toCandidValue(value.undrop)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : TweetUndropComplianceSchema) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?TweetUndropComplianceSchema = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?TweetUndropComplianceSchema =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?undrop_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "undrop") else return null;
+                    let ?undrop = (TweetComplianceSchema.fromCandidValue(undrop_field.1)) else return null;
+                    ?{
+                        undrop;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

@@ -1,9 +1,12 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // SearchCommunityNotesWrittenNoteFieldsParameterInner.mo
 /// Enum values: #id, #info, #status, #test_result
 
 module {
-    // User-facing type: type-safe variants for application code
     public type SearchCommunityNotesWrittenNoteFieldsParameterInner = {
         #id;
         #info;
@@ -11,29 +14,30 @@ module {
         #test_result;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer SearchCommunityNotesWrittenNoteFieldsParameterInner type
-        public type JSON = Text;
+        public func toCandidValue(value : SearchCommunityNotesWrittenNoteFieldsParameterInner) : Candid.Candid =
+            switch (value) {
+                case (#id) #Text("id");
+                case (#info) #Text("info");
+                case (#status) #Text("status");
+                case (#test_result) #Text("test_result");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : SearchCommunityNotesWrittenNoteFieldsParameterInner) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?SearchCommunityNotesWrittenNoteFieldsParameterInner =
+            switch (candid) {
+                case (#Text("id")) ?#id;
+                case (#Text("info")) ?#info;
+                case (#Text("status")) ?#status;
+                case (#Text("test_result")) ?#test_result;
+                case _ null;
+            };
+
+        public func toText(value : SearchCommunityNotesWrittenNoteFieldsParameterInner) : Text =
             switch (value) {
                 case (#id) "id";
                 case (#info) "info";
                 case (#status) "status";
                 case (#test_result) "test_result";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?SearchCommunityNotesWrittenNoteFieldsParameterInner =
-            switch (json) {
-                case "id" ?#id;
-                case "info" ?#info;
-                case "status" ?#status;
-                case "test_result" ?#test_result;
-                case _ null;
-            };
-    }
-}
+    };
+};

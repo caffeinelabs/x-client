@@ -1,10 +1,13 @@
 /// Shows who can reply a Tweet. Fields returned are everyone, mentioned_users, and following.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ReplySettings.mo
 /// Enum values: #everyone, #mentionedusers, #following, #other
 
 module {
-    // User-facing type: type-safe variants for application code
     public type ReplySettings = {
         #everyone;
         #mentionedusers;
@@ -12,29 +15,30 @@ module {
         #other;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ReplySettings type
-        public type JSON = Text;
+        public func toCandidValue(value : ReplySettings) : Candid.Candid =
+            switch (value) {
+                case (#everyone) #Text("everyone");
+                case (#mentionedusers) #Text("mentionedUsers");
+                case (#following) #Text("following");
+                case (#other) #Text("other");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ReplySettings) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?ReplySettings =
+            switch (candid) {
+                case (#Text("everyone")) ?#everyone;
+                case (#Text("mentionedUsers")) ?#mentionedusers;
+                case (#Text("following")) ?#following;
+                case (#Text("other")) ?#other;
+                case _ null;
+            };
+
+        public func toText(value : ReplySettings) : Text =
             switch (value) {
                 case (#everyone) "everyone";
                 case (#mentionedusers) "mentionedUsers";
                 case (#following) "following";
                 case (#other) "other";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ReplySettings =
-            switch (json) {
-                case "everyone" ?#everyone;
-                case "mentionedUsers" ?#mentionedusers;
-                case "following" ?#following;
-                case "other" ?#other;
-                case _ null;
-            };
-    }
-}
+    };
+};

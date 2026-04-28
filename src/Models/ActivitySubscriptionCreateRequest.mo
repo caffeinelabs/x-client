@@ -2,11 +2,14 @@
 import { type ActivitySubscriptionCreateRequestEventType; JSON = ActivitySubscriptionCreateRequestEventType } "./ActivitySubscriptionCreateRequestEventType";
 
 import { type ActivitySubscriptionFilter; JSON = ActivitySubscriptionFilter } "./ActivitySubscriptionFilter";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ActivitySubscriptionCreateRequest.mo
 
 module {
-    // User-facing type: what application code uses
     public type ActivitySubscriptionCreateRequest = {
         event_type : ActivitySubscriptionCreateRequestEventType;
         filter : ActivitySubscriptionFilter;
@@ -15,31 +18,45 @@ module {
         webhook_id : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ActivitySubscriptionCreateRequest type
-        public type JSON = {
-            event_type : ActivitySubscriptionCreateRequestEventType.JSON;
-            filter : ActivitySubscriptionFilter.JSON;
-            tag : ?Text;
-            webhook_id : ?Text;
+        public func toCandidValue(value : ActivitySubscriptionCreateRequest) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("event_type", ActivitySubscriptionCreateRequestEventType.toCandidValue(value.event_type)));
+            List.add(buf, ("filter", ActivitySubscriptionFilter.toCandidValue(value.filter)));
+            switch (value.tag) {
+                case (?v__) List.add(buf, ("tag", #Text(v__)));
+                case null ();
+            };
+            switch (value.webhook_id) {
+                case (?v__) List.add(buf, ("webhook_id", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ActivitySubscriptionCreateRequest) : JSON = { value with
-            event_type = ActivitySubscriptionCreateRequestEventType.toJSON(value.event_type);
-            filter = ActivitySubscriptionFilter.toJSON(value.filter);
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ActivitySubscriptionCreateRequest {
-            let ?event_type = ActivitySubscriptionCreateRequestEventType.fromJSON(json.event_type) else return null;
-            let ?filter = ActivitySubscriptionFilter.fromJSON(json.filter) else return null;
-            ?{ json with
-                event_type;
-                filter;
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?ActivitySubscriptionCreateRequest =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?event_type_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "event_type") else return null;
+                    let ?event_type = (ActivitySubscriptionCreateRequestEventType.fromCandidValue(event_type_field.1)) else return null;
+                    let ?filter_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "filter") else return null;
+                    let ?filter = (ActivitySubscriptionFilter.fromCandidValue(filter_field.1)) else return null;
+                    let tag : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "tag")) {
+                        case (?tag_field) ((switch (tag_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let webhook_id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "webhook_id")) {
+                        case (?webhook_id_field) ((switch (webhook_id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        event_type;
+                        filter;
+                        tag;
+                        webhook_id;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

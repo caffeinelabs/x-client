@@ -1,10 +1,13 @@
 
 import { type ProcessingInfo; JSON = ProcessingInfo } "./ProcessingInfo";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // MediaUploadResponseData.mo
 
 module {
-    // User-facing type: what application code uses
     public type MediaUploadResponseData = {
         /// Number of seconds after which upload session expires.
         expires_after_secs : ?Int;
@@ -17,28 +20,64 @@ module {
         size : ?Int;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer MediaUploadResponseData type
-        public type JSON = {
-            expires_after_secs : ?Int;
-            id : ?Text;
-            media_key : ?Text;
-            processing_info : ?ProcessingInfo.JSON;
-            size : ?Int;
+        public func toCandidValue(value : MediaUploadResponseData) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.expires_after_secs) {
+                case (?v__) List.add(buf, ("expires_after_secs", #Int(v__)));
+                case null ();
+            };
+            switch (value.id) {
+                case (?v__) List.add(buf, ("id", #Text(v__)));
+                case null ();
+            };
+            switch (value.media_key) {
+                case (?v__) List.add(buf, ("media_key", #Text(v__)));
+                case null ();
+            };
+            switch (value.processing_info) {
+                case (?v__) List.add(buf, ("processing_info", ProcessingInfo.toCandidValue(v__)));
+                case null ();
+            };
+            switch (value.size) {
+                case (?v__) List.add(buf, ("size", #Int(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : MediaUploadResponseData) : JSON = { value with
-            processing_info = do ? { ProcessingInfo.toJSON(value.processing_info!) };
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?MediaUploadResponseData {
-            ?{ json with
-                processing_info = do ? { ProcessingInfo.fromJSON(json.processing_info!)! };
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?MediaUploadResponseData =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let expires_after_secs : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "expires_after_secs")) {
+                        case (?expires_after_secs_field) ((switch (expires_after_secs_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "id")) {
+                        case (?id_field) ((switch (id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let media_key : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "media_key")) {
+                        case (?media_key_field) ((switch (media_key_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let processing_info : ?ProcessingInfo = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "processing_info")) {
+                        case (?processing_info_field) (ProcessingInfo.fromCandidValue(processing_info_field.1));
+                        case null null;
+                    };
+                    let size : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "size")) {
+                        case (?size_field) ((switch (size_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        expires_after_secs;
+                        id;
+                        media_key;
+                        processing_info;
+                        size;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

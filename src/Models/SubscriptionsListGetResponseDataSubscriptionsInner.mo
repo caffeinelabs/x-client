@@ -1,25 +1,38 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // SubscriptionsListGetResponseDataSubscriptionsInner.mo
 
 module {
-    // User-facing type: what application code uses
     public type SubscriptionsListGetResponseDataSubscriptionsInner = {
         /// The ID of the user the webhook is subscribed to
         user_id : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer SubscriptionsListGetResponseDataSubscriptionsInner type
-        public type JSON = {
-            user_id : ?Text;
+        public func toCandidValue(value : SubscriptionsListGetResponseDataSubscriptionsInner) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.user_id) {
+                case (?v__) List.add(buf, ("user_id", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : SubscriptionsListGetResponseDataSubscriptionsInner) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?SubscriptionsListGetResponseDataSubscriptionsInner = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?SubscriptionsListGetResponseDataSubscriptionsInner =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let user_id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "user_id")) {
+                        case (?user_id_field) ((switch (user_id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        user_id;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

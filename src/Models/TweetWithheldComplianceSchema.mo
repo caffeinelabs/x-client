@@ -1,26 +1,34 @@
 
 import { type TweetTakedownComplianceSchema; JSON = TweetTakedownComplianceSchema } "./TweetTakedownComplianceSchema";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // TweetWithheldComplianceSchema.mo
 
 module {
-    // User-facing type: what application code uses
     public type TweetWithheldComplianceSchema = {
         withheld : TweetTakedownComplianceSchema;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer TweetWithheldComplianceSchema type
-        public type JSON = {
-            withheld : TweetTakedownComplianceSchema;
+        public func toCandidValue(value : TweetWithheldComplianceSchema) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("withheld", TweetTakedownComplianceSchema.toCandidValue(value.withheld)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : TweetWithheldComplianceSchema) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?TweetWithheldComplianceSchema = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?TweetWithheldComplianceSchema =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?withheld_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "withheld") else return null;
+                    let ?withheld = (TweetTakedownComplianceSchema.fromCandidValue(withheld_field.1)) else return null;
+                    ?{
+                        withheld;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

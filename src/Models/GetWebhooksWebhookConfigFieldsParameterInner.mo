@@ -1,9 +1,12 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // GetWebhooksWebhookConfigFieldsParameterInner.mo
 /// Enum values: #created_at, #id, #url, #valid
 
 module {
-    // User-facing type: type-safe variants for application code
     public type GetWebhooksWebhookConfigFieldsParameterInner = {
         #created_at;
         #id;
@@ -11,29 +14,30 @@ module {
         #valid;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer GetWebhooksWebhookConfigFieldsParameterInner type
-        public type JSON = Text;
+        public func toCandidValue(value : GetWebhooksWebhookConfigFieldsParameterInner) : Candid.Candid =
+            switch (value) {
+                case (#created_at) #Text("created_at");
+                case (#id) #Text("id");
+                case (#url) #Text("url");
+                case (#valid) #Text("valid");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : GetWebhooksWebhookConfigFieldsParameterInner) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?GetWebhooksWebhookConfigFieldsParameterInner =
+            switch (candid) {
+                case (#Text("created_at")) ?#created_at;
+                case (#Text("id")) ?#id;
+                case (#Text("url")) ?#url;
+                case (#Text("valid")) ?#valid;
+                case _ null;
+            };
+
+        public func toText(value : GetWebhooksWebhookConfigFieldsParameterInner) : Text =
             switch (value) {
                 case (#created_at) "created_at";
                 case (#id) "id";
                 case (#url) "url";
                 case (#valid) "valid";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?GetWebhooksWebhookConfigFieldsParameterInner =
-            switch (json) {
-                case "created_at" ?#created_at;
-                case "id" ?#id;
-                case "url" ?#url;
-                case "valid" ?#valid;
-                case _ null;
-            };
-    }
-}
+    };
+};

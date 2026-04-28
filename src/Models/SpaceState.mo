@@ -1,37 +1,40 @@
 /// The current state of the Space.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // SpaceState.mo
 /// Enum values: #live, #scheduled, #ended
 
 module {
-    // User-facing type: type-safe variants for application code
     public type SpaceState = {
         #live;
         #scheduled;
         #ended;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer SpaceState type
-        public type JSON = Text;
+        public func toCandidValue(value : SpaceState) : Candid.Candid =
+            switch (value) {
+                case (#live) #Text("live");
+                case (#scheduled) #Text("scheduled");
+                case (#ended) #Text("ended");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : SpaceState) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?SpaceState =
+            switch (candid) {
+                case (#Text("live")) ?#live;
+                case (#Text("scheduled")) ?#scheduled;
+                case (#Text("ended")) ?#ended;
+                case _ null;
+            };
+
+        public func toText(value : SpaceState) : Text =
             switch (value) {
                 case (#live) "live";
                 case (#scheduled) "scheduled";
                 case (#ended) "ended";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?SpaceState =
-            switch (json) {
-                case "live" ?#live;
-                case "scheduled" ?#scheduled;
-                case "ended" ?#ended;
-                case _ null;
-            };
-    }
-}
+    };
+};

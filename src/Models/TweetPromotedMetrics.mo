@@ -1,9 +1,12 @@
 /// Promoted nonpublic engagement metrics for the Tweet at the time of the request.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // TweetPromotedMetrics.mo
 
 module {
-    // User-facing type: what application code uses
     public type TweetPromotedMetrics = {
         /// Number of times this Tweet has been viewed.
         impression_count : ?Int;
@@ -15,21 +18,55 @@ module {
         retweet_count : ?Int;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer TweetPromotedMetrics type
-        public type JSON = {
-            impression_count : ?Int;
-            like_count : ?Int;
-            reply_count : ?Int;
-            retweet_count : ?Int;
+        public func toCandidValue(value : TweetPromotedMetrics) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.impression_count) {
+                case (?v__) List.add(buf, ("impression_count", #Int(v__)));
+                case null ();
+            };
+            switch (value.like_count) {
+                case (?v__) List.add(buf, ("like_count", #Int(v__)));
+                case null ();
+            };
+            switch (value.reply_count) {
+                case (?v__) List.add(buf, ("reply_count", #Int(v__)));
+                case null ();
+            };
+            switch (value.retweet_count) {
+                case (?v__) List.add(buf, ("retweet_count", #Int(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : TweetPromotedMetrics) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?TweetPromotedMetrics = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?TweetPromotedMetrics =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let impression_count : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "impression_count")) {
+                        case (?impression_count_field) ((switch (impression_count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let like_count : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "like_count")) {
+                        case (?like_count_field) ((switch (like_count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let reply_count : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "reply_count")) {
+                        case (?reply_count_field) ((switch (reply_count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let retweet_count : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "retweet_count")) {
+                        case (?retweet_count_field) ((switch (retweet_count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        impression_count;
+                        like_count;
+                        reply_count;
+                        retweet_count;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

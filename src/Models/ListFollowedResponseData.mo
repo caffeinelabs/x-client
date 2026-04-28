@@ -1,24 +1,37 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ListFollowedResponseData.mo
 
 module {
-    // User-facing type: what application code uses
     public type ListFollowedResponseData = {
         following : ?Bool;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ListFollowedResponseData type
-        public type JSON = {
-            following : ?Bool;
+        public func toCandidValue(value : ListFollowedResponseData) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.following) {
+                case (?v__) List.add(buf, ("following", #Bool(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ListFollowedResponseData) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ListFollowedResponseData = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?ListFollowedResponseData =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let following : ?Bool = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "following")) {
+                        case (?following_field) ((switch (following_field.1) { case (#Bool(b)) ?b; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        following;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

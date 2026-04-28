@@ -4,11 +4,14 @@ import { type ChatMediaUploadAppendRequestAnyOf; JSON = ChatMediaUploadAppendReq
 import { type ChatMediaUploadAppendRequestAnyOf1; JSON = ChatMediaUploadAppendRequestAnyOf1 } "./ChatMediaUploadAppendRequestAnyOf1";
 
 import { type MediaSegments; JSON = MediaSegments } "./MediaSegments";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ChatMediaUploadAppendRequest.mo
 
 module {
-    // User-facing type: what application code uses
     public type ChatMediaUploadAppendRequest = {
         /// XChat conversation identifier for the upload.
         conversation_id : Text;
@@ -19,21 +22,35 @@ module {
         segment_index : MediaSegments;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ChatMediaUploadAppendRequest type
-        public type JSON = {
-            conversation_id : Text;
-            media : Blob;
-            media_hash_key : Text;
-            segment_index : MediaSegments;
+        public func toCandidValue(value : ChatMediaUploadAppendRequest) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("conversation_id", #Text(value.conversation_id)));
+            List.add(buf, ("media", #Blob(value.media)));
+            List.add(buf, ("media_hash_key", #Text(value.media_hash_key)));
+            List.add(buf, ("segment_index", MediaSegments.toCandidValue(value.segment_index)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ChatMediaUploadAppendRequest) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ChatMediaUploadAppendRequest = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?ChatMediaUploadAppendRequest =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?conversation_id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "conversation_id") else return null;
+                    let ?conversation_id = ((switch (conversation_id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?media_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "media") else return null;
+                    let ?media = ((switch (media_field.1) { case (#Blob(b)) ?b; case _ null })) else return null;
+                    let ?media_hash_key_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "media_hash_key") else return null;
+                    let ?media_hash_key = ((switch (media_hash_key_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?segment_index_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "segment_index") else return null;
+                    let ?segment_index = (MediaSegments.fromCandidValue(segment_index_field.1)) else return null;
+                    ?{
+                        conversation_id;
+                        media;
+                        media_hash_key;
+                        segment_index;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

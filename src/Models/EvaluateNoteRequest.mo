@@ -1,8 +1,11 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // EvaluateNoteRequest.mo
 
 module {
-    // User-facing type: what application code uses
     public type EvaluateNoteRequest = {
         /// Text for the community note.
         note_text : Text;
@@ -10,19 +13,27 @@ module {
         post_id : Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer EvaluateNoteRequest type
-        public type JSON = {
-            note_text : Text;
-            post_id : Text;
+        public func toCandidValue(value : EvaluateNoteRequest) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("note_text", #Text(value.note_text)));
+            List.add(buf, ("post_id", #Text(value.post_id)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : EvaluateNoteRequest) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?EvaluateNoteRequest = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?EvaluateNoteRequest =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?note_text_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "note_text") else return null;
+                    let ?note_text = ((switch (note_text_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?post_id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "post_id") else return null;
+                    let ?post_id = ((switch (post_id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    ?{
+                        note_text;
+                        post_id;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

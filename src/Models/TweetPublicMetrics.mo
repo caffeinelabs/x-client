@@ -1,9 +1,12 @@
 /// Engagement metrics for the Tweet at the time of the request.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // TweetPublicMetrics.mo
 
 module {
-    // User-facing type: what application code uses
     public type TweetPublicMetrics = {
         /// Number of times this Tweet has been bookmarked.
         bookmark_count : Int;
@@ -19,23 +22,48 @@ module {
         retweet_count : Int;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer TweetPublicMetrics type
-        public type JSON = {
-            bookmark_count : Int;
-            impression_count : Int;
-            like_count : Int;
-            quote_count : ?Int;
-            reply_count : Int;
-            retweet_count : Int;
+        public func toCandidValue(value : TweetPublicMetrics) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("bookmark_count", #Int(value.bookmark_count)));
+            List.add(buf, ("impression_count", #Int(value.impression_count)));
+            List.add(buf, ("like_count", #Int(value.like_count)));
+            switch (value.quote_count) {
+                case (?v__) List.add(buf, ("quote_count", #Int(v__)));
+                case null ();
+            };
+            List.add(buf, ("reply_count", #Int(value.reply_count)));
+            List.add(buf, ("retweet_count", #Int(value.retweet_count)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : TweetPublicMetrics) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?TweetPublicMetrics = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?TweetPublicMetrics =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?bookmark_count_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "bookmark_count") else return null;
+                    let ?bookmark_count = ((switch (bookmark_count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null })) else return null;
+                    let ?impression_count_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "impression_count") else return null;
+                    let ?impression_count = ((switch (impression_count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null })) else return null;
+                    let ?like_count_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "like_count") else return null;
+                    let ?like_count = ((switch (like_count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null })) else return null;
+                    let quote_count : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "quote_count")) {
+                        case (?quote_count_field) ((switch (quote_count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let ?reply_count_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "reply_count") else return null;
+                    let ?reply_count = ((switch (reply_count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null })) else return null;
+                    let ?retweet_count_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "retweet_count") else return null;
+                    let ?retweet_count = ((switch (retweet_count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null })) else return null;
+                    ?{
+                        bookmark_count;
+                        impression_count;
+                        like_count;
+                        quote_count;
+                        reply_count;
+                        retweet_count;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

@@ -1,34 +1,36 @@
 /// Optional direction filter for directional events.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ActivitySubscriptionFilterDirection.mo
 /// Enum values: #inbound, #outbound
 
 module {
-    // User-facing type: type-safe variants for application code
     public type ActivitySubscriptionFilterDirection = {
         #inbound;
         #outbound;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ActivitySubscriptionFilterDirection type
-        public type JSON = Text;
+        public func toCandidValue(value : ActivitySubscriptionFilterDirection) : Candid.Candid =
+            switch (value) {
+                case (#inbound) #Text("inbound");
+                case (#outbound) #Text("outbound");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ActivitySubscriptionFilterDirection) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?ActivitySubscriptionFilterDirection =
+            switch (candid) {
+                case (#Text("inbound")) ?#inbound;
+                case (#Text("outbound")) ?#outbound;
+                case _ null;
+            };
+
+        public func toText(value : ActivitySubscriptionFilterDirection) : Text =
             switch (value) {
                 case (#inbound) "inbound";
                 case (#outbound) "outbound";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ActivitySubscriptionFilterDirection =
-            switch (json) {
-                case "inbound" ?#inbound;
-                case "outbound" ?#outbound;
-                case _ null;
-            };
-    }
-}
+    };
+};

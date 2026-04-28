@@ -1,8 +1,11 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // Variant.mo
 
 module {
-    // User-facing type: what application code uses
     public type Variant = {
         /// The bit rate of the media.
         bit_rate : ?Int;
@@ -12,20 +15,46 @@ module {
         url : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer Variant type
-        public type JSON = {
-            bit_rate : ?Int;
-            content_type : ?Text;
-            url : ?Text;
+        public func toCandidValue(value : Variant) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.bit_rate) {
+                case (?v__) List.add(buf, ("bit_rate", #Int(v__)));
+                case null ();
+            };
+            switch (value.content_type) {
+                case (?v__) List.add(buf, ("content_type", #Text(v__)));
+                case null ();
+            };
+            switch (value.url) {
+                case (?v__) List.add(buf, ("url", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : Variant) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?Variant = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?Variant =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let bit_rate : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "bit_rate")) {
+                        case (?bit_rate_field) ((switch (bit_rate_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let content_type : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "content_type")) {
+                        case (?content_type_field) ((switch (content_type_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let url : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "url")) {
+                        case (?url_field) ((switch (url_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        bit_rate;
+                        content_type;
+                        url;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

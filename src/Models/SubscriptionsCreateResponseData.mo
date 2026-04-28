@@ -1,24 +1,37 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // SubscriptionsCreateResponseData.mo
 
 module {
-    // User-facing type: what application code uses
     public type SubscriptionsCreateResponseData = {
         subscribed : ?Bool;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer SubscriptionsCreateResponseData type
-        public type JSON = {
-            subscribed : ?Bool;
+        public func toCandidValue(value : SubscriptionsCreateResponseData) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.subscribed) {
+                case (?v__) List.add(buf, ("subscribed", #Bool(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : SubscriptionsCreateResponseData) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?SubscriptionsCreateResponseData = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?SubscriptionsCreateResponseData =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let subscribed : ?Bool = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "subscribed")) {
+                        case (?subscribed_field) ((switch (subscribed_field.1) { case (#Bool(b)) ?b; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        subscribed;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

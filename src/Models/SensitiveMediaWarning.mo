@@ -1,8 +1,11 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // SensitiveMediaWarning.mo
 
 module {
-    // User-facing type: what application code uses
     public type SensitiveMediaWarning = {
         /// Indicates if the content contains adult material
         adult_content : ?Bool;
@@ -12,20 +15,46 @@ module {
         other : ?Bool;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer SensitiveMediaWarning type
-        public type JSON = {
-            adult_content : ?Bool;
-            graphic_violence : ?Bool;
-            other : ?Bool;
+        public func toCandidValue(value : SensitiveMediaWarning) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.adult_content) {
+                case (?v__) List.add(buf, ("adult_content", #Bool(v__)));
+                case null ();
+            };
+            switch (value.graphic_violence) {
+                case (?v__) List.add(buf, ("graphic_violence", #Bool(v__)));
+                case null ();
+            };
+            switch (value.other) {
+                case (?v__) List.add(buf, ("other", #Bool(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : SensitiveMediaWarning) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?SensitiveMediaWarning = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?SensitiveMediaWarning =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let adult_content : ?Bool = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "adult_content")) {
+                        case (?adult_content_field) ((switch (adult_content_field.1) { case (#Bool(b)) ?b; case _ null }));
+                        case null null;
+                    };
+                    let graphic_violence : ?Bool = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "graphic_violence")) {
+                        case (?graphic_violence_field) ((switch (graphic_violence_field.1) { case (#Bool(b)) ?b; case _ null }));
+                        case null null;
+                    };
+                    let other : ?Bool = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "other")) {
+                        case (?other_field) ((switch (other_field.1) { case (#Bool(b)) ?b; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        adult_content;
+                        graphic_violence;
+                        other;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

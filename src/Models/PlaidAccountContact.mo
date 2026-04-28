@@ -5,11 +5,14 @@ import { type PlaidAddress; JSON = PlaidAddress } "./PlaidAddress";
 import { type PlaidName; JSON = PlaidName } "./PlaidName";
 
 import { type PlaidTelephone; JSON = PlaidTelephone } "./PlaidTelephone";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // PlaidAccountContact.mo
 
 module {
-    // User-facing type: what application code uses
     public type PlaidAccountContact = {
         /// List of addresses associated with the account holder.
         addresses : [PlaidAddress];
@@ -22,22 +25,74 @@ module {
         telephones : [PlaidTelephone];
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer PlaidAccountContact type
-        public type JSON = {
-            addresses : [PlaidAddress];
-            emails : [Text];
-            name : PlaidName;
-            relationship : ?Text;
-            telephones : [PlaidTelephone];
+        public func toCandidValue(value : PlaidAccountContact) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("addresses", #Array(Array.map<PlaidAddress, Candid.Candid>(value.addresses, PlaidAddress.toCandidValue))));
+            List.add(buf, ("emails", #Array(Array.map<Text, Candid.Candid>(value.emails, func(s : Text) : Candid.Candid = #Text(s)))));
+            List.add(buf, ("name", PlaidName.toCandidValue(value.name)));
+            switch (value.relationship) {
+                case (?v__) List.add(buf, ("relationship", #Text(v__)));
+                case null ();
+            };
+            List.add(buf, ("telephones", #Array(Array.map<PlaidTelephone, Candid.Candid>(value.telephones, PlaidTelephone.toCandidValue))));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : PlaidAccountContact) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?PlaidAccountContact = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?PlaidAccountContact =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?addresses_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "addresses") else return null;
+                    let ?addresses = ((switch (addresses_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<PlaidAddress>();
+                            for (c__ in xs__.values()) {
+                                let ?m__ = PlaidAddress.fromCandidValue(c__) else return null;
+                                List.add(buf__, m__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    })) else return null;
+                    let ?emails_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "emails") else return null;
+                    let ?emails = ((switch (emails_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<Text>();
+                            for (c__ in xs__.values()) {
+                                let #Text(s__) = c__ else return null;
+                                List.add(buf__, s__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    })) else return null;
+                    let ?name_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "name") else return null;
+                    let ?name = (PlaidName.fromCandidValue(name_field.1)) else return null;
+                    let relationship : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "relationship")) {
+                        case (?relationship_field) ((switch (relationship_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let ?telephones_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "telephones") else return null;
+                    let ?telephones = ((switch (telephones_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<PlaidTelephone>();
+                            for (c__ in xs__.values()) {
+                                let ?m__ = PlaidTelephone.fromCandidValue(c__) else return null;
+                                List.add(buf__, m__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    })) else return null;
+                    ?{
+                        addresses;
+                        emails;
+                        name;
+                        relationship;
+                        telephones;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

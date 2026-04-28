@@ -1,36 +1,39 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // GetMediaAnalyticsGranularityParameter.mo
 /// Enum values: #hourly, #daily, #total
 
 module {
-    // User-facing type: type-safe variants for application code
     public type GetMediaAnalyticsGranularityParameter = {
         #hourly;
         #daily;
         #total;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer GetMediaAnalyticsGranularityParameter type
-        public type JSON = Text;
+        public func toCandidValue(value : GetMediaAnalyticsGranularityParameter) : Candid.Candid =
+            switch (value) {
+                case (#hourly) #Text("hourly");
+                case (#daily) #Text("daily");
+                case (#total) #Text("total");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : GetMediaAnalyticsGranularityParameter) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?GetMediaAnalyticsGranularityParameter =
+            switch (candid) {
+                case (#Text("hourly")) ?#hourly;
+                case (#Text("daily")) ?#daily;
+                case (#Text("total")) ?#total;
+                case _ null;
+            };
+
+        public func toText(value : GetMediaAnalyticsGranularityParameter) : Text =
             switch (value) {
                 case (#hourly) "hourly";
                 case (#daily) "daily";
                 case (#total) "total";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?GetMediaAnalyticsGranularityParameter =
-            switch (json) {
-                case "hourly" ?#hourly;
-                case "daily" ?#daily;
-                case "total" ?#total;
-                case _ null;
-            };
-    }
-}
+    };
+};

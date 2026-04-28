@@ -1,24 +1,37 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // TweetHideResponseData.mo
 
 module {
-    // User-facing type: what application code uses
     public type TweetHideResponseData = {
         hidden : ?Bool;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer TweetHideResponseData type
-        public type JSON = {
-            hidden : ?Bool;
+        public func toCandidValue(value : TweetHideResponseData) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.hidden) {
+                case (?v__) List.add(buf, ("hidden", #Bool(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : TweetHideResponseData) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?TweetHideResponseData = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?TweetHideResponseData =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let hidden : ?Bool = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "hidden")) {
+                        case (?hidden_field) ((switch (hidden_field.1) { case (#Bool(b)) ?b; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        hidden;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

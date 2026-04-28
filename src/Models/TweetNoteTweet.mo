@@ -1,30 +1,51 @@
 /// The full-content of the Tweet, including text beyond 280 characters.
 
 import { type TweetNoteTweetEntities; JSON = TweetNoteTweetEntities } "./TweetNoteTweetEntities";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // TweetNoteTweet.mo
 
 module {
-    // User-facing type: what application code uses
     public type TweetNoteTweet = {
         entities : ?TweetNoteTweetEntities;
         /// The note content of the Tweet.
         text_ : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer TweetNoteTweet type
-        public type JSON = {
-            entities : ?TweetNoteTweetEntities;
-            text_ : ?Text;
+        public func toCandidValue(value : TweetNoteTweet) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.entities) {
+                case (?v__) List.add(buf, ("entities", TweetNoteTweetEntities.toCandidValue(v__)));
+                case null ();
+            };
+            switch (value.text_) {
+                case (?v__) List.add(buf, ("text", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : TweetNoteTweet) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?TweetNoteTweet = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?TweetNoteTweet =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let entities : ?TweetNoteTweetEntities = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "entities")) {
+                        case (?entities_field) (TweetNoteTweetEntities.fromCandidValue(entities_field.1));
+                        case null null;
+                    };
+                    let text_ : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "text")) {
+                        case (?text__field) ((switch (text__field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        entities;
+                        text_;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

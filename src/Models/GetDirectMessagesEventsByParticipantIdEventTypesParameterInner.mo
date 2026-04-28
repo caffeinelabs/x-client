@@ -1,36 +1,39 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // GetDirectMessagesEventsByParticipantIdEventTypesParameterInner.mo
 /// Enum values: #messagecreate, #participantsjoin, #participantsleave
 
 module {
-    // User-facing type: type-safe variants for application code
     public type GetDirectMessagesEventsByParticipantIdEventTypesParameterInner = {
         #messagecreate;
         #participantsjoin;
         #participantsleave;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer GetDirectMessagesEventsByParticipantIdEventTypesParameterInner type
-        public type JSON = Text;
+        public func toCandidValue(value : GetDirectMessagesEventsByParticipantIdEventTypesParameterInner) : Candid.Candid =
+            switch (value) {
+                case (#messagecreate) #Text("MessageCreate");
+                case (#participantsjoin) #Text("ParticipantsJoin");
+                case (#participantsleave) #Text("ParticipantsLeave");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : GetDirectMessagesEventsByParticipantIdEventTypesParameterInner) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?GetDirectMessagesEventsByParticipantIdEventTypesParameterInner =
+            switch (candid) {
+                case (#Text("MessageCreate")) ?#messagecreate;
+                case (#Text("ParticipantsJoin")) ?#participantsjoin;
+                case (#Text("ParticipantsLeave")) ?#participantsleave;
+                case _ null;
+            };
+
+        public func toText(value : GetDirectMessagesEventsByParticipantIdEventTypesParameterInner) : Text =
             switch (value) {
                 case (#messagecreate) "MessageCreate";
                 case (#participantsjoin) "ParticipantsJoin";
                 case (#participantsleave) "ParticipantsLeave";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?GetDirectMessagesEventsByParticipantIdEventTypesParameterInner =
-            switch (json) {
-                case "MessageCreate" ?#messagecreate;
-                case "ParticipantsJoin" ?#participantsjoin;
-                case "ParticipantsLeave" ?#participantsleave;
-                case _ null;
-            };
-    }
-}
+    };
+};

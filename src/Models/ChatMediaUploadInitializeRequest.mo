@@ -1,11 +1,13 @@
 /// Request body for initializing a Chat media upload.
-
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 import Int "mo:core/Int";
 
 // ChatMediaUploadInitializeRequest.mo
 
 module {
-    // User-facing type: what application code uses
     public type ChatMediaUploadInitializeRequest = {
         /// XChat conversation identifier for the upload.
         conversation_id : ?Text;
@@ -13,27 +15,37 @@ module {
         total_bytes : ?Nat;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ChatMediaUploadInitializeRequest type
-        public type JSON = {
-            conversation_id : ?Text;
-            total_bytes : ?Int;
+        public func toCandidValue(value : ChatMediaUploadInitializeRequest) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.conversation_id) {
+                case (?v__) List.add(buf, ("conversation_id", #Text(v__)));
+                case null ();
+            };
+            switch (value.total_bytes) {
+                case (?v__) List.add(buf, ("total_bytes", #Nat(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ChatMediaUploadInitializeRequest) : JSON = {
-            conversation_id = value.conversation_id;
-            total_bytes = value.total_bytes;
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ChatMediaUploadInitializeRequest {
-            ?{
-                conversation_id = json.conversation_id;
-                total_bytes = do ? { let v = json.total_bytes!; if (v < 0) return null else Int.abs(v) };
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?ChatMediaUploadInitializeRequest =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let conversation_id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "conversation_id")) {
+                        case (?conversation_id_field) ((switch (conversation_id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let total_bytes : ?Nat = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "total_bytes")) {
+                        case (?total_bytes_field) ((switch (total_bytes_field.1) { case (#Nat(n)) ?n; case (#Int(i)) (if (i < 0) null else ?Int.abs(i)); case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        conversation_id;
+                        total_bytes;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

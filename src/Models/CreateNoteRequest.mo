@@ -1,10 +1,13 @@
 
 import { type NoteInfo; JSON = NoteInfo } "./NoteInfo";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // CreateNoteRequest.mo
 
 module {
-    // User-facing type: what application code uses
     public type CreateNoteRequest = {
         info : NoteInfo;
         /// Unique identifier of this Tweet. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
@@ -13,27 +16,31 @@ module {
         test_mode : Bool;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer CreateNoteRequest type
-        public type JSON = {
-            info : NoteInfo.JSON;
-            post_id : Text;
-            test_mode : Bool;
+        public func toCandidValue(value : CreateNoteRequest) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("info", NoteInfo.toCandidValue(value.info)));
+            List.add(buf, ("post_id", #Text(value.post_id)));
+            List.add(buf, ("test_mode", #Bool(value.test_mode)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : CreateNoteRequest) : JSON = { value with
-            info = NoteInfo.toJSON(value.info);
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?CreateNoteRequest {
-            let ?info = NoteInfo.fromJSON(json.info) else return null;
-            ?{ json with
-                info;
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?CreateNoteRequest =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?info_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "info") else return null;
+                    let ?info = (NoteInfo.fromCandidValue(info_field.1)) else return null;
+                    let ?post_id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "post_id") else return null;
+                    let ?post_id = ((switch (post_id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?test_mode_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "test_mode") else return null;
+                    let ?test_mode = ((switch (test_mode_field.1) { case (#Bool(b)) ?b; case _ null })) else return null;
+                    ?{
+                        info;
+                        post_id;
+                        test_mode;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

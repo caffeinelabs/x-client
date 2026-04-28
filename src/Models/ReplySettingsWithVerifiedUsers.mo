@@ -1,10 +1,13 @@
 /// Shows who can reply a Tweet. Fields returned are everyone, mentioned_users, subscribers, verified and following.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ReplySettingsWithVerifiedUsers.mo
 /// Enum values: #everyone, #mentionedusers, #following, #other, #subscribers, #verified
 
 module {
-    // User-facing type: type-safe variants for application code
     public type ReplySettingsWithVerifiedUsers = {
         #everyone;
         #mentionedusers;
@@ -14,14 +17,29 @@ module {
         #verified;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ReplySettingsWithVerifiedUsers type
-        public type JSON = Text;
+        public func toCandidValue(value : ReplySettingsWithVerifiedUsers) : Candid.Candid =
+            switch (value) {
+                case (#everyone) #Text("everyone");
+                case (#mentionedusers) #Text("mentionedUsers");
+                case (#following) #Text("following");
+                case (#other) #Text("other");
+                case (#subscribers) #Text("subscribers");
+                case (#verified) #Text("verified");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ReplySettingsWithVerifiedUsers) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?ReplySettingsWithVerifiedUsers =
+            switch (candid) {
+                case (#Text("everyone")) ?#everyone;
+                case (#Text("mentionedUsers")) ?#mentionedusers;
+                case (#Text("following")) ?#following;
+                case (#Text("other")) ?#other;
+                case (#Text("subscribers")) ?#subscribers;
+                case (#Text("verified")) ?#verified;
+                case _ null;
+            };
+
+        public func toText(value : ReplySettingsWithVerifiedUsers) : Text =
             switch (value) {
                 case (#everyone) "everyone";
                 case (#mentionedusers) "mentionedUsers";
@@ -30,17 +48,5 @@ module {
                 case (#subscribers) "subscribers";
                 case (#verified) "verified";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ReplySettingsWithVerifiedUsers =
-            switch (json) {
-                case "everyone" ?#everyone;
-                case "mentionedUsers" ?#mentionedusers;
-                case "following" ?#following;
-                case "other" ?#other;
-                case "subscribers" ?#subscribers;
-                case "verified" ?#verified;
-                case _ null;
-            };
-    }
-}
+    };
+};

@@ -3,11 +3,14 @@
 import { type MisleadingTags; JSON = MisleadingTags } "./MisleadingTags";
 
 import { type NoteClassification; JSON = NoteClassification } "./NoteClassification";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // NoteInfo.mo
 
 module {
-    // User-facing type: what application code uses
     public type NoteInfo = {
         classification : NoteClassification;
         misleading_tags : [MisleadingTags];
@@ -17,28 +20,45 @@ module {
         trustworthy_sources : Bool;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer NoteInfo type
-        public type JSON = {
-            classification : NoteClassification.JSON;
-            misleading_tags : [MisleadingTags];
-            text_ : Text;
-            trustworthy_sources : Bool;
+        public func toCandidValue(value : NoteInfo) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("classification", NoteClassification.toCandidValue(value.classification)));
+            List.add(buf, ("misleading_tags", #Array(Array.map<MisleadingTags, Candid.Candid>(value.misleading_tags, MisleadingTags.toCandidValue))));
+            List.add(buf, ("text", #Text(value.text_)));
+            List.add(buf, ("trustworthy_sources", #Bool(value.trustworthy_sources)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : NoteInfo) : JSON = { value with
-            classification = NoteClassification.toJSON(value.classification);
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?NoteInfo {
-            let ?classification = NoteClassification.fromJSON(json.classification) else return null;
-            ?{ json with
-                classification;
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?NoteInfo =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?classification_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "classification") else return null;
+                    let ?classification = (NoteClassification.fromCandidValue(classification_field.1)) else return null;
+                    let ?misleading_tags_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "misleading_tags") else return null;
+                    let ?misleading_tags = ((switch (misleading_tags_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<MisleadingTags>();
+                            for (c__ in xs__.values()) {
+                                let ?e__ = MisleadingTags.fromCandidValue(c__) else return null;
+                                List.add(buf__, e__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    })) else return null;
+                    let ?text__field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "text") else return null;
+                    let ?text_ = ((switch (text__field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?trustworthy_sources_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "trustworthy_sources") else return null;
+                    let ?trustworthy_sources = ((switch (trustworthy_sources_field.1) { case (#Bool(b)) ?b; case _ null })) else return null;
+                    ?{
+                        classification;
+                        misleading_tags;
+                        text_;
+                        trustworthy_sources;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

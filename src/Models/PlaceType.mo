@@ -1,9 +1,12 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // PlaceType.mo
 /// Enum values: #poi, #neighborhood, #city, #admin, #country, #unknown
 
 module {
-    // User-facing type: type-safe variants for application code
     public type PlaceType = {
         #poi;
         #neighborhood;
@@ -13,14 +16,29 @@ module {
         #unknown;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer PlaceType type
-        public type JSON = Text;
+        public func toCandidValue(value : PlaceType) : Candid.Candid =
+            switch (value) {
+                case (#poi) #Text("poi");
+                case (#neighborhood) #Text("neighborhood");
+                case (#city) #Text("city");
+                case (#admin) #Text("admin");
+                case (#country) #Text("country");
+                case (#unknown) #Text("unknown");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : PlaceType) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?PlaceType =
+            switch (candid) {
+                case (#Text("poi")) ?#poi;
+                case (#Text("neighborhood")) ?#neighborhood;
+                case (#Text("city")) ?#city;
+                case (#Text("admin")) ?#admin;
+                case (#Text("country")) ?#country;
+                case (#Text("unknown")) ?#unknown;
+                case _ null;
+            };
+
+        public func toText(value : PlaceType) : Text =
             switch (value) {
                 case (#poi) "poi";
                 case (#neighborhood) "neighborhood";
@@ -29,17 +47,5 @@ module {
                 case (#country) "country";
                 case (#unknown) "unknown";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?PlaceType =
-            switch (json) {
-                case "poi" ?#poi;
-                case "neighborhood" ?#neighborhood;
-                case "city" ?#city;
-                case "admin" ?#admin;
-                case "country" ?#country;
-                case "unknown" ?#unknown;
-                case _ null;
-            };
-    }
-}
+    };
+};

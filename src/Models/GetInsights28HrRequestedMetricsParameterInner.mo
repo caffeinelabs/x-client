@@ -1,9 +1,12 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // GetInsights28HrRequestedMetricsParameterInner.mo
 /// Enum values: #appinstallattempts, #appopens, #detailexpands, #emailtweet, #engagements, #follows, #hashtagclicks, #impressions, #likes, #linkclicks, #mediaengagements, #mediaviews, #permalinkclicks, #profilevisits, #quotetweets, #replies, #retweets, #uniquevideoviews, #urlclicks, #userprofileclicks, #videocompletions, #videoplayed25percent, #videoplayed50percent, #videoplayed75percent, #videostarts, #videoviews
 
 module {
-    // User-facing type: type-safe variants for application code
     public type GetInsights28HrRequestedMetricsParameterInner = {
         #appinstallattempts;
         #appopens;
@@ -33,14 +36,69 @@ module {
         #videoviews;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer GetInsights28HrRequestedMetricsParameterInner type
-        public type JSON = Text;
+        public func toCandidValue(value : GetInsights28HrRequestedMetricsParameterInner) : Candid.Candid =
+            switch (value) {
+                case (#appinstallattempts) #Text("AppInstallAttempts");
+                case (#appopens) #Text("AppOpens");
+                case (#detailexpands) #Text("DetailExpands");
+                case (#emailtweet) #Text("EmailTweet");
+                case (#engagements) #Text("Engagements");
+                case (#follows) #Text("Follows");
+                case (#hashtagclicks) #Text("HashtagClicks");
+                case (#impressions) #Text("Impressions");
+                case (#likes) #Text("Likes");
+                case (#linkclicks) #Text("LinkClicks");
+                case (#mediaengagements) #Text("MediaEngagements");
+                case (#mediaviews) #Text("MediaViews");
+                case (#permalinkclicks) #Text("PermalinkClicks");
+                case (#profilevisits) #Text("ProfileVisits");
+                case (#quotetweets) #Text("QuoteTweets");
+                case (#replies) #Text("Replies");
+                case (#retweets) #Text("Retweets");
+                case (#uniquevideoviews) #Text("UniqueVideoViews");
+                case (#urlclicks) #Text("UrlClicks");
+                case (#userprofileclicks) #Text("UserProfileClicks");
+                case (#videocompletions) #Text("VideoCompletions");
+                case (#videoplayed25percent) #Text("VideoPlayed25Percent");
+                case (#videoplayed50percent) #Text("VideoPlayed50Percent");
+                case (#videoplayed75percent) #Text("VideoPlayed75Percent");
+                case (#videostarts) #Text("VideoStarts");
+                case (#videoviews) #Text("VideoViews");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : GetInsights28HrRequestedMetricsParameterInner) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?GetInsights28HrRequestedMetricsParameterInner =
+            switch (candid) {
+                case (#Text("AppInstallAttempts")) ?#appinstallattempts;
+                case (#Text("AppOpens")) ?#appopens;
+                case (#Text("DetailExpands")) ?#detailexpands;
+                case (#Text("EmailTweet")) ?#emailtweet;
+                case (#Text("Engagements")) ?#engagements;
+                case (#Text("Follows")) ?#follows;
+                case (#Text("HashtagClicks")) ?#hashtagclicks;
+                case (#Text("Impressions")) ?#impressions;
+                case (#Text("Likes")) ?#likes;
+                case (#Text("LinkClicks")) ?#linkclicks;
+                case (#Text("MediaEngagements")) ?#mediaengagements;
+                case (#Text("MediaViews")) ?#mediaviews;
+                case (#Text("PermalinkClicks")) ?#permalinkclicks;
+                case (#Text("ProfileVisits")) ?#profilevisits;
+                case (#Text("QuoteTweets")) ?#quotetweets;
+                case (#Text("Replies")) ?#replies;
+                case (#Text("Retweets")) ?#retweets;
+                case (#Text("UniqueVideoViews")) ?#uniquevideoviews;
+                case (#Text("UrlClicks")) ?#urlclicks;
+                case (#Text("UserProfileClicks")) ?#userprofileclicks;
+                case (#Text("VideoCompletions")) ?#videocompletions;
+                case (#Text("VideoPlayed25Percent")) ?#videoplayed25percent;
+                case (#Text("VideoPlayed50Percent")) ?#videoplayed50percent;
+                case (#Text("VideoPlayed75Percent")) ?#videoplayed75percent;
+                case (#Text("VideoStarts")) ?#videostarts;
+                case (#Text("VideoViews")) ?#videoviews;
+                case _ null;
+            };
+
+        public func toText(value : GetInsights28HrRequestedMetricsParameterInner) : Text =
             switch (value) {
                 case (#appinstallattempts) "AppInstallAttempts";
                 case (#appopens) "AppOpens";
@@ -69,37 +127,5 @@ module {
                 case (#videostarts) "VideoStarts";
                 case (#videoviews) "VideoViews";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?GetInsights28HrRequestedMetricsParameterInner =
-            switch (json) {
-                case "AppInstallAttempts" ?#appinstallattempts;
-                case "AppOpens" ?#appopens;
-                case "DetailExpands" ?#detailexpands;
-                case "EmailTweet" ?#emailtweet;
-                case "Engagements" ?#engagements;
-                case "Follows" ?#follows;
-                case "HashtagClicks" ?#hashtagclicks;
-                case "Impressions" ?#impressions;
-                case "Likes" ?#likes;
-                case "LinkClicks" ?#linkclicks;
-                case "MediaEngagements" ?#mediaengagements;
-                case "MediaViews" ?#mediaviews;
-                case "PermalinkClicks" ?#permalinkclicks;
-                case "ProfileVisits" ?#profilevisits;
-                case "QuoteTweets" ?#quotetweets;
-                case "Replies" ?#replies;
-                case "Retweets" ?#retweets;
-                case "UniqueVideoViews" ?#uniquevideoviews;
-                case "UrlClicks" ?#urlclicks;
-                case "UserProfileClicks" ?#userprofileclicks;
-                case "VideoCompletions" ?#videocompletions;
-                case "VideoPlayed25Percent" ?#videoplayed25percent;
-                case "VideoPlayed50Percent" ?#videoplayed50percent;
-                case "VideoPlayed75Percent" ?#videoplayed75percent;
-                case "VideoStarts" ?#videostarts;
-                case "VideoViews" ?#videoviews;
-                case _ null;
-            };
-    }
-}
+    };
+};

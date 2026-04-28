@@ -1,9 +1,12 @@
 /// The X Topic object.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // SpaceTopicsInner.mo
 
 module {
-    // User-facing type: what application code uses
     public type SpaceTopicsInner = {
         /// The description of the given topic.
         description : ?Text;
@@ -13,20 +16,36 @@ module {
         name : Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer SpaceTopicsInner type
-        public type JSON = {
-            description : ?Text;
-            id : Text;
-            name : Text;
+        public func toCandidValue(value : SpaceTopicsInner) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.description) {
+                case (?v__) List.add(buf, ("description", #Text(v__)));
+                case null ();
+            };
+            List.add(buf, ("id", #Text(value.id)));
+            List.add(buf, ("name", #Text(value.name)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : SpaceTopicsInner) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?SpaceTopicsInner = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?SpaceTopicsInner =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let description : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "description")) {
+                        case (?description_field) ((switch (description_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let ?id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "id") else return null;
+                    let ?id = ((switch (id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?name_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "name") else return null;
+                    let ?name = ((switch (name_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    ?{
+                        description;
+                        id;
+                        name;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

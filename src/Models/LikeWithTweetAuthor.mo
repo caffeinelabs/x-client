@@ -1,9 +1,12 @@
 /// A Like event, with the tweet author user and the tweet being liked
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // LikeWithTweetAuthor.mo
 
 module {
-    // User-facing type: what application code uses
     public type LikeWithTweetAuthor = {
         /// Creation time of the Tweet.
         created_at : ?Text;
@@ -17,22 +20,64 @@ module {
         tweet_author_id : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer LikeWithTweetAuthor type
-        public type JSON = {
-            created_at : ?Text;
-            id : ?Text;
-            liked_tweet_id : ?Text;
-            timestamp_ms : ?Int;
-            tweet_author_id : ?Text;
+        public func toCandidValue(value : LikeWithTweetAuthor) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.created_at) {
+                case (?v__) List.add(buf, ("created_at", #Text(v__)));
+                case null ();
+            };
+            switch (value.id) {
+                case (?v__) List.add(buf, ("id", #Text(v__)));
+                case null ();
+            };
+            switch (value.liked_tweet_id) {
+                case (?v__) List.add(buf, ("liked_tweet_id", #Text(v__)));
+                case null ();
+            };
+            switch (value.timestamp_ms) {
+                case (?v__) List.add(buf, ("timestamp_ms", #Int(v__)));
+                case null ();
+            };
+            switch (value.tweet_author_id) {
+                case (?v__) List.add(buf, ("tweet_author_id", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : LikeWithTweetAuthor) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?LikeWithTweetAuthor = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?LikeWithTweetAuthor =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let created_at : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "created_at")) {
+                        case (?created_at_field) ((switch (created_at_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "id")) {
+                        case (?id_field) ((switch (id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let liked_tweet_id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "liked_tweet_id")) {
+                        case (?liked_tweet_id_field) ((switch (liked_tweet_id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let timestamp_ms : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "timestamp_ms")) {
+                        case (?timestamp_ms_field) ((switch (timestamp_ms_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let tweet_author_id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "tweet_author_id")) {
+                        case (?tweet_author_id_field) ((switch (tweet_author_id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        created_at;
+                        id;
+                        liked_tweet_id;
+                        timestamp_ms;
+                        tweet_author_id;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

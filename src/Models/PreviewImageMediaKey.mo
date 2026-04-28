@@ -1,35 +1,50 @@
 
 import { type PreviewImageMediaKeyMediaCategory; JSON = PreviewImageMediaKeyMediaCategory } "./PreviewImageMediaKeyMediaCategory";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // PreviewImageMediaKey.mo
 
 module {
-    // User-facing type: what application code uses
     public type PreviewImageMediaKey = {
         /// The unique identifier of this Media.
         media : ?Text;
         media_category : ?PreviewImageMediaKeyMediaCategory;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer PreviewImageMediaKey type
-        public type JSON = {
-            media : ?Text;
-            media_category : ?PreviewImageMediaKeyMediaCategory.JSON;
+        public func toCandidValue(value : PreviewImageMediaKey) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.media) {
+                case (?v__) List.add(buf, ("media", #Text(v__)));
+                case null ();
+            };
+            switch (value.media_category) {
+                case (?v__) List.add(buf, ("media_category", PreviewImageMediaKeyMediaCategory.toCandidValue(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : PreviewImageMediaKey) : JSON = { value with
-            media_category = do ? { PreviewImageMediaKeyMediaCategory.toJSON(value.media_category!) };
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?PreviewImageMediaKey {
-            ?{ json with
-                media_category = do ? { PreviewImageMediaKeyMediaCategory.fromJSON(json.media_category!)! };
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?PreviewImageMediaKey =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let media : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "media")) {
+                        case (?media_field) ((switch (media_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let media_category : ?PreviewImageMediaKeyMediaCategory = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "media_category")) {
+                        case (?media_category_field) (PreviewImageMediaKeyMediaCategory.fromCandidValue(media_category_field.1));
+                        case null null;
+                    };
+                    ?{
+                        media;
+                        media_category;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

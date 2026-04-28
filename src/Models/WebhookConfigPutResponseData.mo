@@ -1,24 +1,37 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // WebhookConfigPutResponseData.mo
 
 module {
-    // User-facing type: what application code uses
     public type WebhookConfigPutResponseData = {
         attempted : ?Bool;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer WebhookConfigPutResponseData type
-        public type JSON = {
-            attempted : ?Bool;
+        public func toCandidValue(value : WebhookConfigPutResponseData) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.attempted) {
+                case (?v__) List.add(buf, ("attempted", #Bool(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : WebhookConfigPutResponseData) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?WebhookConfigPutResponseData = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?WebhookConfigPutResponseData =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let attempted : ?Bool = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "attempted")) {
+                        case (?attempted_field) ((switch (attempted_field.1) { case (#Bool(b)) ?b; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        attempted;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

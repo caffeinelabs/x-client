@@ -1,24 +1,47 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // NewsContextsFinance.mo
 
 module {
-    // User-facing type: what application code uses
     public type NewsContextsFinance = {
         tickers : ?[Text];
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer NewsContextsFinance type
-        public type JSON = {
-            tickers : ?[Text];
+        public func toCandidValue(value : NewsContextsFinance) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.tickers) {
+                case (?v__) List.add(buf, ("tickers", #Array(Array.map<Text, Candid.Candid>(v__, func(s : Text) : Candid.Candid = #Text(s)))));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : NewsContextsFinance) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?NewsContextsFinance = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?NewsContextsFinance =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let tickers : ?[Text] = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "tickers")) {
+                        case (?tickers_field) ((switch (tickers_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<Text>();
+                            for (c__ in xs__.values()) {
+                                let #Text(s__) = c__ else return null;
+                                List.add(buf__, s__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    }));
+                        case null null;
+                    };
+                    ?{
+                        tickers;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

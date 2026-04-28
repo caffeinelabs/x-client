@@ -1,27 +1,48 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ActivitySubscriptionUpdateRequest.mo
 
 module {
-    // User-facing type: what application code uses
     public type ActivitySubscriptionUpdateRequest = {
         tag : ?Text;
         /// The unique identifier of this webhook config.
         webhook_id : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ActivitySubscriptionUpdateRequest type
-        public type JSON = {
-            tag : ?Text;
-            webhook_id : ?Text;
+        public func toCandidValue(value : ActivitySubscriptionUpdateRequest) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.tag) {
+                case (?v__) List.add(buf, ("tag", #Text(v__)));
+                case null ();
+            };
+            switch (value.webhook_id) {
+                case (?v__) List.add(buf, ("webhook_id", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ActivitySubscriptionUpdateRequest) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ActivitySubscriptionUpdateRequest = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?ActivitySubscriptionUpdateRequest =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let tag : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "tag")) {
+                        case (?tag_field) ((switch (tag_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let webhook_id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "webhook_id")) {
+                        case (?webhook_id_field) ((switch (webhook_id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        tag;
+                        webhook_id;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

@@ -1,8 +1,11 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ChatSendMessageRequest.mo
 
 module {
-    // User-facing type: what application code uses
     public type ChatSendMessageRequest = {
         /// Optional conversation token.
         conversation_token : ?Text;
@@ -14,21 +17,45 @@ module {
         message_id : Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ChatSendMessageRequest type
-        public type JSON = {
-            conversation_token : ?Text;
-            encoded_message_create_event : Text;
-            encoded_message_event_signature : ?Text;
-            message_id : Text;
+        public func toCandidValue(value : ChatSendMessageRequest) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.conversation_token) {
+                case (?v__) List.add(buf, ("conversation_token", #Text(v__)));
+                case null ();
+            };
+            List.add(buf, ("encoded_message_create_event", #Text(value.encoded_message_create_event)));
+            switch (value.encoded_message_event_signature) {
+                case (?v__) List.add(buf, ("encoded_message_event_signature", #Text(v__)));
+                case null ();
+            };
+            List.add(buf, ("message_id", #Text(value.message_id)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ChatSendMessageRequest) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ChatSendMessageRequest = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?ChatSendMessageRequest =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let conversation_token : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "conversation_token")) {
+                        case (?conversation_token_field) ((switch (conversation_token_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let ?encoded_message_create_event_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "encoded_message_create_event") else return null;
+                    let ?encoded_message_create_event = ((switch (encoded_message_create_event_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let encoded_message_event_signature : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "encoded_message_event_signature")) {
+                        case (?encoded_message_event_signature_field) ((switch (encoded_message_event_signature_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let ?message_id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "message_id") else return null;
+                    let ?message_id = ((switch (message_id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    ?{
+                        conversation_token;
+                        encoded_message_create_event;
+                        encoded_message_event_signature;
+                        message_id;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

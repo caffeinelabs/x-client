@@ -1,28 +1,57 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // KillAllConnectionsResponseDataResultsInner.mo
 
 module {
-    // User-facing type: what application code uses
     public type KillAllConnectionsResponseDataResultsInner = {
         error_message : ?Text;
         success : ?Bool;
         uuid : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer KillAllConnectionsResponseDataResultsInner type
-        public type JSON = {
-            error_message : ?Text;
-            success : ?Bool;
-            uuid : ?Text;
+        public func toCandidValue(value : KillAllConnectionsResponseDataResultsInner) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.error_message) {
+                case (?v__) List.add(buf, ("error_message", #Text(v__)));
+                case null ();
+            };
+            switch (value.success) {
+                case (?v__) List.add(buf, ("success", #Bool(v__)));
+                case null ();
+            };
+            switch (value.uuid) {
+                case (?v__) List.add(buf, ("uuid", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : KillAllConnectionsResponseDataResultsInner) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?KillAllConnectionsResponseDataResultsInner = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?KillAllConnectionsResponseDataResultsInner =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let error_message : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "error_message")) {
+                        case (?error_message_field) ((switch (error_message_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let success : ?Bool = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "success")) {
+                        case (?success_field) ((switch (success_field.1) { case (#Bool(b)) ?b; case _ null }));
+                        case null null;
+                    };
+                    let uuid : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "uuid")) {
+                        case (?uuid_field) ((switch (uuid_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        error_message;
+                        success;
+                        uuid;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

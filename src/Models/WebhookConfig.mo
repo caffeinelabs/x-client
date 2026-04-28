@@ -1,9 +1,12 @@
 /// A Webhook Configuration
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // WebhookConfig.mo
 
 module {
-    // User-facing type: what application code uses
     public type WebhookConfig = {
         created_at : Text;
         /// The unique identifier of this webhook config.
@@ -13,21 +16,35 @@ module {
         valid : Bool;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer WebhookConfig type
-        public type JSON = {
-            created_at : Text;
-            id : Text;
-            url : Text;
-            valid : Bool;
+        public func toCandidValue(value : WebhookConfig) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("created_at", #Text(value.created_at)));
+            List.add(buf, ("id", #Text(value.id)));
+            List.add(buf, ("url", #Text(value.url)));
+            List.add(buf, ("valid", #Bool(value.valid)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : WebhookConfig) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?WebhookConfig = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?WebhookConfig =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?created_at_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "created_at") else return null;
+                    let ?created_at = ((switch (created_at_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "id") else return null;
+                    let ?id = ((switch (id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?url_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "url") else return null;
+                    let ?url = ((switch (url_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?valid_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "valid") else return null;
+                    let ?valid = ((switch (valid_field.1) { case (#Bool(b)) ?b; case _ null })) else return null;
+                    ?{
+                        created_at;
+                        id;
+                        url;
+                        valid;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

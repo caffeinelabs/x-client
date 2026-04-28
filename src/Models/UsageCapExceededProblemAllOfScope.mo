@@ -1,33 +1,35 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // UsageCapExceededProblemAllOfScope.mo
 /// Enum values: #account, #product
 
 module {
-    // User-facing type: type-safe variants for application code
     public type UsageCapExceededProblemAllOfScope = {
         #account;
         #product;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer UsageCapExceededProblemAllOfScope type
-        public type JSON = Text;
+        public func toCandidValue(value : UsageCapExceededProblemAllOfScope) : Candid.Candid =
+            switch (value) {
+                case (#account) #Text("Account");
+                case (#product) #Text("Product");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : UsageCapExceededProblemAllOfScope) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?UsageCapExceededProblemAllOfScope =
+            switch (candid) {
+                case (#Text("Account")) ?#account;
+                case (#Text("Product")) ?#product;
+                case _ null;
+            };
+
+        public func toText(value : UsageCapExceededProblemAllOfScope) : Text =
             switch (value) {
                 case (#account) "Account";
                 case (#product) "Product";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?UsageCapExceededProblemAllOfScope =
-            switch (json) {
-                case "Account" ?#account;
-                case "Product" ?#product;
-                case _ null;
-            };
-    }
-}
+    };
+};

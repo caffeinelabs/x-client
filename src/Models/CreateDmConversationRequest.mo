@@ -2,11 +2,14 @@
 import { type CreateDmConversationRequestConversationType; JSON = CreateDmConversationRequestConversationType } "./CreateDmConversationRequestConversationType";
 
 import { type CreateMessageRequest; JSON = CreateMessageRequest } "./CreateMessageRequest";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // CreateDmConversationRequest.mo
 
 module {
-    // User-facing type: what application code uses
     public type CreateDmConversationRequest = {
         conversation_type : CreateDmConversationRequestConversationType;
         message : CreateMessageRequest;
@@ -14,27 +17,41 @@ module {
         participant_ids : [Text];
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer CreateDmConversationRequest type
-        public type JSON = {
-            conversation_type : CreateDmConversationRequestConversationType.JSON;
-            message : CreateMessageRequest;
-            participant_ids : [Text];
+        public func toCandidValue(value : CreateDmConversationRequest) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("conversation_type", CreateDmConversationRequestConversationType.toCandidValue(value.conversation_type)));
+            List.add(buf, ("message", CreateMessageRequest.toCandidValue(value.message)));
+            List.add(buf, ("participant_ids", #Array(Array.map<Text, Candid.Candid>(value.participant_ids, func(s : Text) : Candid.Candid = #Text(s)))));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : CreateDmConversationRequest) : JSON = { value with
-            conversation_type = CreateDmConversationRequestConversationType.toJSON(value.conversation_type);
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?CreateDmConversationRequest {
-            let ?conversation_type = CreateDmConversationRequestConversationType.fromJSON(json.conversation_type) else return null;
-            ?{ json with
-                conversation_type;
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?CreateDmConversationRequest =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?conversation_type_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "conversation_type") else return null;
+                    let ?conversation_type = (CreateDmConversationRequestConversationType.fromCandidValue(conversation_type_field.1)) else return null;
+                    let ?message_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "message") else return null;
+                    let ?message = (CreateMessageRequest.fromCandidValue(message_field.1)) else return null;
+                    let ?participant_ids_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "participant_ids") else return null;
+                    let ?participant_ids = ((switch (participant_ids_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<Text>();
+                            for (c__ in xs__.values()) {
+                                let #Text(s__) = c__ else return null;
+                                List.add(buf__, s__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    })) else return null;
+                    ?{
+                        conversation_type;
+                        message;
+                        participant_ids;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

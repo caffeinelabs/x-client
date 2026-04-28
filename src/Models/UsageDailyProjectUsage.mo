@@ -1,11 +1,14 @@
 /// The daily usage breakdown for a project
 
 import { type UsageFields; JSON = UsageFields } "./UsageFields";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // UsageDailyProjectUsage.mo
 
 module {
-    // User-facing type: what application code uses
     public type UsageDailyProjectUsage = {
         /// The unique identifier for this project
         project_id : ?Int;
@@ -13,19 +16,47 @@ module {
         usage : ?[UsageFields];
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer UsageDailyProjectUsage type
-        public type JSON = {
-            project_id : ?Int;
-            usage : ?[UsageFields];
+        public func toCandidValue(value : UsageDailyProjectUsage) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.project_id) {
+                case (?v__) List.add(buf, ("project_id", #Int(v__)));
+                case null ();
+            };
+            switch (value.usage) {
+                case (?v__) List.add(buf, ("usage", #Array(Array.map<UsageFields, Candid.Candid>(v__, UsageFields.toCandidValue))));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : UsageDailyProjectUsage) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?UsageDailyProjectUsage = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?UsageDailyProjectUsage =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let project_id : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "project_id")) {
+                        case (?project_id_field) ((switch (project_id_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let usage : ?[UsageFields] = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "usage")) {
+                        case (?usage_field) ((switch (usage_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<UsageFields>();
+                            for (c__ in xs__.values()) {
+                                let ?m__ = UsageFields.fromCandidValue(c__) else return null;
+                                List.add(buf__, m__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    }));
+                        case null null;
+                    };
+                    ?{
+                        project_id;
+                        usage;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

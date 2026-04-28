@@ -1,26 +1,34 @@
 
 import { type UserComplianceSchema; JSON = UserComplianceSchema } "./UserComplianceSchema";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // UserDeleteComplianceSchema.mo
 
 module {
-    // User-facing type: what application code uses
     public type UserDeleteComplianceSchema = {
         user_delete : UserComplianceSchema;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer UserDeleteComplianceSchema type
-        public type JSON = {
-            user_delete : UserComplianceSchema;
+        public func toCandidValue(value : UserDeleteComplianceSchema) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("user_delete", UserComplianceSchema.toCandidValue(value.user_delete)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : UserDeleteComplianceSchema) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?UserDeleteComplianceSchema = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?UserDeleteComplianceSchema =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?user_delete_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "user_delete") else return null;
+                    let ?user_delete = (UserComplianceSchema.fromCandidValue(user_delete_field.1)) else return null;
+                    ?{
+                        user_delete;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

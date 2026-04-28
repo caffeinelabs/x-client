@@ -1,26 +1,39 @@
 /// The scopes for this tweet
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // TweetScopes.mo
 
 module {
-    // User-facing type: what application code uses
     public type TweetScopes = {
         /// Indicates if this Tweet is viewable by followers without the Tweet ID
         followers : ?Bool;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer TweetScopes type
-        public type JSON = {
-            followers : ?Bool;
+        public func toCandidValue(value : TweetScopes) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.followers) {
+                case (?v__) List.add(buf, ("followers", #Bool(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : TweetScopes) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?TweetScopes = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?TweetScopes =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let followers : ?Bool = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "followers")) {
+                        case (?followers_field) ((switch (followers_field.1) { case (#Bool(b)) ?b; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        followers;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

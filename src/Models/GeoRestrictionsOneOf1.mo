@@ -1,8 +1,11 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // GeoRestrictionsOneOf1.mo
 
 module {
-    // User-facing type: what application code uses
     public type GeoRestrictionsOneOf1 = {
         /// List of blacklisted country codes
         blacklisted_country_codes : [Text];
@@ -10,19 +13,47 @@ module {
         whitelisted_country_codes : [Text];
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer GeoRestrictionsOneOf1 type
-        public type JSON = {
-            blacklisted_country_codes : [Text];
-            whitelisted_country_codes : [Text];
+        public func toCandidValue(value : GeoRestrictionsOneOf1) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("blacklisted_country_codes", #Array(Array.map<Text, Candid.Candid>(value.blacklisted_country_codes, func(s : Text) : Candid.Candid = #Text(s)))));
+            List.add(buf, ("whitelisted_country_codes", #Array(Array.map<Text, Candid.Candid>(value.whitelisted_country_codes, func(s : Text) : Candid.Candid = #Text(s)))));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : GeoRestrictionsOneOf1) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?GeoRestrictionsOneOf1 = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?GeoRestrictionsOneOf1 =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?blacklisted_country_codes_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "blacklisted_country_codes") else return null;
+                    let ?blacklisted_country_codes = ((switch (blacklisted_country_codes_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<Text>();
+                            for (c__ in xs__.values()) {
+                                let #Text(s__) = c__ else return null;
+                                List.add(buf__, s__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    })) else return null;
+                    let ?whitelisted_country_codes_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "whitelisted_country_codes") else return null;
+                    let ?whitelisted_country_codes = ((switch (whitelisted_country_codes_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<Text>();
+                            for (c__ in xs__.values()) {
+                                let #Text(s__) = c__ else return null;
+                                List.add(buf__, s__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    })) else return null;
+                    ?{
+                        blacklisted_country_codes;
+                        whitelisted_country_codes;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

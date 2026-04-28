@@ -1,31 +1,32 @@
 /// The conversation type that is being created.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // CreateDmConversationRequestConversationType.mo
 /// Enum values: #group
 
 module {
-    // User-facing type: type-safe variants for application code
     public type CreateDmConversationRequestConversationType = {
         #group;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer CreateDmConversationRequestConversationType type
-        public type JSON = Text;
+        public func toCandidValue(value : CreateDmConversationRequestConversationType) : Candid.Candid =
+            switch (value) {
+                case (#group) #Text("Group");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : CreateDmConversationRequestConversationType) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?CreateDmConversationRequestConversationType =
+            switch (candid) {
+                case (#Text("Group")) ?#group;
+                case _ null;
+            };
+
+        public func toText(value : CreateDmConversationRequestConversationType) : Text =
             switch (value) {
                 case (#group) "Group";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?CreateDmConversationRequestConversationType =
-            switch (json) {
-                case "Group" ?#group;
-                case _ null;
-            };
-    }
-}
+    };
+};

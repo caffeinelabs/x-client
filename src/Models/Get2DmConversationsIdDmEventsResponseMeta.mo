@@ -1,8 +1,11 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // Get2DmConversationsIdDmEventsResponseMeta.mo
 
 module {
-    // User-facing type: what application code uses
     public type Get2DmConversationsIdDmEventsResponseMeta = {
         /// The next token.
         next_token : ?Text;
@@ -12,20 +15,46 @@ module {
         result_count : ?Int;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer Get2DmConversationsIdDmEventsResponseMeta type
-        public type JSON = {
-            next_token : ?Text;
-            previous_token : ?Text;
-            result_count : ?Int;
+        public func toCandidValue(value : Get2DmConversationsIdDmEventsResponseMeta) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.next_token) {
+                case (?v__) List.add(buf, ("next_token", #Text(v__)));
+                case null ();
+            };
+            switch (value.previous_token) {
+                case (?v__) List.add(buf, ("previous_token", #Text(v__)));
+                case null ();
+            };
+            switch (value.result_count) {
+                case (?v__) List.add(buf, ("result_count", #Int(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : Get2DmConversationsIdDmEventsResponseMeta) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?Get2DmConversationsIdDmEventsResponseMeta = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?Get2DmConversationsIdDmEventsResponseMeta =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let next_token : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "next_token")) {
+                        case (?next_token_field) ((switch (next_token_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let previous_token : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "previous_token")) {
+                        case (?previous_token_field) ((switch (previous_token_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let result_count : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "result_count")) {
+                        case (?result_count_field) ((switch (result_count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        next_token;
+                        previous_token;
+                        result_count;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

@@ -1,26 +1,34 @@
 
 import { type TweetComplianceSchema; JSON = TweetComplianceSchema } "./TweetComplianceSchema";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // TweetDropComplianceSchema.mo
 
 module {
-    // User-facing type: what application code uses
     public type TweetDropComplianceSchema = {
         drop : TweetComplianceSchema;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer TweetDropComplianceSchema type
-        public type JSON = {
-            drop : TweetComplianceSchema;
+        public func toCandidValue(value : TweetDropComplianceSchema) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("drop", TweetComplianceSchema.toCandidValue(value.drop)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : TweetDropComplianceSchema) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?TweetDropComplianceSchema = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?TweetDropComplianceSchema =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?drop_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "drop") else return null;
+                    let ?drop = (TweetComplianceSchema.fromCandidValue(drop_field.1)) else return null;
+                    ?{
+                        drop;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

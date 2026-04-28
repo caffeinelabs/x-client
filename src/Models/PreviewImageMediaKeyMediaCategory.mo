@@ -1,31 +1,32 @@
 /// The media category of media
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // PreviewImageMediaKeyMediaCategory.mo
 /// Enum values: #tweetimage
 
 module {
-    // User-facing type: type-safe variants for application code
     public type PreviewImageMediaKeyMediaCategory = {
         #tweetimage;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer PreviewImageMediaKeyMediaCategory type
-        public type JSON = Text;
+        public func toCandidValue(value : PreviewImageMediaKeyMediaCategory) : Candid.Candid =
+            switch (value) {
+                case (#tweetimage) #Text("TweetImage");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : PreviewImageMediaKeyMediaCategory) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?PreviewImageMediaKeyMediaCategory =
+            switch (candid) {
+                case (#Text("TweetImage")) ?#tweetimage;
+                case _ null;
+            };
+
+        public func toText(value : PreviewImageMediaKeyMediaCategory) : Text =
             switch (value) {
                 case (#tweetimage) "TweetImage";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?PreviewImageMediaKeyMediaCategory =
-            switch (json) {
-                case "TweetImage" ?#tweetimage;
-                case _ null;
-            };
-    }
-}
+    };
+};

@@ -1,8 +1,11 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // UnlikeComplianceSchemaFavorite.mo
 
 module {
-    // User-facing type: what application code uses
     public type UnlikeComplianceSchemaFavorite = {
         /// Unique identifier of this Tweet. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
         id : Text;
@@ -10,19 +13,27 @@ module {
         user_id : Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer UnlikeComplianceSchemaFavorite type
-        public type JSON = {
-            id : Text;
-            user_id : Text;
+        public func toCandidValue(value : UnlikeComplianceSchemaFavorite) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("id", #Text(value.id)));
+            List.add(buf, ("user_id", #Text(value.user_id)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : UnlikeComplianceSchemaFavorite) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?UnlikeComplianceSchemaFavorite = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?UnlikeComplianceSchemaFavorite =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "id") else return null;
+                    let ?id = ((switch (id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?user_id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "user_id") else return null;
+                    let ?user_id = ((switch (user_id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    ?{
+                        id;
+                        user_id;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

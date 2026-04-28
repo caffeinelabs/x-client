@@ -25,12 +25,16 @@ import { type UserUnprotectComplianceSchema; JSON = UserUnprotectComplianceSchem
 import { type UserUnsuspendComplianceSchema; JSON = UserUnsuspendComplianceSchema } "./UserUnsuspendComplianceSchema";
 
 import { type UserWithheldComplianceSchema; JSON = UserWithheldComplianceSchema } "./UserWithheldComplianceSchema";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // UserComplianceData.mo
+// Generic oneOf (no discriminator, no flatten) — wire form is `{"#tag": ...}`.
 import Runtime "mo:core/Runtime";
 
 module {
-    // User-facing type: discriminated union (oneOf)
     public type UserComplianceData = {
         #UserProtectComplianceSchema : UserProtectComplianceSchema;
         #UserUnprotectComplianceSchema : UserUnprotectComplianceSchema;
@@ -43,7 +47,6 @@ module {
         #UserProfileModificationComplianceSchema : UserProfileModificationComplianceSchema;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
         // Convert oneOf variant to Text for URL parameters
         public func toText(value : UserComplianceData) : Text =
@@ -59,46 +62,63 @@ module {
                 case (#UserProfileModificationComplianceSchema(v)) Runtime.unreachable();
             };
 
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer UserComplianceData type
-        public type JSON = {
-            #UserProtectComplianceSchema : UserProtectComplianceSchema;
-            #UserUnprotectComplianceSchema : UserUnprotectComplianceSchema;
-            #UserDeleteComplianceSchema : UserDeleteComplianceSchema;
-            #UserUndeleteComplianceSchema : UserUndeleteComplianceSchema;
-            #UserSuspendComplianceSchema : UserSuspendComplianceSchema;
-            #UserUnsuspendComplianceSchema : UserUnsuspendComplianceSchema;
-            #UserWithheldComplianceSchema : UserWithheldComplianceSchema;
-            #UserScrubGeoSchema : UserScrubGeoSchema;
-            #UserProfileModificationComplianceSchema : UserProfileModificationComplianceSchema;
-        };
-
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : UserComplianceData) : JSON =
+        public func toCandidValue(value : UserComplianceData) : Candid.Candid =
             switch (value) {
-                case (#UserProtectComplianceSchema(v)) #UserProtectComplianceSchema(v);
-                case (#UserUnprotectComplianceSchema(v)) #UserUnprotectComplianceSchema(v);
-                case (#UserDeleteComplianceSchema(v)) #UserDeleteComplianceSchema(v);
-                case (#UserUndeleteComplianceSchema(v)) #UserUndeleteComplianceSchema(v);
-                case (#UserSuspendComplianceSchema(v)) #UserSuspendComplianceSchema(v);
-                case (#UserUnsuspendComplianceSchema(v)) #UserUnsuspendComplianceSchema(v);
-                case (#UserWithheldComplianceSchema(v)) #UserWithheldComplianceSchema(v);
-                case (#UserScrubGeoSchema(v)) #UserScrubGeoSchema(v);
-                case (#UserProfileModificationComplianceSchema(v)) #UserProfileModificationComplianceSchema(v);
+                case (#UserProtectComplianceSchema(v)) #Variant(("UserProtectComplianceSchema", UserProtectComplianceSchema.toCandidValue(v)));
+                case (#UserUnprotectComplianceSchema(v)) #Variant(("UserUnprotectComplianceSchema", UserUnprotectComplianceSchema.toCandidValue(v)));
+                case (#UserDeleteComplianceSchema(v)) #Variant(("UserDeleteComplianceSchema", UserDeleteComplianceSchema.toCandidValue(v)));
+                case (#UserUndeleteComplianceSchema(v)) #Variant(("UserUndeleteComplianceSchema", UserUndeleteComplianceSchema.toCandidValue(v)));
+                case (#UserSuspendComplianceSchema(v)) #Variant(("UserSuspendComplianceSchema", UserSuspendComplianceSchema.toCandidValue(v)));
+                case (#UserUnsuspendComplianceSchema(v)) #Variant(("UserUnsuspendComplianceSchema", UserUnsuspendComplianceSchema.toCandidValue(v)));
+                case (#UserWithheldComplianceSchema(v)) #Variant(("UserWithheldComplianceSchema", UserWithheldComplianceSchema.toCandidValue(v)));
+                case (#UserScrubGeoSchema(v)) #Variant(("UserScrubGeoSchema", UserScrubGeoSchema.toCandidValue(v)));
+                case (#UserProfileModificationComplianceSchema(v)) #Variant(("UserProfileModificationComplianceSchema", UserProfileModificationComplianceSchema.toCandidValue(v)));
             };
 
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?UserComplianceData =
-            switch (json) {
-                case (#UserProtectComplianceSchema(v)) ?#UserProtectComplianceSchema(v);
-                case (#UserUnprotectComplianceSchema(v)) ?#UserUnprotectComplianceSchema(v);
-                case (#UserDeleteComplianceSchema(v)) ?#UserDeleteComplianceSchema(v);
-                case (#UserUndeleteComplianceSchema(v)) ?#UserUndeleteComplianceSchema(v);
-                case (#UserSuspendComplianceSchema(v)) ?#UserSuspendComplianceSchema(v);
-                case (#UserUnsuspendComplianceSchema(v)) ?#UserUnsuspendComplianceSchema(v);
-                case (#UserWithheldComplianceSchema(v)) ?#UserWithheldComplianceSchema(v);
-                case (#UserScrubGeoSchema(v)) ?#UserScrubGeoSchema(v);
-                case (#UserProfileModificationComplianceSchema(v)) ?#UserProfileModificationComplianceSchema(v);
+        public func fromCandidValue(candid : Candid.Candid) : ?UserComplianceData =
+            switch (candid) {
+                case (#Variant(tagAndVal)) {
+                    switch (tagAndVal.0) {
+                        case ("UserProtectComplianceSchema") {
+                            let ?inner = UserProtectComplianceSchema.fromCandidValue(tagAndVal.1) else return null;
+                            ?#UserProtectComplianceSchema(inner)
+                        };
+                        case ("UserUnprotectComplianceSchema") {
+                            let ?inner = UserUnprotectComplianceSchema.fromCandidValue(tagAndVal.1) else return null;
+                            ?#UserUnprotectComplianceSchema(inner)
+                        };
+                        case ("UserDeleteComplianceSchema") {
+                            let ?inner = UserDeleteComplianceSchema.fromCandidValue(tagAndVal.1) else return null;
+                            ?#UserDeleteComplianceSchema(inner)
+                        };
+                        case ("UserUndeleteComplianceSchema") {
+                            let ?inner = UserUndeleteComplianceSchema.fromCandidValue(tagAndVal.1) else return null;
+                            ?#UserUndeleteComplianceSchema(inner)
+                        };
+                        case ("UserSuspendComplianceSchema") {
+                            let ?inner = UserSuspendComplianceSchema.fromCandidValue(tagAndVal.1) else return null;
+                            ?#UserSuspendComplianceSchema(inner)
+                        };
+                        case ("UserUnsuspendComplianceSchema") {
+                            let ?inner = UserUnsuspendComplianceSchema.fromCandidValue(tagAndVal.1) else return null;
+                            ?#UserUnsuspendComplianceSchema(inner)
+                        };
+                        case ("UserWithheldComplianceSchema") {
+                            let ?inner = UserWithheldComplianceSchema.fromCandidValue(tagAndVal.1) else return null;
+                            ?#UserWithheldComplianceSchema(inner)
+                        };
+                        case ("UserScrubGeoSchema") {
+                            let ?inner = UserScrubGeoSchema.fromCandidValue(tagAndVal.1) else return null;
+                            ?#UserScrubGeoSchema(inner)
+                        };
+                        case ("UserProfileModificationComplianceSchema") {
+                            let ?inner = UserProfileModificationComplianceSchema.fromCandidValue(tagAndVal.1) else return null;
+                            ?#UserProfileModificationComplianceSchema(inner)
+                        };
+                        case _ null;
+                    };
+                };
+                case _ null;
             };
-    }
-}
+    };
+};

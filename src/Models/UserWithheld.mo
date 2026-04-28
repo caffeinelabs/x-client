@@ -1,36 +1,56 @@
 /// Indicates withholding details for [withheld content](https://help.twitter.com/en/rules-and-policies/tweet-withheld-by-country).
 
 import { type UserWithheldScope; JSON = UserWithheldScope } "./UserWithheldScope";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // UserWithheld.mo
 
 module {
-    // User-facing type: what application code uses
     public type UserWithheld = {
         /// Provides a list of countries where this content is not available.
         country_codes : [Text];
         scope : ?UserWithheldScope;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer UserWithheld type
-        public type JSON = {
-            country_codes : [Text];
-            scope : ?UserWithheldScope.JSON;
+        public func toCandidValue(value : UserWithheld) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("country_codes", #Array(Array.map<Text, Candid.Candid>(value.country_codes, func(s : Text) : Candid.Candid = #Text(s)))));
+            switch (value.scope) {
+                case (?v__) List.add(buf, ("scope", UserWithheldScope.toCandidValue(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : UserWithheld) : JSON = { value with
-            scope = do ? { UserWithheldScope.toJSON(value.scope!) };
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?UserWithheld {
-            ?{ json with
-                scope = do ? { UserWithheldScope.fromJSON(json.scope!)! };
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?UserWithheld =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?country_codes_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "country_codes") else return null;
+                    let ?country_codes = ((switch (country_codes_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<Text>();
+                            for (c__ in xs__.values()) {
+                                let #Text(s__) = c__ else return null;
+                                List.add(buf__, s__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    })) else return null;
+                    let scope : ?UserWithheldScope = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "scope")) {
+                        case (?scope_field) (UserWithheldScope.fromCandidValue(scope_field.1));
+                        case null null;
+                    };
+                    ?{
+                        country_codes;
+                        scope;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

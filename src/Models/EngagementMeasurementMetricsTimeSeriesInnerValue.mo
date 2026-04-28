@@ -2,29 +2,60 @@
 import { type EngagementMeasurementMetricsTimeSeriesInnerValueMetricValuesInner; JSON = EngagementMeasurementMetricsTimeSeriesInnerValueMetricValuesInner } "./EngagementMeasurementMetricsTimeSeriesInnerValueMetricValuesInner";
 
 import { type EngagementMeasurementMetricsTimeSeriesInnerValueTimestamp; JSON = EngagementMeasurementMetricsTimeSeriesInnerValueTimestamp } "./EngagementMeasurementMetricsTimeSeriesInnerValueTimestamp";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // EngagementMeasurementMetricsTimeSeriesInnerValue.mo
 
 module {
-    // User-facing type: what application code uses
     public type EngagementMeasurementMetricsTimeSeriesInnerValue = {
         metric_values : ?[EngagementMeasurementMetricsTimeSeriesInnerValueMetricValuesInner];
         timestamp : ?EngagementMeasurementMetricsTimeSeriesInnerValueTimestamp;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer EngagementMeasurementMetricsTimeSeriesInnerValue type
-        public type JSON = {
-            metric_values : ?[EngagementMeasurementMetricsTimeSeriesInnerValueMetricValuesInner];
-            timestamp : ?EngagementMeasurementMetricsTimeSeriesInnerValueTimestamp;
+        public func toCandidValue(value : EngagementMeasurementMetricsTimeSeriesInnerValue) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.metric_values) {
+                case (?v__) List.add(buf, ("metric_values", #Array(Array.map<EngagementMeasurementMetricsTimeSeriesInnerValueMetricValuesInner, Candid.Candid>(v__, EngagementMeasurementMetricsTimeSeriesInnerValueMetricValuesInner.toCandidValue))));
+                case null ();
+            };
+            switch (value.timestamp) {
+                case (?v__) List.add(buf, ("timestamp", EngagementMeasurementMetricsTimeSeriesInnerValueTimestamp.toCandidValue(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : EngagementMeasurementMetricsTimeSeriesInnerValue) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?EngagementMeasurementMetricsTimeSeriesInnerValue = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?EngagementMeasurementMetricsTimeSeriesInnerValue =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let metric_values : ?[EngagementMeasurementMetricsTimeSeriesInnerValueMetricValuesInner] = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "metric_values")) {
+                        case (?metric_values_field) ((switch (metric_values_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<EngagementMeasurementMetricsTimeSeriesInnerValueMetricValuesInner>();
+                            for (c__ in xs__.values()) {
+                                let ?m__ = EngagementMeasurementMetricsTimeSeriesInnerValueMetricValuesInner.fromCandidValue(c__) else return null;
+                                List.add(buf__, m__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    }));
+                        case null null;
+                    };
+                    let timestamp : ?EngagementMeasurementMetricsTimeSeriesInnerValueTimestamp = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "timestamp")) {
+                        case (?timestamp_field) (EngagementMeasurementMetricsTimeSeriesInnerValueTimestamp.fromCandidValue(timestamp_field.1));
+                        case null null;
+                    };
+                    ?{
+                        metric_values;
+                        timestamp;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

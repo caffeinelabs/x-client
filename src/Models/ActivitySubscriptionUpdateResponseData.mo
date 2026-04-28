@@ -1,35 +1,50 @@
 
 import { type ActivitySubscription; JSON = ActivitySubscription } "./ActivitySubscription";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ActivitySubscriptionUpdateResponseData.mo
 
 module {
-    // User-facing type: what application code uses
     public type ActivitySubscriptionUpdateResponseData = {
         subscription : ?ActivitySubscription;
         /// Number of active subscriptions.
         total_subscriptions : ?Int;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ActivitySubscriptionUpdateResponseData type
-        public type JSON = {
-            subscription : ?ActivitySubscription.JSON;
-            total_subscriptions : ?Int;
+        public func toCandidValue(value : ActivitySubscriptionUpdateResponseData) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.subscription) {
+                case (?v__) List.add(buf, ("subscription", ActivitySubscription.toCandidValue(v__)));
+                case null ();
+            };
+            switch (value.total_subscriptions) {
+                case (?v__) List.add(buf, ("total_subscriptions", #Int(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ActivitySubscriptionUpdateResponseData) : JSON = { value with
-            subscription = do ? { ActivitySubscription.toJSON(value.subscription!) };
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ActivitySubscriptionUpdateResponseData {
-            ?{ json with
-                subscription = do ? { ActivitySubscription.fromJSON(json.subscription!)! };
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?ActivitySubscriptionUpdateResponseData =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let subscription : ?ActivitySubscription = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "subscription")) {
+                        case (?subscription_field) (ActivitySubscription.fromCandidValue(subscription_field.1));
+                        case null null;
+                    };
+                    let total_subscriptions : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "total_subscriptions")) {
+                        case (?total_subscriptions_field) ((switch (total_subscriptions_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        subscription;
+                        total_subscriptions;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

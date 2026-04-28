@@ -1,30 +1,51 @@
 /// Suggested source links and the number of requests that included each link.
 
 import { type UrlEntity; JSON = UrlEntity } "./UrlEntity";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // TweetSuggestedSourceLinksWithCounts.mo
 
 module {
-    // User-facing type: what application code uses
     public type TweetSuggestedSourceLinksWithCounts = {
         /// Number of note requests that included the source link.
         count : ?Int;
         url : ?UrlEntity;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer TweetSuggestedSourceLinksWithCounts type
-        public type JSON = {
-            count : ?Int;
-            url : ?UrlEntity;
+        public func toCandidValue(value : TweetSuggestedSourceLinksWithCounts) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.count) {
+                case (?v__) List.add(buf, ("count", #Int(v__)));
+                case null ();
+            };
+            switch (value.url) {
+                case (?v__) List.add(buf, ("url", UrlEntity.toCandidValue(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : TweetSuggestedSourceLinksWithCounts) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?TweetSuggestedSourceLinksWithCounts = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?TweetSuggestedSourceLinksWithCounts =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let count : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "count")) {
+                        case (?count_field) ((switch (count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let url : ?UrlEntity = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "url")) {
+                        case (?url_field) (UrlEntity.fromCandidValue(url_field.1));
+                        case null null;
+                    };
+                    ?{
+                        count;
+                        url;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

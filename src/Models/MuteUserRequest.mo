@@ -1,25 +1,33 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // MuteUserRequest.mo
 
 module {
-    // User-facing type: what application code uses
     public type MuteUserRequest = {
         /// Unique identifier of this User. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
         target_user_id : Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer MuteUserRequest type
-        public type JSON = {
-            target_user_id : Text;
+        public func toCandidValue(value : MuteUserRequest) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("target_user_id", #Text(value.target_user_id)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : MuteUserRequest) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?MuteUserRequest = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?MuteUserRequest =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?target_user_id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "target_user_id") else return null;
+                    let ?target_user_id = ((switch (target_user_id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    ?{
+                        target_user_id;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

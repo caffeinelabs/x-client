@@ -1,10 +1,13 @@
 
 import { type TimestampedMetrics; JSON = TimestampedMetrics } "./TimestampedMetrics";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // AnalyticsDataInner.mo
 
 module {
-    // User-facing type: what application code uses
     public type AnalyticsDataInner = {
         /// Unique identifier of this Tweet. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
         id : ?Text;
@@ -12,19 +15,47 @@ module {
         timestamped_metrics : ?[TimestampedMetrics];
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer AnalyticsDataInner type
-        public type JSON = {
-            id : ?Text;
-            timestamped_metrics : ?[TimestampedMetrics];
+        public func toCandidValue(value : AnalyticsDataInner) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.id) {
+                case (?v__) List.add(buf, ("id", #Text(v__)));
+                case null ();
+            };
+            switch (value.timestamped_metrics) {
+                case (?v__) List.add(buf, ("timestamped_metrics", #Array(Array.map<TimestampedMetrics, Candid.Candid>(v__, TimestampedMetrics.toCandidValue))));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : AnalyticsDataInner) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?AnalyticsDataInner = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?AnalyticsDataInner =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "id")) {
+                        case (?id_field) ((switch (id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let timestamped_metrics : ?[TimestampedMetrics] = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "timestamped_metrics")) {
+                        case (?timestamped_metrics_field) ((switch (timestamped_metrics_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<TimestampedMetrics>();
+                            for (c__ in xs__.values()) {
+                                let ?m__ = TimestampedMetrics.fromCandidValue(c__) else return null;
+                                List.add(buf__, m__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    }));
+                        case null null;
+                    };
+                    ?{
+                        id;
+                        timestamped_metrics;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

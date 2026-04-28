@@ -1,24 +1,37 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // UsersRetweetsDeleteResponseData.mo
 
 module {
-    // User-facing type: what application code uses
     public type UsersRetweetsDeleteResponseData = {
         retweeted : ?Bool;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer UsersRetweetsDeleteResponseData type
-        public type JSON = {
-            retweeted : ?Bool;
+        public func toCandidValue(value : UsersRetweetsDeleteResponseData) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.retweeted) {
+                case (?v__) List.add(buf, ("retweeted", #Bool(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : UsersRetweetsDeleteResponseData) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?UsersRetweetsDeleteResponseData = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?UsersRetweetsDeleteResponseData =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let retweeted : ?Bool = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "retweeted")) {
+                        case (?retweeted_field) ((switch (retweeted_field.1) { case (#Bool(b)) ?b; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        retweeted;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

@@ -1,10 +1,13 @@
 
 import { type DmMediaAttachment; JSON = DmMediaAttachment } "./DmMediaAttachment";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // CreateTextMessageRequest.mo
 
 module {
-    // User-facing type: what application code uses
     public type CreateTextMessageRequest = {
         /// Attachments to a DM Event.
         attachments : ?[DmMediaAttachment];
@@ -12,19 +15,42 @@ module {
         text_ : Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer CreateTextMessageRequest type
-        public type JSON = {
-            attachments : ?[DmMediaAttachment];
-            text_ : Text;
+        public func toCandidValue(value : CreateTextMessageRequest) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.attachments) {
+                case (?v__) List.add(buf, ("attachments", #Array(Array.map<DmMediaAttachment, Candid.Candid>(v__, DmMediaAttachment.toCandidValue))));
+                case null ();
+            };
+            List.add(buf, ("text", #Text(value.text_)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : CreateTextMessageRequest) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?CreateTextMessageRequest = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?CreateTextMessageRequest =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let attachments : ?[DmMediaAttachment] = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "attachments")) {
+                        case (?attachments_field) ((switch (attachments_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<DmMediaAttachment>();
+                            for (c__ in xs__.values()) {
+                                let ?m__ = DmMediaAttachment.fromCandidValue(c__) else return null;
+                                List.add(buf__, m__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    }));
+                        case null null;
+                    };
+                    let ?text__field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "text") else return null;
+                    let ?text_ = ((switch (text__field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    ?{
+                        attachments;
+                        text_;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

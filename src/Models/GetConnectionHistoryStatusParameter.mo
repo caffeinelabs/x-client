@@ -1,36 +1,39 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // GetConnectionHistoryStatusParameter.mo
 /// Enum values: #active, #inactive, #all
 
 module {
-    // User-facing type: type-safe variants for application code
     public type GetConnectionHistoryStatusParameter = {
         #active;
         #inactive;
         #all;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer GetConnectionHistoryStatusParameter type
-        public type JSON = Text;
+        public func toCandidValue(value : GetConnectionHistoryStatusParameter) : Candid.Candid =
+            switch (value) {
+                case (#active) #Text("active");
+                case (#inactive) #Text("inactive");
+                case (#all) #Text("all");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : GetConnectionHistoryStatusParameter) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?GetConnectionHistoryStatusParameter =
+            switch (candid) {
+                case (#Text("active")) ?#active;
+                case (#Text("inactive")) ?#inactive;
+                case (#Text("all")) ?#all;
+                case _ null;
+            };
+
+        public func toText(value : GetConnectionHistoryStatusParameter) : Text =
             switch (value) {
                 case (#active) "active";
                 case (#inactive) "inactive";
                 case (#all) "all";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?GetConnectionHistoryStatusParameter =
-            switch (json) {
-                case "active" ?#active;
-                case "inactive" ?#inactive;
-                case "all" ?#all;
-                case _ null;
-            };
-    }
-}
+    };
+};

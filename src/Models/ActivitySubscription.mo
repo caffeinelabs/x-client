@@ -1,11 +1,14 @@
 /// An XActivity subscription.
 
 import { type ActivitySubscriptionFilter; JSON = ActivitySubscriptionFilter } "./ActivitySubscriptionFilter";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ActivitySubscription.mo
 
 module {
-    // User-facing type: what application code uses
     public type ActivitySubscription = {
         created_at : Text;
         event_type : Text;
@@ -18,31 +21,57 @@ module {
         webhook_id : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ActivitySubscription type
-        public type JSON = {
-            created_at : Text;
-            event_type : Text;
-            filter : ActivitySubscriptionFilter.JSON;
-            subscription_id : Text;
-            tag : ?Text;
-            updated_at : Text;
-            webhook_id : ?Text;
+        public func toCandidValue(value : ActivitySubscription) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("created_at", #Text(value.created_at)));
+            List.add(buf, ("event_type", #Text(value.event_type)));
+            List.add(buf, ("filter", ActivitySubscriptionFilter.toCandidValue(value.filter)));
+            List.add(buf, ("subscription_id", #Text(value.subscription_id)));
+            switch (value.tag) {
+                case (?v__) List.add(buf, ("tag", #Text(v__)));
+                case null ();
+            };
+            List.add(buf, ("updated_at", #Text(value.updated_at)));
+            switch (value.webhook_id) {
+                case (?v__) List.add(buf, ("webhook_id", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ActivitySubscription) : JSON = { value with
-            filter = ActivitySubscriptionFilter.toJSON(value.filter);
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ActivitySubscription {
-            let ?filter = ActivitySubscriptionFilter.fromJSON(json.filter) else return null;
-            ?{ json with
-                filter;
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?ActivitySubscription =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?created_at_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "created_at") else return null;
+                    let ?created_at = ((switch (created_at_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?event_type_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "event_type") else return null;
+                    let ?event_type = ((switch (event_type_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?filter_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "filter") else return null;
+                    let ?filter = (ActivitySubscriptionFilter.fromCandidValue(filter_field.1)) else return null;
+                    let ?subscription_id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "subscription_id") else return null;
+                    let ?subscription_id = ((switch (subscription_id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let tag : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "tag")) {
+                        case (?tag_field) ((switch (tag_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let ?updated_at_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "updated_at") else return null;
+                    let ?updated_at = ((switch (updated_at_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let webhook_id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "webhook_id")) {
+                        case (?webhook_id_field) ((switch (webhook_id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        created_at;
+                        event_type;
+                        filter;
+                        subscription_id;
+                        tag;
+                        updated_at;
+                        webhook_id;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

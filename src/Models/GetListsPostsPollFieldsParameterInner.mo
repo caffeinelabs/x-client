@@ -1,9 +1,12 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // GetListsPostsPollFieldsParameterInner.mo
 /// Enum values: #duration_minutes, #end_datetime, #id, #options, #voting_status
 
 module {
-    // User-facing type: type-safe variants for application code
     public type GetListsPostsPollFieldsParameterInner = {
         #duration_minutes;
         #end_datetime;
@@ -12,14 +15,27 @@ module {
         #voting_status;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer GetListsPostsPollFieldsParameterInner type
-        public type JSON = Text;
+        public func toCandidValue(value : GetListsPostsPollFieldsParameterInner) : Candid.Candid =
+            switch (value) {
+                case (#duration_minutes) #Text("duration_minutes");
+                case (#end_datetime) #Text("end_datetime");
+                case (#id) #Text("id");
+                case (#options) #Text("options");
+                case (#voting_status) #Text("voting_status");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : GetListsPostsPollFieldsParameterInner) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?GetListsPostsPollFieldsParameterInner =
+            switch (candid) {
+                case (#Text("duration_minutes")) ?#duration_minutes;
+                case (#Text("end_datetime")) ?#end_datetime;
+                case (#Text("id")) ?#id;
+                case (#Text("options")) ?#options;
+                case (#Text("voting_status")) ?#voting_status;
+                case _ null;
+            };
+
+        public func toText(value : GetListsPostsPollFieldsParameterInner) : Text =
             switch (value) {
                 case (#duration_minutes) "duration_minutes";
                 case (#end_datetime) "end_datetime";
@@ -27,16 +43,5 @@ module {
                 case (#options) "options";
                 case (#voting_status) "voting_status";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?GetListsPostsPollFieldsParameterInner =
-            switch (json) {
-                case "duration_minutes" ?#duration_minutes;
-                case "end_datetime" ?#end_datetime;
-                case "id" ?#id;
-                case "options" ?#options;
-                case "voting_status" ?#voting_status;
-                case _ null;
-            };
-    }
-}
+    };
+};

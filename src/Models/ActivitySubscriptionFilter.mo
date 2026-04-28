@@ -1,11 +1,14 @@
 /// An XAA subscription filter.
 
 import { type ActivitySubscriptionFilterDirection; JSON = ActivitySubscriptionFilterDirection } "./ActivitySubscriptionFilterDirection";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ActivitySubscriptionFilter.mo
 
 module {
-    // User-facing type: what application code uses
     public type ActivitySubscriptionFilter = {
         direction : ?ActivitySubscriptionFilterDirection;
         /// A keyword to filter on.
@@ -14,26 +17,46 @@ module {
         user_id : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ActivitySubscriptionFilter type
-        public type JSON = {
-            direction : ?ActivitySubscriptionFilterDirection.JSON;
-            keyword : ?Text;
-            user_id : ?Text;
+        public func toCandidValue(value : ActivitySubscriptionFilter) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.direction) {
+                case (?v__) List.add(buf, ("direction", ActivitySubscriptionFilterDirection.toCandidValue(v__)));
+                case null ();
+            };
+            switch (value.keyword) {
+                case (?v__) List.add(buf, ("keyword", #Text(v__)));
+                case null ();
+            };
+            switch (value.user_id) {
+                case (?v__) List.add(buf, ("user_id", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ActivitySubscriptionFilter) : JSON = { value with
-            direction = do ? { ActivitySubscriptionFilterDirection.toJSON(value.direction!) };
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ActivitySubscriptionFilter {
-            ?{ json with
-                direction = do ? { ActivitySubscriptionFilterDirection.fromJSON(json.direction!)! };
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?ActivitySubscriptionFilter =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let direction : ?ActivitySubscriptionFilterDirection = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "direction")) {
+                        case (?direction_field) (ActivitySubscriptionFilterDirection.fromCandidValue(direction_field.1));
+                        case null null;
+                    };
+                    let keyword : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "keyword")) {
+                        case (?keyword_field) ((switch (keyword_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let user_id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "user_id")) {
+                        case (?user_id_field) ((switch (user_id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        direction;
+                        keyword;
+                        user_id;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

@@ -1,36 +1,39 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // GetPostsCountsAllSearchCountFieldsParameterInner.mo
 /// Enum values: #end, #start, #tweet_count
 
 module {
-    // User-facing type: type-safe variants for application code
     public type GetPostsCountsAllSearchCountFieldsParameterInner = {
         #end;
         #start;
         #tweet_count;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer GetPostsCountsAllSearchCountFieldsParameterInner type
-        public type JSON = Text;
+        public func toCandidValue(value : GetPostsCountsAllSearchCountFieldsParameterInner) : Candid.Candid =
+            switch (value) {
+                case (#end) #Text("end");
+                case (#start) #Text("start");
+                case (#tweet_count) #Text("tweet_count");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : GetPostsCountsAllSearchCountFieldsParameterInner) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?GetPostsCountsAllSearchCountFieldsParameterInner =
+            switch (candid) {
+                case (#Text("end")) ?#end;
+                case (#Text("start")) ?#start;
+                case (#Text("tweet_count")) ?#tweet_count;
+                case _ null;
+            };
+
+        public func toText(value : GetPostsCountsAllSearchCountFieldsParameterInner) : Text =
             switch (value) {
                 case (#end) "end";
                 case (#start) "start";
                 case (#tweet_count) "tweet_count";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?GetPostsCountsAllSearchCountFieldsParameterInner =
-            switch (json) {
-                case "end" ?#end;
-                case "start" ?#start;
-                case "tweet_count" ?#tweet_count;
-                case _ null;
-            };
-    }
-}
+    };
+};

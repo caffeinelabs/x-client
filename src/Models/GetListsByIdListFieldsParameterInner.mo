@@ -1,9 +1,12 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // GetListsByIdListFieldsParameterInner.mo
 /// Enum values: #created_at, #description, #follower_count, #id, #member_count, #name, #owner_id, #private_
 
 module {
-    // User-facing type: type-safe variants for application code
     public type GetListsByIdListFieldsParameterInner = {
         #created_at;
         #description;
@@ -15,14 +18,33 @@ module {
         #private_;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer GetListsByIdListFieldsParameterInner type
-        public type JSON = Text;
+        public func toCandidValue(value : GetListsByIdListFieldsParameterInner) : Candid.Candid =
+            switch (value) {
+                case (#created_at) #Text("created_at");
+                case (#description) #Text("description");
+                case (#follower_count) #Text("follower_count");
+                case (#id) #Text("id");
+                case (#member_count) #Text("member_count");
+                case (#name) #Text("name");
+                case (#owner_id) #Text("owner_id");
+                case (#private_) #Text("private");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : GetListsByIdListFieldsParameterInner) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?GetListsByIdListFieldsParameterInner =
+            switch (candid) {
+                case (#Text("created_at")) ?#created_at;
+                case (#Text("description")) ?#description;
+                case (#Text("follower_count")) ?#follower_count;
+                case (#Text("id")) ?#id;
+                case (#Text("member_count")) ?#member_count;
+                case (#Text("name")) ?#name;
+                case (#Text("owner_id")) ?#owner_id;
+                case (#Text("private")) ?#private_;
+                case _ null;
+            };
+
+        public func toText(value : GetListsByIdListFieldsParameterInner) : Text =
             switch (value) {
                 case (#created_at) "created_at";
                 case (#description) "description";
@@ -33,19 +55,5 @@ module {
                 case (#owner_id) "owner_id";
                 case (#private_) "private";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?GetListsByIdListFieldsParameterInner =
-            switch (json) {
-                case "created_at" ?#created_at;
-                case "description" ?#description;
-                case "follower_count" ?#follower_count;
-                case "id" ?#id;
-                case "member_count" ?#member_count;
-                case "name" ?#name;
-                case "owner_id" ?#owner_id;
-                case "private" ?#private_;
-                case _ null;
-            };
-    }
-}
+    };
+};

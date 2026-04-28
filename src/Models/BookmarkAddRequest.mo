@@ -1,25 +1,33 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // BookmarkAddRequest.mo
 
 module {
-    // User-facing type: what application code uses
     public type BookmarkAddRequest = {
         /// Unique identifier of this Tweet. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
         tweet_id : Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer BookmarkAddRequest type
-        public type JSON = {
-            tweet_id : Text;
+        public func toCandidValue(value : BookmarkAddRequest) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("tweet_id", #Text(value.tweet_id)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : BookmarkAddRequest) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?BookmarkAddRequest = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?BookmarkAddRequest =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?tweet_id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "tweet_id") else return null;
+                    let ?tweet_id = ((switch (tweet_id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    ?{
+                        tweet_id;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

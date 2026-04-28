@@ -5,11 +5,14 @@ import { type NoteInfo; JSON = NoteInfo } "./NoteInfo";
 import { type NoteRatingStatus; JSON = NoteRatingStatus } "./NoteRatingStatus";
 
 import { type NoteTestResult; JSON = NoteTestResult } "./NoteTestResult";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // Note.mo
 
 module {
-    // User-facing type: what application code uses
     public type Note = {
         /// The unique identifier of this Community Note.
         id : Text;
@@ -20,30 +23,54 @@ module {
         test_result : ?NoteTestResult;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer Note type
-        public type JSON = {
-            id : Text;
-            info : ?NoteInfo.JSON;
-            post_id : Text;
-            status : ?NoteRatingStatus.JSON;
-            test_result : ?NoteTestResult;
+        public func toCandidValue(value : Note) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("id", #Text(value.id)));
+            switch (value.info) {
+                case (?v__) List.add(buf, ("info", NoteInfo.toCandidValue(v__)));
+                case null ();
+            };
+            List.add(buf, ("post_id", #Text(value.post_id)));
+            switch (value.status) {
+                case (?v__) List.add(buf, ("status", NoteRatingStatus.toCandidValue(v__)));
+                case null ();
+            };
+            switch (value.test_result) {
+                case (?v__) List.add(buf, ("test_result", NoteTestResult.toCandidValue(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : Note) : JSON = { value with
-            info = do ? { NoteInfo.toJSON(value.info!) };
-            status = do ? { NoteRatingStatus.toJSON(value.status!) };
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?Note {
-            ?{ json with
-                info = do ? { NoteInfo.fromJSON(json.info!)! };
-                status = do ? { NoteRatingStatus.fromJSON(json.status!)! };
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?Note =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "id") else return null;
+                    let ?id = ((switch (id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let info : ?NoteInfo = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "info")) {
+                        case (?info_field) (NoteInfo.fromCandidValue(info_field.1));
+                        case null null;
+                    };
+                    let ?post_id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "post_id") else return null;
+                    let ?post_id = ((switch (post_id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let status : ?NoteRatingStatus = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "status")) {
+                        case (?status_field) (NoteRatingStatus.fromCandidValue(status_field.1));
+                        case null null;
+                    };
+                    let test_result : ?NoteTestResult = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "test_result")) {
+                        case (?test_result_field) (NoteTestResult.fromCandidValue(test_result_field.1));
+                        case null null;
+                    };
+                    ?{
+                        id;
+                        info;
+                        post_id;
+                        status;
+                        test_result;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

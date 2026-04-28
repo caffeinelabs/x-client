@@ -1,36 +1,39 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // GetSpacesByIdsTopicFieldsParameterInner.mo
 /// Enum values: #description, #id, #name
 
 module {
-    // User-facing type: type-safe variants for application code
     public type GetSpacesByIdsTopicFieldsParameterInner = {
         #description;
         #id;
         #name;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer GetSpacesByIdsTopicFieldsParameterInner type
-        public type JSON = Text;
+        public func toCandidValue(value : GetSpacesByIdsTopicFieldsParameterInner) : Candid.Candid =
+            switch (value) {
+                case (#description) #Text("description");
+                case (#id) #Text("id");
+                case (#name) #Text("name");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : GetSpacesByIdsTopicFieldsParameterInner) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?GetSpacesByIdsTopicFieldsParameterInner =
+            switch (candid) {
+                case (#Text("description")) ?#description;
+                case (#Text("id")) ?#id;
+                case (#Text("name")) ?#name;
+                case _ null;
+            };
+
+        public func toText(value : GetSpacesByIdsTopicFieldsParameterInner) : Text =
             switch (value) {
                 case (#description) "description";
                 case (#id) "id";
                 case (#name) "name";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?GetSpacesByIdsTopicFieldsParameterInner =
-            switch (json) {
-                case "description" ?#description;
-                case "id" ?#id;
-                case "name" ?#name;
-                case _ null;
-            };
-    }
-}
+    };
+};

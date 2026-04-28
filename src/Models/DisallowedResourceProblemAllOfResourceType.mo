@@ -1,9 +1,12 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // DisallowedResourceProblemAllOfResourceType.mo
 /// Enum values: #user, #tweet, #media, #list, #space
 
 module {
-    // User-facing type: type-safe variants for application code
     public type DisallowedResourceProblemAllOfResourceType = {
         #user;
         #tweet;
@@ -12,14 +15,27 @@ module {
         #space;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer DisallowedResourceProblemAllOfResourceType type
-        public type JSON = Text;
+        public func toCandidValue(value : DisallowedResourceProblemAllOfResourceType) : Candid.Candid =
+            switch (value) {
+                case (#user) #Text("user");
+                case (#tweet) #Text("tweet");
+                case (#media) #Text("media");
+                case (#list) #Text("list");
+                case (#space) #Text("space");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : DisallowedResourceProblemAllOfResourceType) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?DisallowedResourceProblemAllOfResourceType =
+            switch (candid) {
+                case (#Text("user")) ?#user;
+                case (#Text("tweet")) ?#tweet;
+                case (#Text("media")) ?#media;
+                case (#Text("list")) ?#list;
+                case (#Text("space")) ?#space;
+                case _ null;
+            };
+
+        public func toText(value : DisallowedResourceProblemAllOfResourceType) : Text =
             switch (value) {
                 case (#user) "user";
                 case (#tweet) "tweet";
@@ -27,16 +43,5 @@ module {
                 case (#list) "list";
                 case (#space) "space";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?DisallowedResourceProblemAllOfResourceType =
-            switch (json) {
-                case "user" ?#user;
-                case "tweet" ?#tweet;
-                case "media" ?#media;
-                case "list" ?#list;
-                case "space" ?#space;
-                case _ null;
-            };
-    }
-}
+    };
+};

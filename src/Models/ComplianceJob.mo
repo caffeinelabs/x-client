@@ -2,11 +2,14 @@
 import { type ComplianceJobStatus; JSON = ComplianceJobStatus } "./ComplianceJobStatus";
 
 import { type ComplianceJobType; JSON = ComplianceJobType } "./ComplianceJobType";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ComplianceJob.mo
 
 module {
-    // User-facing type: what application code uses
     public type ComplianceJob = {
         /// Creation time of the compliance job.
         created_at : Text;
@@ -26,36 +29,60 @@ module {
         upload_url : Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ComplianceJob type
-        public type JSON = {
-            created_at : Text;
-            download_expires_at : Text;
-            download_url : Text;
-            id : Text;
-            name : ?Text;
-            status : ComplianceJobStatus.JSON;
-            type_ : ComplianceJobType.JSON;
-            upload_expires_at : Text;
-            upload_url : Text;
+        public func toCandidValue(value : ComplianceJob) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("created_at", #Text(value.created_at)));
+            List.add(buf, ("download_expires_at", #Text(value.download_expires_at)));
+            List.add(buf, ("download_url", #Text(value.download_url)));
+            List.add(buf, ("id", #Text(value.id)));
+            switch (value.name) {
+                case (?v__) List.add(buf, ("name", #Text(v__)));
+                case null ();
+            };
+            List.add(buf, ("status", ComplianceJobStatus.toCandidValue(value.status)));
+            List.add(buf, ("type", ComplianceJobType.toCandidValue(value.type_)));
+            List.add(buf, ("upload_expires_at", #Text(value.upload_expires_at)));
+            List.add(buf, ("upload_url", #Text(value.upload_url)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ComplianceJob) : JSON = { value with
-            status = ComplianceJobStatus.toJSON(value.status);
-            type_ = ComplianceJobType.toJSON(value.type_);
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ComplianceJob {
-            let ?status = ComplianceJobStatus.fromJSON(json.status) else return null;
-            let ?type_ = ComplianceJobType.fromJSON(json.type_) else return null;
-            ?{ json with
-                status;
-                type_;
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?ComplianceJob =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?created_at_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "created_at") else return null;
+                    let ?created_at = ((switch (created_at_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?download_expires_at_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "download_expires_at") else return null;
+                    let ?download_expires_at = ((switch (download_expires_at_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?download_url_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "download_url") else return null;
+                    let ?download_url = ((switch (download_url_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "id") else return null;
+                    let ?id = ((switch (id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let name : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "name")) {
+                        case (?name_field) ((switch (name_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let ?status_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "status") else return null;
+                    let ?status = (ComplianceJobStatus.fromCandidValue(status_field.1)) else return null;
+                    let ?type__field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "type") else return null;
+                    let ?type_ = (ComplianceJobType.fromCandidValue(type__field.1)) else return null;
+                    let ?upload_expires_at_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "upload_expires_at") else return null;
+                    let ?upload_expires_at = ((switch (upload_expires_at_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?upload_url_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "upload_url") else return null;
+                    let ?upload_url = ((switch (upload_url_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    ?{
+                        created_at;
+                        download_expires_at;
+                        download_url;
+                        id;
+                        name;
+                        status;
+                        type_;
+                        upload_expires_at;
+                        upload_url;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

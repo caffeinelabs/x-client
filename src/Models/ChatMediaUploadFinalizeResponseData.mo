@@ -1,25 +1,33 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ChatMediaUploadFinalizeResponseData.mo
 
 module {
-    // User-facing type: what application code uses
     public type ChatMediaUploadFinalizeResponseData = {
         /// Whether the finalize request succeeded.
         success : Bool;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ChatMediaUploadFinalizeResponseData type
-        public type JSON = {
-            success : Bool;
+        public func toCandidValue(value : ChatMediaUploadFinalizeResponseData) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("success", #Bool(value.success)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ChatMediaUploadFinalizeResponseData) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ChatMediaUploadFinalizeResponseData = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?ChatMediaUploadFinalizeResponseData =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?success_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "success") else return null;
+                    let ?success = ((switch (success_field.1) { case (#Bool(b)) ?b; case _ null })) else return null;
+                    ?{
+                        success;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

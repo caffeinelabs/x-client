@@ -1,27 +1,48 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // UsersRetweetsCreateResponseData.mo
 
 module {
-    // User-facing type: what application code uses
     public type UsersRetweetsCreateResponseData = {
         /// Unique identifier of this Tweet. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
         id : ?Text;
         retweeted : ?Bool;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer UsersRetweetsCreateResponseData type
-        public type JSON = {
-            id : ?Text;
-            retweeted : ?Bool;
+        public func toCandidValue(value : UsersRetweetsCreateResponseData) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.id) {
+                case (?v__) List.add(buf, ("id", #Text(v__)));
+                case null ();
+            };
+            switch (value.retweeted) {
+                case (?v__) List.add(buf, ("retweeted", #Bool(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : UsersRetweetsCreateResponseData) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?UsersRetweetsCreateResponseData = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?UsersRetweetsCreateResponseData =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "id")) {
+                        case (?id_field) ((switch (id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let retweeted : ?Bool = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "retweeted")) {
+                        case (?retweeted_field) ((switch (retweeted_field.1) { case (#Bool(b)) ?b; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        id;
+                        retweeted;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

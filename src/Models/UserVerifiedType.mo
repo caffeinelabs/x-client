@@ -1,10 +1,13 @@
 /// The X Blue verified type of the user, eg: blue, government, business or none.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // UserVerifiedType.mo
 /// Enum values: #blue, #government, #business, #none_
 
 module {
-    // User-facing type: type-safe variants for application code
     public type UserVerifiedType = {
         #blue;
         #government;
@@ -12,29 +15,30 @@ module {
         #none_;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer UserVerifiedType type
-        public type JSON = Text;
+        public func toCandidValue(value : UserVerifiedType) : Candid.Candid =
+            switch (value) {
+                case (#blue) #Text("blue");
+                case (#government) #Text("government");
+                case (#business) #Text("business");
+                case (#none_) #Text("none");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : UserVerifiedType) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?UserVerifiedType =
+            switch (candid) {
+                case (#Text("blue")) ?#blue;
+                case (#Text("government")) ?#government;
+                case (#Text("business")) ?#business;
+                case (#Text("none")) ?#none_;
+                case _ null;
+            };
+
+        public func toText(value : UserVerifiedType) : Text =
             switch (value) {
                 case (#blue) "blue";
                 case (#government) "government";
                 case (#business) "business";
                 case (#none_) "none";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?UserVerifiedType =
-            switch (json) {
-                case "blue" ?#blue;
-                case "government" ?#government;
-                case "business" ?#business;
-                case "none" ?#none_;
-                case _ null;
-            };
-    }
-}
+    };
+};

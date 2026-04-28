@@ -1,8 +1,11 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // MediaMetrics.mo
 
 module {
-    // User-facing type: what application code uses
     public type MediaMetrics = {
         /// Tracks the number of clicks on a call-to-action URL
         cta_url_clicks : ?Int;
@@ -26,27 +29,109 @@ module {
         watch_time_ms : ?Int;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer MediaMetrics type
-        public type JSON = {
-            cta_url_clicks : ?Int;
-            cta_watch_clicks : ?Int;
-            play_from_tap : ?Int;
-            playback25 : ?Int;
-            playback50 : ?Int;
-            playback75 : ?Int;
-            playback_complete : ?Int;
-            playback_start : ?Int;
-            video_views : ?Int;
-            watch_time_ms : ?Int;
+        public func toCandidValue(value : MediaMetrics) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.cta_url_clicks) {
+                case (?v__) List.add(buf, ("cta_url_clicks", #Int(v__)));
+                case null ();
+            };
+            switch (value.cta_watch_clicks) {
+                case (?v__) List.add(buf, ("cta_watch_clicks", #Int(v__)));
+                case null ();
+            };
+            switch (value.play_from_tap) {
+                case (?v__) List.add(buf, ("play_from_tap", #Int(v__)));
+                case null ();
+            };
+            switch (value.playback25) {
+                case (?v__) List.add(buf, ("playback25", #Int(v__)));
+                case null ();
+            };
+            switch (value.playback50) {
+                case (?v__) List.add(buf, ("playback50", #Int(v__)));
+                case null ();
+            };
+            switch (value.playback75) {
+                case (?v__) List.add(buf, ("playback75", #Int(v__)));
+                case null ();
+            };
+            switch (value.playback_complete) {
+                case (?v__) List.add(buf, ("playback_complete", #Int(v__)));
+                case null ();
+            };
+            switch (value.playback_start) {
+                case (?v__) List.add(buf, ("playback_start", #Int(v__)));
+                case null ();
+            };
+            switch (value.video_views) {
+                case (?v__) List.add(buf, ("video_views", #Int(v__)));
+                case null ();
+            };
+            switch (value.watch_time_ms) {
+                case (?v__) List.add(buf, ("watch_time_ms", #Int(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : MediaMetrics) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?MediaMetrics = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?MediaMetrics =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let cta_url_clicks : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "cta_url_clicks")) {
+                        case (?cta_url_clicks_field) ((switch (cta_url_clicks_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let cta_watch_clicks : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "cta_watch_clicks")) {
+                        case (?cta_watch_clicks_field) ((switch (cta_watch_clicks_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let play_from_tap : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "play_from_tap")) {
+                        case (?play_from_tap_field) ((switch (play_from_tap_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let playback25 : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "playback25")) {
+                        case (?playback25_field) ((switch (playback25_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let playback50 : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "playback50")) {
+                        case (?playback50_field) ((switch (playback50_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let playback75 : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "playback75")) {
+                        case (?playback75_field) ((switch (playback75_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let playback_complete : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "playback_complete")) {
+                        case (?playback_complete_field) ((switch (playback_complete_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let playback_start : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "playback_start")) {
+                        case (?playback_start_field) ((switch (playback_start_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let video_views : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "video_views")) {
+                        case (?video_views_field) ((switch (video_views_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let watch_time_ms : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "watch_time_ms")) {
+                        case (?watch_time_ms_field) ((switch (watch_time_ms_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        cta_url_clicks;
+                        cta_watch_clicks;
+                        play_from_tap;
+                        playback25;
+                        playback50;
+                        playback75;
+                        playback_complete;
+                        playback_start;
+                        video_views;
+                        watch_time_ms;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

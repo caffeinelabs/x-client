@@ -1,11 +1,13 @@
 /// Represent the information for the URL image.
-
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 import Int "mo:core/Int";
 
 // UrlImage.mo
 
 module {
-    // User-facing type: what application code uses
     public type UrlImage = {
         /// The height of the media in pixels.
         height : ?Nat;
@@ -15,30 +17,46 @@ module {
         width : ?Nat;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer UrlImage type
-        public type JSON = {
-            height : ?Int;
-            url : ?Text;
-            width : ?Int;
+        public func toCandidValue(value : UrlImage) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.height) {
+                case (?v__) List.add(buf, ("height", #Nat(v__)));
+                case null ();
+            };
+            switch (value.url) {
+                case (?v__) List.add(buf, ("url", #Text(v__)));
+                case null ();
+            };
+            switch (value.width) {
+                case (?v__) List.add(buf, ("width", #Nat(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : UrlImage) : JSON = {
-            height = value.height;
-            url = value.url;
-            width = value.width;
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?UrlImage {
-            ?{
-                height = do ? { let v = json.height!; if (v < 0) return null else Int.abs(v) };
-                url = json.url;
-                width = do ? { let v = json.width!; if (v < 0) return null else Int.abs(v) };
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?UrlImage =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let height : ?Nat = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "height")) {
+                        case (?height_field) ((switch (height_field.1) { case (#Nat(n)) ?n; case (#Int(i)) (if (i < 0) null else ?Int.abs(i)); case _ null }));
+                        case null null;
+                    };
+                    let url : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "url")) {
+                        case (?url_field) ((switch (url_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let width : ?Nat = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "width")) {
+                        case (?width_field) ((switch (width_field.1) { case (#Nat(n)) ?n; case (#Int(i)) (if (i < 0) null else ?Int.abs(i)); case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        height;
+                        url;
+                        width;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

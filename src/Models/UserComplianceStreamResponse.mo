@@ -7,18 +7,21 @@ import { type Problem; JSON = Problem } "./Problem";
 import { type UserComplianceData; JSON = UserComplianceData } "./UserComplianceData";
 
 import { type UserComplianceStreamResponseOneOf; JSON = UserComplianceStreamResponseOneOf } "./UserComplianceStreamResponseOneOf";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // UserComplianceStreamResponse.mo
+// Generic oneOf (no discriminator, no flatten) — wire form is `{"#tag": ...}`.
 import Runtime "mo:core/Runtime";
 
 module {
-    // User-facing type: discriminated union (oneOf)
     public type UserComplianceStreamResponse = {
         #UserComplianceStreamResponseOneOf : UserComplianceStreamResponseOneOf;
         #LikesComplianceStreamResponseOneOf1 : LikesComplianceStreamResponseOneOf1;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
         // Convert oneOf variant to Text for URL parameters
         public func toText(value : UserComplianceStreamResponse) : Text =
@@ -27,25 +30,28 @@ module {
                 case (#LikesComplianceStreamResponseOneOf1(v)) Runtime.unreachable();
             };
 
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer UserComplianceStreamResponse type
-        public type JSON = {
-            #UserComplianceStreamResponseOneOf : UserComplianceStreamResponseOneOf;
-            #LikesComplianceStreamResponseOneOf1 : LikesComplianceStreamResponseOneOf1;
-        };
-
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : UserComplianceStreamResponse) : JSON =
+        public func toCandidValue(value : UserComplianceStreamResponse) : Candid.Candid =
             switch (value) {
-                case (#UserComplianceStreamResponseOneOf(v)) #UserComplianceStreamResponseOneOf(v);
-                case (#LikesComplianceStreamResponseOneOf1(v)) #LikesComplianceStreamResponseOneOf1(v);
+                case (#UserComplianceStreamResponseOneOf(v)) #Variant(("UserComplianceStreamResponseOneOf", UserComplianceStreamResponseOneOf.toCandidValue(v)));
+                case (#LikesComplianceStreamResponseOneOf1(v)) #Variant(("LikesComplianceStreamResponseOneOf1", LikesComplianceStreamResponseOneOf1.toCandidValue(v)));
             };
 
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?UserComplianceStreamResponse =
-            switch (json) {
-                case (#UserComplianceStreamResponseOneOf(v)) ?#UserComplianceStreamResponseOneOf(v);
-                case (#LikesComplianceStreamResponseOneOf1(v)) ?#LikesComplianceStreamResponseOneOf1(v);
+        public func fromCandidValue(candid : Candid.Candid) : ?UserComplianceStreamResponse =
+            switch (candid) {
+                case (#Variant(tagAndVal)) {
+                    switch (tagAndVal.0) {
+                        case ("UserComplianceStreamResponseOneOf") {
+                            let ?inner = UserComplianceStreamResponseOneOf.fromCandidValue(tagAndVal.1) else return null;
+                            ?#UserComplianceStreamResponseOneOf(inner)
+                        };
+                        case ("LikesComplianceStreamResponseOneOf1") {
+                            let ?inner = LikesComplianceStreamResponseOneOf1.fromCandidValue(tagAndVal.1) else return null;
+                            ?#LikesComplianceStreamResponseOneOf1(inner)
+                        };
+                        case _ null;
+                    };
+                };
+                case _ null;
             };
-    }
-}
+    };
+};

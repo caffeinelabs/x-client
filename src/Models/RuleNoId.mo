@@ -1,9 +1,12 @@
 /// A user-provided stream filtering rule.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // RuleNoId.mo
 
 module {
-    // User-facing type: what application code uses
     public type RuleNoId = {
         /// A tag meant for the labeling of user provided rules.
         tag : ?Text;
@@ -11,19 +14,32 @@ module {
         value : Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer RuleNoId type
-        public type JSON = {
-            tag : ?Text;
-            value : Text;
+        public func toCandidValue(value : RuleNoId) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.tag) {
+                case (?v__) List.add(buf, ("tag", #Text(v__)));
+                case null ();
+            };
+            List.add(buf, ("value", #Text(value.value)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : RuleNoId) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?RuleNoId = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?RuleNoId =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let tag : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "tag")) {
+                        case (?tag_field) ((switch (tag_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let ?value_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "value") else return null;
+                    let ?value = ((switch (value_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    ?{
+                        tag;
+                        value;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

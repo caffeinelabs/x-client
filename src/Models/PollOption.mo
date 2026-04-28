@@ -1,9 +1,12 @@
 /// Describes a choice in a Poll object.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // PollOption.mo
 
 module {
-    // User-facing type: what application code uses
     public type PollOption = {
         /// The text of a poll choice.
         label_ : Text;
@@ -13,20 +16,31 @@ module {
         votes : Int;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer PollOption type
-        public type JSON = {
-            label_ : Text;
-            position : Int;
-            votes : Int;
+        public func toCandidValue(value : PollOption) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("label", #Text(value.label_)));
+            List.add(buf, ("position", #Int(value.position)));
+            List.add(buf, ("votes", #Int(value.votes)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : PollOption) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?PollOption = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?PollOption =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?label__field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "label") else return null;
+                    let ?label_ = ((switch (label__field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?position_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "position") else return null;
+                    let ?position = ((switch (position_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null })) else return null;
+                    let ?votes_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "votes") else return null;
+                    let ?votes = ((switch (votes_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null })) else return null;
+                    ?{
+                        label_;
+                        position;
+                        votes;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

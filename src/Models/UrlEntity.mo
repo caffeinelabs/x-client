@@ -1,13 +1,15 @@
 /// Represent the portion of text recognized as a URL, and its start and end position within the text.
 
 import { type UrlImage; JSON = UrlImage } "./UrlImage";
-
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 import Int "mo:core/Int";
 
 // UrlEntity.mo
 
 module {
-    // User-facing type: what application code uses
     public type UrlEntity = {
         /// Index (zero-based) at which position this entity ends.  The index is exclusive.
         end : Nat;
@@ -32,54 +34,113 @@ module {
         url : Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer UrlEntity type
-        public type JSON = {
-            end : Int;
-            start : Int;
-            description : ?Text;
-            display_url : ?Text;
-            expanded_url : ?Text;
-            images : ?[UrlImage];
-            media_key : ?Text;
-            status : ?Int;
-            title : ?Text;
-            unwound_url : ?Text;
-            url : Text;
+        public func toCandidValue(value : UrlEntity) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("end", #Nat(value.end)));
+            List.add(buf, ("start", #Nat(value.start)));
+            switch (value.description) {
+                case (?v__) List.add(buf, ("description", #Text(v__)));
+                case null ();
+            };
+            switch (value.display_url) {
+                case (?v__) List.add(buf, ("display_url", #Text(v__)));
+                case null ();
+            };
+            switch (value.expanded_url) {
+                case (?v__) List.add(buf, ("expanded_url", #Text(v__)));
+                case null ();
+            };
+            switch (value.images) {
+                case (?v__) List.add(buf, ("images", #Array(Array.map<UrlImage, Candid.Candid>(v__, UrlImage.toCandidValue))));
+                case null ();
+            };
+            switch (value.media_key) {
+                case (?v__) List.add(buf, ("media_key", #Text(v__)));
+                case null ();
+            };
+            switch (value.status) {
+                case (?v__) List.add(buf, ("status", #Nat(v__)));
+                case null ();
+            };
+            switch (value.title) {
+                case (?v__) List.add(buf, ("title", #Text(v__)));
+                case null ();
+            };
+            switch (value.unwound_url) {
+                case (?v__) List.add(buf, ("unwound_url", #Text(v__)));
+                case null ();
+            };
+            List.add(buf, ("url", #Text(value.url)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : UrlEntity) : JSON = {
-            end = value.end;
-            start = value.start;
-            description = value.description;
-            display_url = value.display_url;
-            expanded_url = value.expanded_url;
-            images = value.images;
-            media_key = value.media_key;
-            status = value.status;
-            title = value.title;
-            unwound_url = value.unwound_url;
-            url = value.url;
-        };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?UrlEntity {
-            ?{
-                end = if (json.end < 0) return null else Int.abs(json.end);
-                start = if (json.start < 0) return null else Int.abs(json.start);
-                description = json.description;
-                display_url = json.display_url;
-                expanded_url = json.expanded_url;
-                images = json.images;
-                media_key = json.media_key;
-                status = do ? { let v = json.status!; if (v < 0) return null else Int.abs(v) };
-                title = json.title;
-                unwound_url = json.unwound_url;
-                url = json.url;
-            }
-        };
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?UrlEntity =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?end_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "end") else return null;
+                    let ?end = ((switch (end_field.1) { case (#Nat(n)) ?n; case (#Int(i)) (if (i < 0) null else ?Int.abs(i)); case _ null })) else return null;
+                    let ?start_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "start") else return null;
+                    let ?start = ((switch (start_field.1) { case (#Nat(n)) ?n; case (#Int(i)) (if (i < 0) null else ?Int.abs(i)); case _ null })) else return null;
+                    let description : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "description")) {
+                        case (?description_field) ((switch (description_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let display_url : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "display_url")) {
+                        case (?display_url_field) ((switch (display_url_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let expanded_url : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "expanded_url")) {
+                        case (?expanded_url_field) ((switch (expanded_url_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let images : ?[UrlImage] = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "images")) {
+                        case (?images_field) ((switch (images_field.1) {
+                        case (#Array(xs__)) {
+                            let buf__ = List.empty<UrlImage>();
+                            for (c__ in xs__.values()) {
+                                let ?m__ = UrlImage.fromCandidValue(c__) else return null;
+                                List.add(buf__, m__);
+                            };
+                            ?List.toArray(buf__);
+                        };
+                        case _ null;
+                    }));
+                        case null null;
+                    };
+                    let media_key : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "media_key")) {
+                        case (?media_key_field) ((switch (media_key_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let status : ?Nat = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "status")) {
+                        case (?status_field) ((switch (status_field.1) { case (#Nat(n)) ?n; case (#Int(i)) (if (i < 0) null else ?Int.abs(i)); case _ null }));
+                        case null null;
+                    };
+                    let title : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "title")) {
+                        case (?title_field) ((switch (title_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let unwound_url : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "unwound_url")) {
+                        case (?unwound_url_field) ((switch (unwound_url_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let ?url_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "url") else return null;
+                    let ?url = ((switch (url_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    ?{
+                        end;
+                        start;
+                        description;
+                        display_url;
+                        expanded_url;
+                        images;
+                        media_key;
+                        status;
+                        title;
+                        unwound_url;
+                        url;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

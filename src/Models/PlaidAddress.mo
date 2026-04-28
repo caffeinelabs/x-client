@@ -1,9 +1,12 @@
 /// Address information for the account holder.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // PlaidAddress.mo
 
 module {
-    // User-facing type: what application code uses
     public type PlaidAddress = {
         /// The city of the address.
         city : Text;
@@ -19,23 +22,58 @@ module {
         region_ : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer PlaidAddress type
-        public type JSON = {
-            city : Text;
-            country : Text;
-            line1 : Text;
-            line2 : ?Text;
-            postalCode : ?Text;
-            region_ : ?Text;
+        public func toCandidValue(value : PlaidAddress) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("city", #Text(value.city)));
+            List.add(buf, ("country", #Text(value.country)));
+            List.add(buf, ("line1", #Text(value.line1)));
+            switch (value.line2) {
+                case (?v__) List.add(buf, ("line2", #Text(v__)));
+                case null ();
+            };
+            switch (value.postalCode) {
+                case (?v__) List.add(buf, ("postalCode", #Text(v__)));
+                case null ();
+            };
+            switch (value.region_) {
+                case (?v__) List.add(buf, ("region", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : PlaidAddress) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?PlaidAddress = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?PlaidAddress =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?city_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "city") else return null;
+                    let ?city = ((switch (city_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?country_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "country") else return null;
+                    let ?country = ((switch (country_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let ?line1_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "line1") else return null;
+                    let ?line1 = ((switch (line1_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let line2 : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "line2")) {
+                        case (?line2_field) ((switch (line2_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let postalCode : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "postalCode")) {
+                        case (?postalCode_field) ((switch (postalCode_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let region_ : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "region")) {
+                        case (?region__field) ((switch (region__field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        city;
+                        country;
+                        line1;
+                        line2;
+                        postalCode;
+                        region_;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

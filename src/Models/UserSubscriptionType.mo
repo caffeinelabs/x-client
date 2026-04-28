@@ -1,10 +1,13 @@
 /// The X Blue subscription type of the user, eg: Basic, Premium, PremiumPlus or None.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // UserSubscriptionType.mo
 /// Enum values: #basic, #premium, #premiumplus, #none_
 
 module {
-    // User-facing type: type-safe variants for application code
     public type UserSubscriptionType = {
         #basic;
         #premium;
@@ -12,29 +15,30 @@ module {
         #none_;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer UserSubscriptionType type
-        public type JSON = Text;
+        public func toCandidValue(value : UserSubscriptionType) : Candid.Candid =
+            switch (value) {
+                case (#basic) #Text("Basic");
+                case (#premium) #Text("Premium");
+                case (#premiumplus) #Text("PremiumPlus");
+                case (#none_) #Text("None");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : UserSubscriptionType) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?UserSubscriptionType =
+            switch (candid) {
+                case (#Text("Basic")) ?#basic;
+                case (#Text("Premium")) ?#premium;
+                case (#Text("PremiumPlus")) ?#premiumplus;
+                case (#Text("None")) ?#none_;
+                case _ null;
+            };
+
+        public func toText(value : UserSubscriptionType) : Text =
             switch (value) {
                 case (#basic) "Basic";
                 case (#premium) "Premium";
                 case (#premiumplus) "PremiumPlus";
                 case (#none_) "None";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?UserSubscriptionType =
-            switch (json) {
-                case "Basic" ?#basic;
-                case "Premium" ?#premium;
-                case "PremiumPlus" ?#premiumplus;
-                case "None" ?#none_;
-                case _ null;
-            };
-    }
-}
+    };
+};

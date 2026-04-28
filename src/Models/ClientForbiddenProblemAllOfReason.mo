@@ -1,33 +1,35 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ClientForbiddenProblemAllOfReason.mo
 /// Enum values: #official_client_forbidden, #client_not_enrolled
 
 module {
-    // User-facing type: type-safe variants for application code
     public type ClientForbiddenProblemAllOfReason = {
         #official_client_forbidden;
         #client_not_enrolled;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ClientForbiddenProblemAllOfReason type
-        public type JSON = Text;
+        public func toCandidValue(value : ClientForbiddenProblemAllOfReason) : Candid.Candid =
+            switch (value) {
+                case (#official_client_forbidden) #Text("official-client-forbidden");
+                case (#client_not_enrolled) #Text("client-not-enrolled");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ClientForbiddenProblemAllOfReason) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?ClientForbiddenProblemAllOfReason =
+            switch (candid) {
+                case (#Text("official-client-forbidden")) ?#official_client_forbidden;
+                case (#Text("client-not-enrolled")) ?#client_not_enrolled;
+                case _ null;
+            };
+
+        public func toText(value : ClientForbiddenProblemAllOfReason) : Text =
             switch (value) {
                 case (#official_client_forbidden) "official-client-forbidden";
                 case (#client_not_enrolled) "client-not-enrolled";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ClientForbiddenProblemAllOfReason =
-            switch (json) {
-                case "official-client-forbidden" ?#official_client_forbidden;
-                case "client-not-enrolled" ?#client_not_enrolled;
-                case _ null;
-            };
-    }
-}
+    };
+};

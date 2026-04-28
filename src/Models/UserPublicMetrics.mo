@@ -1,9 +1,12 @@
 /// A list of metrics for this User.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // UserPublicMetrics.mo
 
 module {
-    // User-facing type: what application code uses
     public type UserPublicMetrics = {
         /// Number of Users who are following this User.
         followers_count : Int;
@@ -17,22 +20,44 @@ module {
         tweet_count : Int;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer UserPublicMetrics type
-        public type JSON = {
-            followers_count : Int;
-            following_count : Int;
-            like_count : ?Int;
-            listed_count : Int;
-            tweet_count : Int;
+        public func toCandidValue(value : UserPublicMetrics) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("followers_count", #Int(value.followers_count)));
+            List.add(buf, ("following_count", #Int(value.following_count)));
+            switch (value.like_count) {
+                case (?v__) List.add(buf, ("like_count", #Int(v__)));
+                case null ();
+            };
+            List.add(buf, ("listed_count", #Int(value.listed_count)));
+            List.add(buf, ("tweet_count", #Int(value.tweet_count)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : UserPublicMetrics) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?UserPublicMetrics = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?UserPublicMetrics =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?followers_count_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "followers_count") else return null;
+                    let ?followers_count = ((switch (followers_count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null })) else return null;
+                    let ?following_count_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "following_count") else return null;
+                    let ?following_count = ((switch (following_count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null })) else return null;
+                    let like_count : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "like_count")) {
+                        case (?like_count_field) ((switch (like_count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case null null;
+                    };
+                    let ?listed_count_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "listed_count") else return null;
+                    let ?listed_count = ((switch (listed_count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null })) else return null;
+                    let ?tweet_count_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "tweet_count") else return null;
+                    let ?tweet_count = ((switch (tweet_count_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null })) else return null;
+                    ?{
+                        followers_count;
+                        following_count;
+                        like_count;
+                        listed_count;
+                        tweet_count;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

@@ -1,22 +1,27 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // MediaUploadRequestOneShotMedia.mo
 
 module {
-    // User-facing type: what application code uses
     public type MediaUploadRequestOneShotMedia = {
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer MediaUploadRequestOneShotMedia type
-        public type JSON = {
+        public func toCandidValue(value : MediaUploadRequestOneShotMedia) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : MediaUploadRequestOneShotMedia) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?MediaUploadRequestOneShotMedia = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?MediaUploadRequestOneShotMedia =
+            switch (candid) {
+                case (#Record(fields)) {
+                    ?{
+                    };
+                };
+                case _ null;
+            };
+    };
+};

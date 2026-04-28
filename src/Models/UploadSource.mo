@@ -1,25 +1,33 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // UploadSource.mo
 
 module {
-    // User-facing type: what application code uses
     public type UploadSource = {
         /// Records the source (e.g., app, device) from which the media was uploaded
         upload_source : Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer UploadSource type
-        public type JSON = {
-            upload_source : Text;
+        public func toCandidValue(value : UploadSource) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            List.add(buf, ("upload_source", #Text(value.upload_source)));
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : UploadSource) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?UploadSource = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?UploadSource =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let ?upload_source_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "upload_source") else return null;
+                    let ?upload_source = ((switch (upload_source_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    ?{
+                        upload_source;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

@@ -1,9 +1,12 @@
 /// Represents the data for the context annotation entity.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // ContextAnnotationEntityFields.mo
 
 module {
-    // User-facing type: what application code uses
     public type ContextAnnotationEntityFields = {
         /// Description of the context annotation entity.
         description : ?Text;
@@ -13,20 +16,41 @@ module {
         name : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer ContextAnnotationEntityFields type
-        public type JSON = {
-            description : ?Text;
-            id : Text;
-            name : ?Text;
+        public func toCandidValue(value : ContextAnnotationEntityFields) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.description) {
+                case (?v__) List.add(buf, ("description", #Text(v__)));
+                case null ();
+            };
+            List.add(buf, ("id", #Text(value.id)));
+            switch (value.name) {
+                case (?v__) List.add(buf, ("name", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : ContextAnnotationEntityFields) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?ContextAnnotationEntityFields = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?ContextAnnotationEntityFields =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let description : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "description")) {
+                        case (?description_field) ((switch (description_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let ?id_field = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "id") else return null;
+                    let ?id = ((switch (id_field.1) { case (#Text(s)) ?s; case _ null })) else return null;
+                    let name : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "name")) {
+                        case (?name_field) ((switch (name_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        description;
+                        id;
+                        name;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

@@ -1,33 +1,35 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // DisallowedResourceProblemAllOfSection.mo
 /// Enum values: #data, #includes
 
 module {
-    // User-facing type: type-safe variants for application code
     public type DisallowedResourceProblemAllOfSection = {
         #data;
         #includes;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer DisallowedResourceProblemAllOfSection type
-        public type JSON = Text;
+        public func toCandidValue(value : DisallowedResourceProblemAllOfSection) : Candid.Candid =
+            switch (value) {
+                case (#data) #Text("data");
+                case (#includes) #Text("includes");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : DisallowedResourceProblemAllOfSection) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?DisallowedResourceProblemAllOfSection =
+            switch (candid) {
+                case (#Text("data")) ?#data;
+                case (#Text("includes")) ?#includes;
+                case _ null;
+            };
+
+        public func toText(value : DisallowedResourceProblemAllOfSection) : Text =
             switch (value) {
                 case (#data) "data";
                 case (#includes) "includes";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?DisallowedResourceProblemAllOfSection =
-            switch (json) {
-                case "data" ?#data;
-                case "includes" ?#includes;
-                case _ null;
-            };
-    }
-}
+    };
+};

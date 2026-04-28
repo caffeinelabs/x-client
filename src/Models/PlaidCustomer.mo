@@ -1,26 +1,39 @@
 /// A user id for the plaid customer
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // PlaidCustomer.mo
 
 module {
-    // User-facing type: what application code uses
     public type PlaidCustomer = {
         /// Unique identifier of this User. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
         customerId : ?Text;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer PlaidCustomer type
-        public type JSON = {
-            customerId : ?Text;
+        public func toCandidValue(value : PlaidCustomer) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.customerId) {
+                case (?v__) List.add(buf, ("customerId", #Text(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : PlaidCustomer) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?PlaidCustomer = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?PlaidCustomer =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let customerId : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "customerId")) {
+                        case (?customerId_field) ((switch (customerId_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        customerId;
+                    };
+                };
+                case _ null;
+            };
+    };
+};

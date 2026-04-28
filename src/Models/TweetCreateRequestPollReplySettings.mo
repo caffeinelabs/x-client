@@ -1,10 +1,13 @@
 /// Settings to indicate who can reply to the Tweet.
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // TweetCreateRequestPollReplySettings.mo
 /// Enum values: #following, #mentionedusers, #subscribers, #verified
 
 module {
-    // User-facing type: type-safe variants for application code
     public type TweetCreateRequestPollReplySettings = {
         #following;
         #mentionedusers;
@@ -12,29 +15,30 @@ module {
         #verified;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer TweetCreateRequestPollReplySettings type
-        public type JSON = Text;
+        public func toCandidValue(value : TweetCreateRequestPollReplySettings) : Candid.Candid =
+            switch (value) {
+                case (#following) #Text("following");
+                case (#mentionedusers) #Text("mentionedUsers");
+                case (#subscribers) #Text("subscribers");
+                case (#verified) #Text("verified");
+            };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : TweetCreateRequestPollReplySettings) : JSON =
+        public func fromCandidValue(candid : Candid.Candid) : ?TweetCreateRequestPollReplySettings =
+            switch (candid) {
+                case (#Text("following")) ?#following;
+                case (#Text("mentionedUsers")) ?#mentionedusers;
+                case (#Text("subscribers")) ?#subscribers;
+                case (#Text("verified")) ?#verified;
+                case _ null;
+            };
+
+        public func toText(value : TweetCreateRequestPollReplySettings) : Text =
             switch (value) {
                 case (#following) "following";
                 case (#mentionedusers) "mentionedUsers";
                 case (#subscribers) "subscribers";
                 case (#verified) "verified";
             };
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?TweetCreateRequestPollReplySettings =
-            switch (json) {
-                case "following" ?#following;
-                case "mentionedUsers" ?#mentionedusers;
-                case "subscribers" ?#subscribers;
-                case "verified" ?#verified;
-                case _ null;
-            };
-    }
-}
+    };
+};

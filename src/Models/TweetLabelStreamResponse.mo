@@ -7,18 +7,21 @@ import { type Problem; JSON = Problem } "./Problem";
 import { type TweetLabelData; JSON = TweetLabelData } "./TweetLabelData";
 
 import { type TweetLabelStreamResponseOneOf; JSON = TweetLabelStreamResponseOneOf } "./TweetLabelStreamResponseOneOf";
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // TweetLabelStreamResponse.mo
+// Generic oneOf (no discriminator, no flatten) — wire form is `{"#tag": ...}`.
 import Runtime "mo:core/Runtime";
 
 module {
-    // User-facing type: discriminated union (oneOf)
     public type TweetLabelStreamResponse = {
         #TweetLabelStreamResponseOneOf : TweetLabelStreamResponseOneOf;
         #LikesComplianceStreamResponseOneOf1 : LikesComplianceStreamResponseOneOf1;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
         // Convert oneOf variant to Text for URL parameters
         public func toText(value : TweetLabelStreamResponse) : Text =
@@ -27,25 +30,28 @@ module {
                 case (#LikesComplianceStreamResponseOneOf1(v)) Runtime.unreachable();
             };
 
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer TweetLabelStreamResponse type
-        public type JSON = {
-            #TweetLabelStreamResponseOneOf : TweetLabelStreamResponseOneOf;
-            #LikesComplianceStreamResponseOneOf1 : LikesComplianceStreamResponseOneOf1;
-        };
-
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : TweetLabelStreamResponse) : JSON =
+        public func toCandidValue(value : TweetLabelStreamResponse) : Candid.Candid =
             switch (value) {
-                case (#TweetLabelStreamResponseOneOf(v)) #TweetLabelStreamResponseOneOf(v);
-                case (#LikesComplianceStreamResponseOneOf1(v)) #LikesComplianceStreamResponseOneOf1(v);
+                case (#TweetLabelStreamResponseOneOf(v)) #Variant(("TweetLabelStreamResponseOneOf", TweetLabelStreamResponseOneOf.toCandidValue(v)));
+                case (#LikesComplianceStreamResponseOneOf1(v)) #Variant(("LikesComplianceStreamResponseOneOf1", LikesComplianceStreamResponseOneOf1.toCandidValue(v)));
             };
 
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?TweetLabelStreamResponse =
-            switch (json) {
-                case (#TweetLabelStreamResponseOneOf(v)) ?#TweetLabelStreamResponseOneOf(v);
-                case (#LikesComplianceStreamResponseOneOf1(v)) ?#LikesComplianceStreamResponseOneOf1(v);
+        public func fromCandidValue(candid : Candid.Candid) : ?TweetLabelStreamResponse =
+            switch (candid) {
+                case (#Variant(tagAndVal)) {
+                    switch (tagAndVal.0) {
+                        case ("TweetLabelStreamResponseOneOf") {
+                            let ?inner = TweetLabelStreamResponseOneOf.fromCandidValue(tagAndVal.1) else return null;
+                            ?#TweetLabelStreamResponseOneOf(inner)
+                        };
+                        case ("LikesComplianceStreamResponseOneOf1") {
+                            let ?inner = LikesComplianceStreamResponseOneOf1.fromCandidValue(tagAndVal.1) else return null;
+                            ?#LikesComplianceStreamResponseOneOf1(inner)
+                        };
+                        case _ null;
+                    };
+                };
+                case _ null;
             };
-    }
-}
+    };
+};

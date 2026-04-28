@@ -1,8 +1,11 @@
+import { Candid } "mo:serde-core";
+import Array "mo:core/Array";
+import List "mo:core/List";
+import Float "mo:core/Float";
 
 // Sticker.mo
 
 module {
-    // User-facing type: what application code uses
     public type Sticker = {
         /// width-to-height ratio of the media
         aspect_ratio : ?Float;
@@ -26,27 +29,109 @@ module {
         transform_ty : ?Float;
     };
 
-    // JSON sub-module: everything needed for JSON serialization
     public module JSON {
-        // JSON-facing Motoko type: mirrors JSON structure
-        // Named "JSON" to avoid shadowing the outer Sticker type
-        public type JSON = {
-            aspect_ratio : ?Float;
-            group_annotation_id : ?Float;
-            id : ?Text;
-            sticker_set_annotation_id : ?Float;
-            transform_a : ?Float;
-            transform_b : ?Float;
-            transform_c : ?Float;
-            transform_d : ?Float;
-            transform_tx : ?Float;
-            transform_ty : ?Float;
+        public func toCandidValue(value : Sticker) : Candid.Candid {
+            let buf = List.empty<(Text, Candid.Candid)>();
+            switch (value.aspect_ratio) {
+                case (?v__) List.add(buf, ("aspect_ratio", #Float(v__)));
+                case null ();
+            };
+            switch (value.group_annotation_id) {
+                case (?v__) List.add(buf, ("group_annotation_id", #Float(v__)));
+                case null ();
+            };
+            switch (value.id) {
+                case (?v__) List.add(buf, ("id", #Text(v__)));
+                case null ();
+            };
+            switch (value.sticker_set_annotation_id) {
+                case (?v__) List.add(buf, ("sticker_set_annotation_id", #Float(v__)));
+                case null ();
+            };
+            switch (value.transform_a) {
+                case (?v__) List.add(buf, ("transform_a", #Float(v__)));
+                case null ();
+            };
+            switch (value.transform_b) {
+                case (?v__) List.add(buf, ("transform_b", #Float(v__)));
+                case null ();
+            };
+            switch (value.transform_c) {
+                case (?v__) List.add(buf, ("transform_c", #Float(v__)));
+                case null ();
+            };
+            switch (value.transform_d) {
+                case (?v__) List.add(buf, ("transform_d", #Float(v__)));
+                case null ();
+            };
+            switch (value.transform_tx) {
+                case (?v__) List.add(buf, ("transform_tx", #Float(v__)));
+                case null ();
+            };
+            switch (value.transform_ty) {
+                case (?v__) List.add(buf, ("transform_ty", #Float(v__)));
+                case null ();
+            };
+            #Record(List.toArray(buf));
         };
 
-        // Convert User-facing type to JSON-facing Motoko type
-        public func toJSON(value : Sticker) : JSON = value;
-
-        // Convert JSON-facing Motoko type to User-facing type
-        public func fromJSON(json : JSON) : ?Sticker = ?json;
-    }
-}
+        public func fromCandidValue(candid : Candid.Candid) : ?Sticker =
+            switch (candid) {
+                case (#Record(fields)) {
+                    let aspect_ratio : ?Float = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "aspect_ratio")) {
+                        case (?aspect_ratio_field) ((switch (aspect_ratio_field.1) { case (#Float(f)) ?f; case (#Int(i)) ?Float.fromInt(i); case (#Nat(n)) ?Float.fromInt(n); case _ null }));
+                        case null null;
+                    };
+                    let group_annotation_id : ?Float = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "group_annotation_id")) {
+                        case (?group_annotation_id_field) ((switch (group_annotation_id_field.1) { case (#Float(f)) ?f; case (#Int(i)) ?Float.fromInt(i); case (#Nat(n)) ?Float.fromInt(n); case _ null }));
+                        case null null;
+                    };
+                    let id : ?Text = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "id")) {
+                        case (?id_field) ((switch (id_field.1) { case (#Text(s)) ?s; case _ null }));
+                        case null null;
+                    };
+                    let sticker_set_annotation_id : ?Float = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "sticker_set_annotation_id")) {
+                        case (?sticker_set_annotation_id_field) ((switch (sticker_set_annotation_id_field.1) { case (#Float(f)) ?f; case (#Int(i)) ?Float.fromInt(i); case (#Nat(n)) ?Float.fromInt(n); case _ null }));
+                        case null null;
+                    };
+                    let transform_a : ?Float = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "transform_a")) {
+                        case (?transform_a_field) ((switch (transform_a_field.1) { case (#Float(f)) ?f; case (#Int(i)) ?Float.fromInt(i); case (#Nat(n)) ?Float.fromInt(n); case _ null }));
+                        case null null;
+                    };
+                    let transform_b : ?Float = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "transform_b")) {
+                        case (?transform_b_field) ((switch (transform_b_field.1) { case (#Float(f)) ?f; case (#Int(i)) ?Float.fromInt(i); case (#Nat(n)) ?Float.fromInt(n); case _ null }));
+                        case null null;
+                    };
+                    let transform_c : ?Float = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "transform_c")) {
+                        case (?transform_c_field) ((switch (transform_c_field.1) { case (#Float(f)) ?f; case (#Int(i)) ?Float.fromInt(i); case (#Nat(n)) ?Float.fromInt(n); case _ null }));
+                        case null null;
+                    };
+                    let transform_d : ?Float = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "transform_d")) {
+                        case (?transform_d_field) ((switch (transform_d_field.1) { case (#Float(f)) ?f; case (#Int(i)) ?Float.fromInt(i); case (#Nat(n)) ?Float.fromInt(n); case _ null }));
+                        case null null;
+                    };
+                    let transform_tx : ?Float = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "transform_tx")) {
+                        case (?transform_tx_field) ((switch (transform_tx_field.1) { case (#Float(f)) ?f; case (#Int(i)) ?Float.fromInt(i); case (#Nat(n)) ?Float.fromInt(n); case _ null }));
+                        case null null;
+                    };
+                    let transform_ty : ?Float = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "transform_ty")) {
+                        case (?transform_ty_field) ((switch (transform_ty_field.1) { case (#Float(f)) ?f; case (#Int(i)) ?Float.fromInt(i); case (#Nat(n)) ?Float.fromInt(n); case _ null }));
+                        case null null;
+                    };
+                    ?{
+                        aspect_ratio;
+                        group_annotation_id;
+                        id;
+                        sticker_set_annotation_id;
+                        transform_a;
+                        transform_b;
+                        transform_c;
+                        transform_d;
+                        transform_tx;
+                        transform_ty;
+                    };
+                };
+                case _ null;
+            };
+    };
+};
