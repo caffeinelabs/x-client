@@ -2,6 +2,8 @@
 
 import Text "mo:core/Text";
 import Int "mo:core/Int";
+import Nat "mo:core/Nat";
+import Iter "mo:core/Iter";
 import Blob "mo:core/Blob";
 import Array "mo:core/Array";
 import List "mo:core/List";
@@ -162,15 +164,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (TweetCreateResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to TweetCreateResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to TweetCreateResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -196,7 +198,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -254,15 +256,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (TweetDeleteResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to TweetDeleteResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to TweetDeleteResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -288,7 +290,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -346,15 +348,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2Insights28hrResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2Insights28hrResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2Insights28hrResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -380,7 +382,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -438,15 +440,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2InsightsHistoricalResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2InsightsHistoricalResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2InsightsHistoricalResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -472,7 +474,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -531,15 +533,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2ListsIdTweetsResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2ListsIdTweetsResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2ListsIdTweetsResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -565,7 +567,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -623,15 +625,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Analytics.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Analytics" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Analytics");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -657,7 +659,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -716,15 +718,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2TweetsIdResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2TweetsIdResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2TweetsIdResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -750,7 +752,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -808,15 +810,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2TweetsResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2TweetsResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2TweetsResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -842,7 +844,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -900,15 +902,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2TweetsCountsAllResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2TweetsCountsAllResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2TweetsCountsAllResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -934,7 +936,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -992,15 +994,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2TweetsCountsRecentResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2TweetsCountsRecentResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2TweetsCountsRecentResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -1026,7 +1028,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -1085,15 +1087,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2TweetsIdLikingUsersResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2TweetsIdLikingUsersResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2TweetsIdLikingUsersResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -1119,7 +1121,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -1178,15 +1180,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2TweetsIdQuoteTweetsResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2TweetsIdQuoteTweetsResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2TweetsIdQuoteTweetsResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -1212,7 +1214,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -1271,15 +1273,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2TweetsIdRetweetedByResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2TweetsIdRetweetedByResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2TweetsIdRetweetedByResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -1305,7 +1307,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -1364,15 +1366,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2TweetsIdRetweetsResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2TweetsIdRetweetsResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2TweetsIdRetweetsResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -1398,7 +1400,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -1456,15 +1458,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2TweetsSearchStreamRulesCountsResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2TweetsSearchStreamRulesCountsResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2TweetsSearchStreamRulesCountsResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -1490,7 +1492,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -1548,15 +1550,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (RulesLookupResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to RulesLookupResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to RulesLookupResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -1582,7 +1584,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -1641,15 +1643,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2SpacesIdBuyersResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2SpacesIdBuyersResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2SpacesIdBuyersResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -1675,7 +1677,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -1734,15 +1736,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2SpacesIdTweetsResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2SpacesIdTweetsResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2SpacesIdTweetsResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -1768,7 +1770,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -1827,15 +1829,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2UsersIdLikedTweetsResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2UsersIdLikedTweetsResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2UsersIdLikedTweetsResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -1861,7 +1863,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -1920,15 +1922,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2UsersIdMentionsResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2UsersIdMentionsResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2UsersIdMentionsResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -1954,7 +1956,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -2013,15 +2015,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2UsersIdTweetsResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2UsersIdTweetsResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2UsersIdTweetsResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -2047,7 +2049,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -2106,15 +2108,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2UsersIdTimelinesReverseChronologicalResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2UsersIdTimelinesReverseChronologicalResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2UsersIdTimelinesReverseChronologicalResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -2140,7 +2142,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -2203,15 +2205,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (TweetHideResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to TweetHideResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to TweetHideResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -2237,7 +2239,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -2300,15 +2302,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (UsersLikesCreateResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to UsersLikesCreateResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to UsersLikesCreateResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -2334,7 +2336,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -2397,15 +2399,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (UsersRetweetsCreateResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to UsersRetweetsCreateResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to UsersRetweetsCreateResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -2431,7 +2433,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -2489,15 +2491,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2TweetsSearchAllResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2TweetsSearchAllResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2TweetsSearchAllResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -2523,7 +2525,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -2581,15 +2583,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2TweetsSearchRecentResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2TweetsSearchRecentResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2TweetsSearchRecentResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -2615,7 +2617,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -2673,15 +2675,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (FilteredStreamingTweetResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to FilteredStreamingTweetResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to FilteredStreamingTweetResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -2707,7 +2709,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -2765,15 +2767,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (StreamingTweetResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to StreamingTweetResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to StreamingTweetResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -2799,7 +2801,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -2857,15 +2859,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (StreamingTweetResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to StreamingTweetResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to StreamingTweetResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -2891,7 +2893,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -2949,15 +2951,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (StreamingTweetResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to StreamingTweetResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to StreamingTweetResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -2983,7 +2985,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -3041,15 +3043,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (StreamingTweetResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to StreamingTweetResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to StreamingTweetResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -3075,7 +3077,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -3133,15 +3135,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (StreamingTweetResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to StreamingTweetResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to StreamingTweetResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -3167,7 +3169,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -3225,15 +3227,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (StreamingTweetResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to StreamingTweetResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to StreamingTweetResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -3259,7 +3261,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -3317,15 +3319,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (Get2TweetsSample10StreamResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to Get2TweetsSample10StreamResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to Get2TweetsSample10StreamResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -3351,7 +3353,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -3410,15 +3412,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (UsersLikesDeleteResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to UsersLikesDeleteResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to UsersLikesDeleteResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -3444,7 +3446,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -3503,15 +3505,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (UsersRetweetsDeleteResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to UsersRetweetsDeleteResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to UsersRetweetsDeleteResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -3537,7 +3539,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
@@ -3600,15 +3602,15 @@ module {
             // Success response (2xx): parse as expected return type
             (switch (Text.decodeUtf8(response.body)) {
                 case (?text) text;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to decode response body as UTF-8" # " (" # Int.toText(response.body.size()) # " bytes of non-UTF-8 data — server may have returned binary, gzipped, or non-UTF-8-charset content)");
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to decode response body as UTF-8");
             }) |>
             (switch (JSON.toCandid(_)) {
                 case (#ok(c__)) c__;
-                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to parse JSON: " # msg # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case (#err(msg)) throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to parse JSON: " # msg);
             }) |>
             (switch (AddOrDeleteRulesResponse.fromCandidValue(_)) {
                 case (?value) value;
-                case null throw Error.reject("HTTP " # Int.toText(response.status) # ": Failed to convert response to AddOrDeleteRulesResponse" # " — server returned: " # (switch (Text.decodeUtf8(response.body)) { case (?t) t; case null "(undecodable bytes)" }));
+                case null throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Failed to convert response to AddOrDeleteRulesResponse");
             })
         } else {
             // Error response (4xx, 5xx): parse error models and throw
@@ -3634,7 +3636,7 @@ module {
             };
 
             // Fallback for status codes not defined in OpenAPI spec
-            throw Error.reject("HTTP " # Int.toText(response.status) # ": Unexpected error" #
+            throw Error.reject("HTTP " # Int.toText(response.status) # " body[" # Nat.toText(response.body.size()) # "B]=" # (switch (Text.decodeUtf8(response.body)) { case (?t) (if (t.size() > 100) Text.fromIter(Iter.take<Char>(t.chars(), 100)) # "..." else t); case null "(undecodable)" }) # ": Unexpected error" #
                 (if (responseText != "") { " - " # responseText } else { "" }));
         }
     };
