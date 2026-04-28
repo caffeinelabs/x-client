@@ -1,3 +1,17 @@
+## [0.2.2] — 2026-04-28
+
+### Fixed
+
+- Bumps `serde-core` to `0.1.3` to pull in the JSON parser's `\u`-escape
+  + UTF-16 surrogate-pair handling. Twitter's `/2/tweets` POST response
+  echoes back any emoji or non-BMP character in the user's tweet text as
+  a surrogate pair (e.g. `🎓` → `🎓`); the parser previously
+  could not handle these and `JSON.toCandid(responseBody)` returned
+  `Failed to parse JSON text` — breaking response decode for any tweet
+  whose text contained an emoji.
+
+  Filed upstream as [aviate-labs/json.mo#8](https://github.com/aviate-labs/json.mo/pull/8).
+
 ## [0.2.1] — 2026-04-28
 
 ### Fixed
