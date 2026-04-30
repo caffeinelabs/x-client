@@ -3,6 +3,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // MediaUploadRequestOneShotMediaType.mo
 /// Enum values: #text_srt, #text_vtt, #image_jpeg, #image_bmp, #image_png, #image_webp, #image_pjpeg, #image_tiff

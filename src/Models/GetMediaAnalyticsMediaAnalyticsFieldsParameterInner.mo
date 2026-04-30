@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetMediaAnalyticsMediaAnalyticsFieldsParameterInner.mo
 /// Enum values: #cta_url_clicks, #cta_watch_clicks, #media_key, #play_from_tap, #playback25, #playback50, #playback75, #playback_complete, #playback_start, #timestamp, #video_views, #watch_time_ms

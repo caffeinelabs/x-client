@@ -3,6 +3,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // SubscriptionsCountGetResponseData.mo
 
@@ -19,6 +20,24 @@ module {
     };
 
     public module JSON {
+        // `init` constructs a SubscriptionsCountGetResponseData from just its required fields,
+        // defaulting all optional fields to `null`. Pair with record-update
+        // syntax to layer in selected optionals:
+        //   let req = { SubscriptionsCountGetResponseData.init { …required fields… } with someOpt = ?… };
+        // Implementation uses Candid round-trip — Candid record subtyping fills
+        // absent optional fields with null. Costs a few cycles per call (init is
+        // not on a hot path) but keeps generated code compact regardless of how
+        // many optional fields the model has.
+        public func init(required : {
+            account_name : Text;
+            provisioned_count : Text;
+            subscriptions_count_all : Text;
+            subscriptions_count_direct_messages : Text;
+        }) : SubscriptionsCountGetResponseData {
+            let ?res = from_candid(to_candid(required)) : ?SubscriptionsCountGetResponseData else Runtime.unreachable();
+            res
+        };
+
         public func toCandidValue(value : SubscriptionsCountGetResponseData) : Candid.Candid {
             let buf = List.empty<(Text, Candid.Candid)>();
             List.add(buf, ("account_name", #Text(value.account_name)));

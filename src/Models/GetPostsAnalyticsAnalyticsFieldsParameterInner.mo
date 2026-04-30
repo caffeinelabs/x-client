@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetPostsAnalyticsAnalyticsFieldsParameterInner.mo
 /// Enum values: #app_install_attempts, #app_opens, #bookmarks, #detail_expands, #email_tweet, #engagements, #follows, #hashtag_clicks, #id, #impressions, #likes, #media_views, #permalink_clicks, #quote_tweets, #replies, #retweets, #shares, #timestamp, #unfollows, #unlikes, #url_clicks, #user_profile_clicks

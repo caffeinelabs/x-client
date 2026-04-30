@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetListsPostsPollFieldsParameterInner.mo
 /// Enum values: #duration_minutes, #end_datetime, #id, #options, #voting_status

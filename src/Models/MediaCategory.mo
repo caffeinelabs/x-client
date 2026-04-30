@@ -3,6 +3,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // MediaCategory.mo
 /// Enum values: #amplify_video, #tweet_gif, #tweet_image, #tweet_video, #dm_gif, #dm_image, #dm_video, #subtitles

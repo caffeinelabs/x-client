@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetListsPostsPlaceFieldsParameterInner.mo
 /// Enum values: #contained_within, #country, #country_code, #full_name, #geo, #id, #name, #place_type

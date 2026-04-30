@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetRuleCountsRulesCountFieldsParameterInner.mo
 /// Enum values: #all_project_client_apps, #cap_per_client_app, #cap_per_project, #client_app_rules_count, #project_rules_count

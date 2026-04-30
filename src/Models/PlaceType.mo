@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // PlaceType.mo
 /// Enum values: #poi, #neighborhood, #city, #admin, #country, #unknown

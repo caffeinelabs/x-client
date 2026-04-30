@@ -3,6 +3,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // MediaUploadConfigRequestMediaType.mo
 /// Enum values: #video_mp4, #video_webm, #video_mp2t, #video_quicktime, #text_srt, #text_vtt, #image_jpeg, #image_gif, #image_bmp, #image_png, #image_webp, #image_pjpeg, #image_tiff, #model_gltf_binary, #model_vnd_usdz_zip

@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // ActivitySubscriptionCreateRequestEventType.mo
 /// Enum values: #profile_update_bio, #profile_update_profile_picture, #profile_update_banner_picture, #profile_update_screenname, #profile_update_geo, #profile_update_url, #profile_update_verified_badge, #profile_update_affiliate_badge, #profile_update_handle, #news_new, #follow_follow, #follow_unfollow, #spaces_start, #spaces_end, #chat_received, #chat_sent, #chat_conversation_join, #dm_sent, #dm_received, #dm_indicate_typing, #dm_read

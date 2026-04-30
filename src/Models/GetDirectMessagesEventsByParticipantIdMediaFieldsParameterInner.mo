@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetDirectMessagesEventsByParticipantIdMediaFieldsParameterInner.mo
 /// Enum values: #alt_text, #duration_ms, #height, #media_key, #non_public_metrics, #organic_metrics, #preview_image_url, #promoted_metrics, #public_metrics, #type_, #url, #variants, #width

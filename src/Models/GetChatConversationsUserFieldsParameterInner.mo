@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetChatConversationsUserFieldsParameterInner.mo
 /// Enum values: #affiliation, #confirmed_email, #connection_status, #created_at, #description, #entities, #id, #is_identity_verified, #location, #most_recent_tweet_id, #name, #parody, #pinned_tweet_id, #profile_banner_url, #profile_image_url, #protected, #public_metrics, #receives_your_dm, #subscription, #subscription_type, #url, #username, #verified, #verified_followers_count, #verified_type, #withheld

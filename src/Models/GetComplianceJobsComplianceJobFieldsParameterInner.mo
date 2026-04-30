@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetComplianceJobsComplianceJobFieldsParameterInner.mo
 /// Enum values: #created_at, #download_expires_at, #download_url, #id, #name, #resumable, #status, #type_, #upload_expires_at, #upload_url

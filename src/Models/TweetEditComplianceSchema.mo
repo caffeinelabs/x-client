@@ -4,6 +4,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // TweetEditComplianceSchema.mo
 
@@ -13,6 +14,21 @@ module {
     };
 
     public module JSON {
+        // `init` constructs a TweetEditComplianceSchema from just its required fields,
+        // defaulting all optional fields to `null`. Pair with record-update
+        // syntax to layer in selected optionals:
+        //   let req = { TweetEditComplianceSchema.init { …required fields… } with someOpt = ?… };
+        // Implementation uses Candid round-trip — Candid record subtyping fills
+        // absent optional fields with null. Costs a few cycles per call (init is
+        // not on a hot path) but keeps generated code compact regardless of how
+        // many optional fields the model has.
+        public func init(required : {
+            tweet_edit : TweetEditComplianceObjectSchema;
+        }) : TweetEditComplianceSchema {
+            let ?res = from_candid(to_candid(required)) : ?TweetEditComplianceSchema else Runtime.unreachable();
+            res
+        };
+
         public func toCandidValue(value : TweetEditComplianceSchema) : Candid.Candid {
             let buf = List.empty<(Text, Candid.Candid)>();
             List.add(buf, ("tweet_edit", TweetEditComplianceObjectSchema.toCandidValue(value.tweet_edit)));

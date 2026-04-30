@@ -6,6 +6,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // ChatCreateConversationRequest.mo
 
@@ -36,6 +37,24 @@ module {
     };
 
     public module JSON {
+        // `init` constructs a ChatCreateConversationRequest from just its required fields,
+        // defaulting all optional fields to `null`. Pair with record-update
+        // syntax to layer in selected optionals:
+        //   let req = { ChatCreateConversationRequest.init { …required fields… } with someOpt = ?… };
+        // Implementation uses Candid round-trip — Candid record subtyping fills
+        // absent optional fields with null. Costs a few cycles per call (init is
+        // not on a hot path) but keeps generated code compact regardless of how
+        // many optional fields the model has.
+        public func init(required : {
+            conversation_id : Text;
+            conversation_key_version : Text;
+            conversation_participant_keys : [ChatConversationParticipantKey];
+            group_members : [Text];
+        }) : ChatCreateConversationRequest {
+            let ?res = from_candid(to_candid(required)) : ?ChatCreateConversationRequest else Runtime.unreachable();
+            res
+        };
+
         public func toCandidValue(value : ChatCreateConversationRequest) : Candid.Candid {
             let buf = List.empty<(Text, Candid.Candid)>();
             switch (value.action_signatures) {

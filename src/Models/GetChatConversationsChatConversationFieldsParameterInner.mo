@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetChatConversationsChatConversationFieldsParameterInner.mo
 /// Enum values: #admin_ids, #created_at, #group_avatar_url, #group_name, #id, #is_muted, #member_ids, #message_ttl_msec, #participant_ids, #screen_capture_blocking_enabled, #screen_capture_detection_enabled, #type_, #updated_at

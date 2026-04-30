@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetListsByIdListFieldsParameterInner.mo
 /// Enum values: #created_at, #description, #follower_count, #id, #member_count, #name, #owner_id, #private_

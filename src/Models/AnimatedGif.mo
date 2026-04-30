@@ -6,6 +6,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 import Int "mo:core/Int";
 
 // AnimatedGif.mo
@@ -25,6 +26,21 @@ module {
     };
 
     public module JSON {
+        // `init` constructs a AnimatedGif from just its required fields,
+        // defaulting all optional fields to `null`. Pair with record-update
+        // syntax to layer in selected optionals:
+        //   let req = { AnimatedGif.init { …required fields… } with someOpt = ?… };
+        // Implementation uses Candid round-trip — Candid record subtyping fills
+        // absent optional fields with null. Costs a few cycles per call (init is
+        // not on a hot path) but keeps generated code compact regardless of how
+        // many optional fields the model has.
+        public func init(required : {
+            type_ : Text;
+        }) : AnimatedGif {
+            let ?res = from_candid(to_candid(required)) : ?AnimatedGif else Runtime.unreachable();
+            res
+        };
+
         public func toCandidValue(value : AnimatedGif) : Candid.Candid {
             let buf = List.empty<(Text, Candid.Candid)>();
             switch (value.height) {

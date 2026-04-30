@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetListsFollowersExpansionsParameterInner.mo
 /// Enum values: #affiliation_user_id, #most_recent_tweet_id, #pinned_tweet_id

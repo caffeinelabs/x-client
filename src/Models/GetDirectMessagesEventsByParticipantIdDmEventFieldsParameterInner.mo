@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetDirectMessagesEventsByParticipantIdDmEventFieldsParameterInner.mo
 /// Enum values: #attachments, #created_at, #dm_conversation_id, #entities, #event_type, #id, #participant_ids, #referenced_tweets, #sender_id, #text_

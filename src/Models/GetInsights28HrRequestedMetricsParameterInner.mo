@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetInsights28HrRequestedMetricsParameterInner.mo
 /// Enum values: #appinstallattempts, #appopens, #detailexpands, #emailtweet, #engagements, #follows, #hashtagclicks, #impressions, #likes, #linkclicks, #mediaengagements, #mediaviews, #permalinkclicks, #profilevisits, #quotetweets, #replies, #retweets, #uniquevideoviews, #urlclicks, #userprofileclicks, #videocompletions, #videoplayed25percent, #videoplayed50percent, #videoplayed75percent, #videostarts, #videoviews

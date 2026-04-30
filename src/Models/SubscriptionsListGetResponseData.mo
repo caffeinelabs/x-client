@@ -5,6 +5,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // SubscriptionsListGetResponseData.mo
 
@@ -21,6 +22,24 @@ module {
     };
 
     public module JSON {
+        // `init` constructs a SubscriptionsListGetResponseData from just its required fields,
+        // defaulting all optional fields to `null`. Pair with record-update
+        // syntax to layer in selected optionals:
+        //   let req = { SubscriptionsListGetResponseData.init { …required fields… } with someOpt = ?… };
+        // Implementation uses Candid round-trip — Candid record subtyping fills
+        // absent optional fields with null. Costs a few cycles per call (init is
+        // not on a hot path) but keeps generated code compact regardless of how
+        // many optional fields the model has.
+        public func init(required : {
+            application_id : Text;
+            subscriptions : [SubscriptionsListGetResponseDataSubscriptionsInner];
+            webhook_id : Text;
+            webhook_url : Text;
+        }) : SubscriptionsListGetResponseData {
+            let ?res = from_candid(to_candid(required)) : ?SubscriptionsListGetResponseData else Runtime.unreachable();
+            res
+        };
+
         public func toCandidValue(value : SubscriptionsListGetResponseData) : Candid.Candid {
             let buf = List.empty<(Text, Candid.Candid)>();
             List.add(buf, ("application_id", #Text(value.application_id)));

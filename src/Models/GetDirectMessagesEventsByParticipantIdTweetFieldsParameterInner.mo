@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetDirectMessagesEventsByParticipantIdTweetFieldsParameterInner.mo
 /// Enum values: #article, #attachments, #author_id, #card_uri, #community_id, #context_annotations, #conversation_id, #created_at, #display_text_range, #edit_controls, #edit_history_tweet_ids, #entities, #geo, #id, #in_reply_to_user_id, #lang, #media_metadata, #non_public_metrics, #note_tweet, #organic_metrics, #possibly_sensitive, #promoted_metrics, #public_metrics, #referenced_tweets, #reply_settings, #scopes, #source, #suggested_source_links, #suggested_source_links_with_counts, #text_, #withheld

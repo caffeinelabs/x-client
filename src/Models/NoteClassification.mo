@@ -3,6 +3,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // NoteClassification.mo
 /// Enum values: #misinformed_or_potentially_misleading, #not_misleading

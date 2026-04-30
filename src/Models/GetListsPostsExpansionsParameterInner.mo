@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetListsPostsExpansionsParameterInner.mo
 /// Enum values: #article_cover_media, #article_media_entities, #attachments_media_keys, #attachments_media_source_tweet, #attachments_poll_ids, #author_id, #edit_history_tweet_ids, #entities_mentions_username, #geo_place_id, #in_reply_to_user_id, #entities_note_mentions_username, #referenced_tweets_id, #referenced_tweets_id_attachments_media_keys, #referenced_tweets_id_author_id

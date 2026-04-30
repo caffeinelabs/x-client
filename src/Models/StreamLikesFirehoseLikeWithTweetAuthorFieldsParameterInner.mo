@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // StreamLikesFirehoseLikeWithTweetAuthorFieldsParameterInner.mo
 /// Enum values: #created_at, #id, #liked_tweet_author_id, #liked_tweet_id, #timestamp_ms

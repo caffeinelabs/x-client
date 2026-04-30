@@ -3,6 +3,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // MisleadingTags.mo
 /// Enum values: #disputed_claim_as_fact, #factual_error, #manipulated_media, #misinterpreted_satire, #missing_important_context, #other, #outdated_information

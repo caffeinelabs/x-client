@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetSpacesByIdsSpaceFieldsParameterInner.mo
 /// Enum values: #created_at, #creator_id, #ended_at, #host_ids, #id, #invited_user_ids, #is_ticketed, #lang, #participant_count, #scheduled_start, #speaker_ids, #started_at, #state, #subscriber_count, #title, #topic_ids, #updated_at

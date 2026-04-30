@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // ClientForbiddenProblemAllOfReason.mo
 /// Enum values: #official_client_forbidden, #client_not_enrolled

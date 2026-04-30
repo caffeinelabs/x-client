@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetUsersPublicKeysPublicKeyFieldsParameterInner.mo
 /// Enum values: #juicebox_config, #public_key, #signing_public_key, #version

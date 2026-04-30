@@ -4,6 +4,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // CreateNoteRequest.mo
 
@@ -17,6 +18,23 @@ module {
     };
 
     public module JSON {
+        // `init` constructs a CreateNoteRequest from just its required fields,
+        // defaulting all optional fields to `null`. Pair with record-update
+        // syntax to layer in selected optionals:
+        //   let req = { CreateNoteRequest.init { …required fields… } with someOpt = ?… };
+        // Implementation uses Candid round-trip — Candid record subtyping fills
+        // absent optional fields with null. Costs a few cycles per call (init is
+        // not on a hot path) but keeps generated code compact regardless of how
+        // many optional fields the model has.
+        public func init(required : {
+            info : NoteInfo;
+            post_id : Text;
+            test_mode : Bool;
+        }) : CreateNoteRequest {
+            let ?res = from_candid(to_candid(required)) : ?CreateNoteRequest else Runtime.unreachable();
+            res
+        };
+
         public func toCandidValue(value : CreateNoteRequest) : Candid.Candid {
             let buf = List.empty<(Text, Candid.Candid)>();
             List.add(buf, ("info", NoteInfo.toCandidValue(value.info)));

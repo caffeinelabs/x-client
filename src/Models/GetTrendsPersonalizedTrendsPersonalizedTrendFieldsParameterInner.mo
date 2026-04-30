@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetTrendsPersonalizedTrendsPersonalizedTrendFieldsParameterInner.mo
 /// Enum values: #category, #post_count, #trend_name, #trending_since

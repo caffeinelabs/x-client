@@ -2,6 +2,7 @@ import { Candid } "mo:serde-core";
 import Array "mo:core/Array";
 import List "mo:core/List";
 import Float "mo:core/Float";
+import Runtime "mo:core/Runtime";
 
 // GetConnectionHistoryEndpointsParameterInner.mo
 /// Enum values: #filtered_stream, #sample_stream, #sample10_stream, #firehose_stream, #tweets_compliance_stream, #users_compliance_stream, #tweet_label_stream, #firehose_stream_lang_en, #firehose_stream_lang_ja, #firehose_stream_lang_ko, #firehose_stream_lang_pt, #likes_firehose_stream, #likes_sample10_stream, #likes_compliance_stream
