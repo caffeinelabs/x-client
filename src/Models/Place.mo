@@ -11,21 +11,29 @@ import Runtime "mo:core/Runtime";
 // Place.mo
 
 module {
-    public type Place = {
-        contained_within : ?[Text];
-        /// The full name of the county in which this place exists.
-        country : ?Text;
-        /// A two-letter ISO 3166-1 alpha-2 country code.
-        country_code : ?Text;
+    /// The required-fields slice of Place — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// The full name of this place.
         full_name : Text;
-        geo : ?Geo;
         /// The identifier for this place.
         id : Text;
-        /// The human readable name of this place.
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express Place as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+        contained_within : ?[Text];
+        country : ?Text;
+        country_code : ?Text;
+        geo : ?Geo;
         name : ?Text;
         place_type : ?PlaceType;
     };
+
+    public type Place = Required and Optional;
 
     public module JSON {
         // `init` constructs a Place from just its required fields,
@@ -36,10 +44,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            full_name : Text;
-            id : Text;
-        }) : Place {
+        public func init(required : Required) : Place {
             let ?res = from_candid(to_candid(required)) : ?Place else Runtime.unreachable();
             res
         };
@@ -130,4 +135,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

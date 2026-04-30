@@ -19,34 +19,35 @@ import Runtime "mo:core/Runtime";
 // TweetCreateRequest.mo
 
 module {
-    public type TweetCreateRequest = {
-        /// Card Uri Parameter. This is mutually exclusive from Quote Tweet Id, Poll, Media, and Direct Message Deep Link.
+    /// The required-fields slice of TweetCreateRequest — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express TweetCreateRequest as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
         card_uri : ?Text;
-        /// The unique identifier of this Community.
         community_id : ?Text;
-        /// Link to take the conversation from the public timeline to a private Direct Message.
         direct_message_deep_link : ?Text;
         edit_options : ?TweetCreateRequestEditOptions;
-        /// Exclusive Tweet for super followers.
         for_super_followers_only : ?Bool;
         geo : ?TweetCreateRequestGeo;
-        /// Whether this Post contains AI-generated media. When true, the Post will be labeled accordingly.
         made_with_ai : ?Bool;
         media : ?TweetCreateRequestMedia;
-        /// Nullcasted (promoted-only) Posts do not appear in the public timeline and are not served to followers.
         nullcast : ?Bool;
-        /// Whether this Post is a paid partnership. When true, the Post will be labeled as a paid promotion.
         paid_partnership : ?Bool;
         poll : ?TweetCreateRequestPoll;
-        /// Unique identifier of this Tweet. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
         quote_tweet_id : ?Text;
         reply : ?TweetCreateRequestReply;
         reply_settings : ?TweetCreateRequestPollReplySettings;
-        /// Share community post with followers too.
         share_with_followers : ?Bool;
-        /// The content of the Tweet.
         text_ : ?Text;
     };
+
+    public type TweetCreateRequest = Required and Optional;
 
     public module JSON {
         // `init` constructs a TweetCreateRequest from just its required fields,
@@ -57,8 +58,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-        }) : TweetCreateRequest {
+        public func init(required : Required) : TweetCreateRequest {
             let ?res = from_candid(to_candid(required)) : ?TweetCreateRequest else Runtime.unreachable();
             res
         };
@@ -221,4 +221,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

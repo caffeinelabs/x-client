@@ -8,12 +8,21 @@ import Runtime "mo:core/Runtime";
 // DeleteRulesRequestDelete.mo
 
 module {
-    public type DeleteRulesRequestDelete = {
-        /// IDs of all deleted user-specified stream filtering rules.
+    /// The required-fields slice of DeleteRulesRequestDelete — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express DeleteRulesRequestDelete as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
         ids : ?[Text];
-        /// Values of all deleted user-specified stream filtering rules.
         values : ?[Text];
     };
+
+    public type DeleteRulesRequestDelete = Required and Optional;
 
     public module JSON {
         // `init` constructs a DeleteRulesRequestDelete from just its required fields,
@@ -24,8 +33,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-        }) : DeleteRulesRequestDelete {
+        public func init(required : Required) : DeleteRulesRequestDelete {
             let ?res = from_candid(to_candid(required)) : ?DeleteRulesRequestDelete else Runtime.unreachable();
             res
         };
@@ -82,4 +90,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

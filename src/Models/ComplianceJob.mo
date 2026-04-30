@@ -11,7 +11,10 @@ import Runtime "mo:core/Runtime";
 // ComplianceJob.mo
 
 module {
-    public type ComplianceJob = {
+    /// The required-fields slice of ComplianceJob — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// Creation time of the compliance job.
         created_at : Text;
         /// Expiration time of the download URL.
@@ -20,8 +23,6 @@ module {
         download_url : Text;
         /// Compliance Job ID.
         id : Text;
-        /// User-provided name for a compliance job.
-        name : ?Text;
         status : ComplianceJobStatus;
         type_ : ComplianceJobType;
         /// Expiration time of the upload URL.
@@ -29,6 +30,15 @@ module {
         /// URL to which the user will upload their Tweet or user IDs.
         upload_url : Text;
     };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express ComplianceJob as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+        name : ?Text;
+    };
+
+    public type ComplianceJob = Required and Optional;
 
     public module JSON {
         // `init` constructs a ComplianceJob from just its required fields,
@@ -39,16 +49,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            created_at : Text;
-            download_expires_at : Text;
-            download_url : Text;
-            id : Text;
-            status : ComplianceJobStatus;
-            type_ : ComplianceJobType;
-            upload_expires_at : Text;
-            upload_url : Text;
-        }) : ComplianceJob {
+        public func init(required : Required) : ComplianceJob {
             let ?res = from_candid(to_candid(required)) : ?ComplianceJob else Runtime.unreachable();
             res
         };
@@ -108,4 +109,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

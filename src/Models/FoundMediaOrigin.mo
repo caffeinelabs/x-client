@@ -7,12 +7,23 @@ import Runtime "mo:core/Runtime";
 // FoundMediaOrigin.mo
 
 module {
-    public type FoundMediaOrigin = {
+    /// The required-fields slice of FoundMediaOrigin — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// Unique Identifier of media within provider ( <= 24 characters ))
         id : Text;
         /// The media provider (e.g., 'giphy') that sourced the media ( <= 8 Characters )
         provider : Text;
     };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express FoundMediaOrigin as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+    };
+
+    public type FoundMediaOrigin = Required and Optional;
 
     public module JSON {
         // `init` constructs a FoundMediaOrigin from just its required fields,
@@ -23,10 +34,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            id : Text;
-            provider : Text;
-        }) : FoundMediaOrigin {
+        public func init(required : Required) : FoundMediaOrigin {
             let ?res = from_candid(to_candid(required)) : ?FoundMediaOrigin else Runtime.unreachable();
             res
         };
@@ -53,4 +61,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

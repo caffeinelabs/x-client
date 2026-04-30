@@ -11,29 +11,33 @@ import Int "mo:core/Int";
 // UrlEntity.mo
 
 module {
-    public type UrlEntity = {
+    /// The required-fields slice of UrlEntity — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// Index (zero-based) at which position this entity ends.  The index is exclusive.
         end : Nat;
         /// Index (zero-based) at which position this entity starts.  The index is inclusive.
         start : Nat;
-        /// Description of the URL landing page.
-        description : ?Text;
-        /// The URL as displayed in the X client.
-        display_url : ?Text;
-        /// A validly formatted URL.
-        expanded_url : ?Text;
-        images : ?[UrlImage];
-        /// The Media Key identifier for this attachment.
-        media_key : ?Text;
-        /// HTTP Status Code.
-        status : ?Nat;
-        /// Title of the page the URL points to.
-        title : ?Text;
-        /// Fully resolved url.
-        unwound_url : ?Text;
         /// A validly formatted URL.
         url : Text;
     };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express UrlEntity as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+        description : ?Text;
+        display_url : ?Text;
+        expanded_url : ?Text;
+        images : ?[UrlImage];
+        media_key : ?Text;
+        status : ?Nat;
+        title : ?Text;
+        unwound_url : ?Text;
+    };
+
+    public type UrlEntity = Required and Optional;
 
     public module JSON {
         // `init` constructs a UrlEntity from just its required fields,
@@ -44,11 +48,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            end : Nat;
-            start : Nat;
-            url : Text;
-        }) : UrlEntity {
+        public func init(required : Required) : UrlEntity {
             let ?res = from_candid(to_candid(required)) : ?UrlEntity else Runtime.unreachable();
             res
         };
@@ -161,4 +161,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

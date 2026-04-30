@@ -8,12 +8,22 @@ import Runtime "mo:core/Runtime";
 // RuleNoId.mo
 
 module {
-    public type RuleNoId = {
-        /// A tag meant for the labeling of user provided rules.
-        tag : ?Text;
+    /// The required-fields slice of RuleNoId — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// The filterlang value of the rule.
         value : Text;
     };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express RuleNoId as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+        tag : ?Text;
+    };
+
+    public type RuleNoId = Required and Optional;
 
     public module JSON {
         // `init` constructs a RuleNoId from just its required fields,
@@ -24,9 +34,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            value : Text;
-        }) : RuleNoId {
+        public func init(required : Required) : RuleNoId {
             let ?res = from_candid(to_candid(required)) : ?RuleNoId else Runtime.unreachable();
             res
         };
@@ -58,4 +66,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

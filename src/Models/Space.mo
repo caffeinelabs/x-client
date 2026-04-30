@@ -12,41 +12,37 @@ import Runtime "mo:core/Runtime";
 // Space.mo
 
 module {
-    public type Space = {
-        /// Creation time of the Space.
-        created_at : ?Text;
-        /// Unique identifier of this User. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
-        creator_id : ?Text;
-        /// End time of the Space.
-        ended_at : ?Text;
-        /// The user ids for the hosts of the Space.
-        host_ids : ?[Text];
+    /// The required-fields slice of Space — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// The unique identifier of this Space.
         id : Text;
-        /// An array of user ids for people who were invited to a Space.
-        invited_user_ids : ?[Text];
-        /// Denotes if the Space is a ticketed Space.
-        is_ticketed : ?Bool;
-        /// The language of the Space.
-        lang : ?Text;
-        /// The number of participants in a Space.
-        participant_count : ?Int;
-        /// A date time stamp for when a Space is scheduled to begin.
-        scheduled_start : ?Text;
-        /// An array of user ids for people who were speakers in a Space.
-        speaker_ids : ?[Text];
-        /// When the Space was started as a date string.
-        started_at : ?Text;
         state : SpaceState;
-        /// The number of people who have either purchased a ticket or set a reminder for this Space.
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express Space as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+        created_at : ?Text;
+        creator_id : ?Text;
+        ended_at : ?Text;
+        host_ids : ?[Text];
+        invited_user_ids : ?[Text];
+        is_ticketed : ?Bool;
+        lang : ?Text;
+        participant_count : ?Int;
+        scheduled_start : ?Text;
+        speaker_ids : ?[Text];
+        started_at : ?Text;
         subscriber_count : ?Int;
-        /// The title of the Space.
         title : ?Text;
-        /// The topics of a Space, as selected by its creator.
         topics : ?[SpaceTopicsInner];
-        /// When the Space was last updated.
         updated_at : ?Text;
     };
+
+    public type Space = Required and Optional;
 
     public module JSON {
         // `init` constructs a Space from just its required fields,
@@ -57,10 +53,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            id : Text;
-            state : SpaceState;
-        }) : Space {
+        public func init(required : Required) : Space {
             let ?res = from_candid(to_candid(required)) : ?Space else Runtime.unreachable();
             res
         };
@@ -262,4 +255,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

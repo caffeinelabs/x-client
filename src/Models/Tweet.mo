@@ -39,51 +39,48 @@ import Runtime "mo:core/Runtime";
 // Tweet.mo
 
 module {
-    public type Tweet = {
+    /// The required-fields slice of Tweet — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express Tweet as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
         attachments : ?TweetAttachments;
-        /// Unique identifier of this User. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
         author_id : ?Text;
-        /// The unique identifier of this Community.
         community_id : ?Text;
         context_annotations : ?[ContextAnnotation];
-        /// Unique identifier of this Tweet. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
         conversation_id : ?Text;
-        /// Creation time of the Tweet.
         created_at : ?Text;
-        /// Represent a boundary range (start and end zero-based indices) for the portion of text that is displayed for a post. `start` must be smaller than `end`. The start index is inclusive, the end index is exclusive.
         display_text_range : ?[Int];
         edit_controls : ?TweetEditControls;
-        /// A list of Tweet Ids in this Tweet chain.
         edit_history_tweet_ids : ?[Text];
         entities : ?FullTextEntities;
         geo : ?TweetGeo;
-        /// Unique identifier of this Tweet. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
         id : ?Text;
-        /// Unique identifier of this User. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
         in_reply_to_user_id : ?Text;
-        /// Language of the Tweet, if detected by X. Returned as a BCP47 language tag.
         lang : ?Text;
         non_public_metrics : ?TweetNonPublicMetrics;
         note_tweet : ?TweetNoteTweet;
         organic_metrics : ?TweetOrganicMetrics;
-        /// Indicates if this Tweet contains URLs marked as sensitive, for example content suitable for mature audiences.
         possibly_sensitive : ?Bool;
         promoted_metrics : ?TweetPromotedMetrics;
         public_metrics : ?TweetPublicMetrics;
-        /// A list of Posts this Tweet refers to. For example, if the parent Tweet is a Retweet, a Quoted Tweet or a Reply, it will include the related Tweet referenced to by its parent.
         referenced_tweets : ?[TweetReferencedTweetsInner];
         reply_settings : ?ReplySettingsWithVerifiedUsers;
         scopes : ?TweetScopes;
-        /// This is deprecated.
         source : ?Text;
         suggested_source_links : ?[UrlEntity];
         suggested_source_links_with_counts : ?TweetSuggestedSourceLinksWithCounts;
-        /// The content of the Tweet.
         text_ : ?Text;
-        /// The X handle (screen name) of this user.
         username : ?Text;
         withheld : ?TweetWithheld;
     };
+
+    public type Tweet = Required and Optional;
 
     public module JSON {
         // `init` constructs a Tweet from just its required fields,
@@ -94,8 +91,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-        }) : Tweet {
+        public func init(required : Required) : Tweet {
             let ?res = from_candid(to_candid(required)) : ?Tweet else Runtime.unreachable();
             res
         };
@@ -425,4 +421,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

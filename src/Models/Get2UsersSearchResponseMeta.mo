@@ -7,12 +7,21 @@ import Runtime "mo:core/Runtime";
 // Get2UsersSearchResponseMeta.mo
 
 module {
-    public type Get2UsersSearchResponseMeta = {
-        /// The next token.
+    /// The required-fields slice of Get2UsersSearchResponseMeta — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express Get2UsersSearchResponseMeta as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
         next_token : ?Text;
-        /// The previous token.
         previous_token : ?Text;
     };
+
+    public type Get2UsersSearchResponseMeta = Required and Optional;
 
     public module JSON {
         // `init` constructs a Get2UsersSearchResponseMeta from just its required fields,
@@ -23,8 +32,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-        }) : Get2UsersSearchResponseMeta {
+        public func init(required : Required) : Get2UsersSearchResponseMeta {
             let ?res = from_candid(to_candid(required)) : ?Get2UsersSearchResponseMeta else Runtime.unreachable();
             res
         };
@@ -61,4 +69,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

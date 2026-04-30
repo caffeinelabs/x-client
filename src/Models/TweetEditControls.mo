@@ -7,7 +7,10 @@ import Runtime "mo:core/Runtime";
 // TweetEditControls.mo
 
 module {
-    public type TweetEditControls = {
+    /// The required-fields slice of TweetEditControls — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// Time when Tweet is no longer editable.
         editable_until : Text;
         /// Number of times this Tweet can be edited.
@@ -15,6 +18,14 @@ module {
         /// Indicates if this Tweet is eligible to be edited.
         is_edit_eligible : Bool;
     };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express TweetEditControls as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+    };
+
+    public type TweetEditControls = Required and Optional;
 
     public module JSON {
         // `init` constructs a TweetEditControls from just its required fields,
@@ -25,11 +36,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            editable_until : Text;
-            edits_remaining : Int;
-            is_edit_eligible : Bool;
-        }) : TweetEditControls {
+        public func init(required : Required) : TweetEditControls {
             let ?res = from_candid(to_candid(required)) : ?TweetEditControls else Runtime.unreachable();
             res
         };
@@ -60,4 +67,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

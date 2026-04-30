@@ -10,33 +10,33 @@ import Runtime "mo:core/Runtime";
 // ChatConversation.mo
 
 module {
-    public type ChatConversation = {
-        /// User IDs of group admins. Only present for group conversations.
-        admin_ids : ?[Text];
-        /// ISO 8601 timestamp when the group was created. Only present for group conversations.
-        created_at : ?Text;
-        /// URL for the group avatar. Only present for group conversations.
-        group_avatar_url : ?Text;
-        /// Encrypted group name. Only present for group conversations.
-        group_name : ?Text;
+    /// The required-fields slice of ChatConversation — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// The unique identifier for this conversation.
         id : Text;
-        /// Whether notifications are muted for this conversation.
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express ChatConversation as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+        admin_ids : ?[Text];
+        created_at : ?Text;
+        group_avatar_url : ?Text;
+        group_name : ?Text;
         is_muted : ?Bool;
-        /// User IDs of group members. Only present for group conversations.
         member_ids : ?[Text];
-        /// Message time-to-live in milliseconds.
         message_ttl_msec : ?Text;
-        /// Array of user IDs who are participants in this conversation.
         participant_ids : ?[Text];
-        /// Whether screen capture blocking is enabled for this conversation.
         screen_capture_blocking_enabled : ?Bool;
-        /// Whether screen capture detection is enabled for this conversation.
         screen_capture_detection_enabled : ?Bool;
         type_ : ?ChatConversationType;
-        /// ISO 8601 timestamp when the group was last updated. Only present for group conversations.
         updated_at : ?Text;
     };
+
+    public type ChatConversation = Required and Optional;
 
     public module JSON {
         // `init` constructs a ChatConversation from just its required fields,
@@ -47,9 +47,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            id : Text;
-        }) : ChatConversation {
+        public func init(required : Required) : ChatConversation {
             let ?res = from_candid(to_candid(required)) : ?ChatConversation else Runtime.unreachable();
             res
         };
@@ -210,4 +208,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

@@ -11,30 +11,34 @@ import Runtime "mo:core/Runtime";
 // ChatCreateConversationRequest.mo
 
 module {
-    public type ChatCreateConversationRequest = {
-        /// Cryptographic signatures for the create action.
-        action_signatures : ?[ChatActionSignature];
-        /// Base64-encoded key rotation payload.
-        base64_encoded_key_rotation : ?Text;
+    /// The required-fields slice of ChatCreateConversationRequest — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// Client-generated conversation ID.
         conversation_id : Text;
         /// Version of the conversation encryption key.
         conversation_key_version : Text;
         /// Encrypted conversation keys for each participant.
         conversation_participant_keys : [ChatConversationParticipantKey];
-        /// User IDs of group admins. Defaults to the creator if omitted.
-        group_admins : ?[Text];
-        /// URL of the avatar image for the group conversation.
-        group_avatar_url : ?Text;
-        /// Description for the group conversation.
-        group_description : ?Text;
         /// User IDs of group members to include in the conversation.
         group_members : [Text];
-        /// Display name for the group conversation.
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express ChatCreateConversationRequest as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+        action_signatures : ?[ChatActionSignature];
+        base64_encoded_key_rotation : ?Text;
+        group_admins : ?[Text];
+        group_avatar_url : ?Text;
+        group_description : ?Text;
         group_name : ?Text;
-        /// Message time-to-live in milliseconds. Messages expire after this duration.
         ttl_msec : ?Text;
     };
+
+    public type ChatCreateConversationRequest = Required and Optional;
 
     public module JSON {
         // `init` constructs a ChatCreateConversationRequest from just its required fields,
@@ -45,12 +49,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            conversation_id : Text;
-            conversation_key_version : Text;
-            conversation_participant_keys : [ChatConversationParticipantKey];
-            group_members : [Text];
-        }) : ChatCreateConversationRequest {
+        public func init(required : Required) : ChatCreateConversationRequest {
             let ?res = from_candid(to_candid(required)) : ?ChatCreateConversationRequest else Runtime.unreachable();
             res
         };
@@ -188,4 +187,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

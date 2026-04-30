@@ -8,7 +8,10 @@ import Runtime "mo:core/Runtime";
 // PlaidTelephone.mo
 
 module {
-    public type PlaidTelephone = {
+    /// The required-fields slice of PlaidTelephone — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// The country code for the phone number (e.g., '+1').
         country : Text;
         /// The phone number.
@@ -16,6 +19,14 @@ module {
         /// The type of phone number (e.g., 'mobile').
         type_ : Text;
     };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express PlaidTelephone as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+    };
+
+    public type PlaidTelephone = Required and Optional;
 
     public module JSON {
         // `init` constructs a PlaidTelephone from just its required fields,
@@ -26,11 +37,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            country : Text;
-            number : Text;
-            type_ : Text;
-        }) : PlaidTelephone {
+        public func init(required : Required) : PlaidTelephone {
             let ?res = from_candid(to_candid(required)) : ?PlaidTelephone else Runtime.unreachable();
             res
         };
@@ -61,4 +68,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

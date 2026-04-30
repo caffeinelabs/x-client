@@ -8,12 +8,22 @@ import Runtime "mo:core/Runtime";
 // MentionFields.mo
 
 module {
-    public type MentionFields = {
-        /// Unique identifier of this User. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
-        id : ?Text;
+    /// The required-fields slice of MentionFields — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// The X handle (screen name) of this user.
         username : Text;
     };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express MentionFields as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+        id : ?Text;
+    };
+
+    public type MentionFields = Required and Optional;
 
     public module JSON {
         // `init` constructs a MentionFields from just its required fields,
@@ -24,9 +34,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            username : Text;
-        }) : MentionFields {
+        public func init(required : Required) : MentionFields {
             let ?res = from_candid(to_candid(required)) : ?MentionFields else Runtime.unreachable();
             res
         };
@@ -58,4 +66,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

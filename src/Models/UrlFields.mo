@@ -11,25 +11,29 @@ import Int "mo:core/Int";
 // UrlFields.mo
 
 module {
-    public type UrlFields = {
-        /// Description of the URL landing page.
-        description : ?Text;
-        /// The URL as displayed in the X client.
-        display_url : ?Text;
-        /// A validly formatted URL.
-        expanded_url : ?Text;
-        images : ?[UrlImage];
-        /// The Media Key identifier for this attachment.
-        media_key : ?Text;
-        /// HTTP Status Code.
-        status : ?Nat;
-        /// Title of the page the URL points to.
-        title : ?Text;
-        /// Fully resolved url.
-        unwound_url : ?Text;
+    /// The required-fields slice of UrlFields — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// A validly formatted URL.
         url : Text;
     };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express UrlFields as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+        description : ?Text;
+        display_url : ?Text;
+        expanded_url : ?Text;
+        images : ?[UrlImage];
+        media_key : ?Text;
+        status : ?Nat;
+        title : ?Text;
+        unwound_url : ?Text;
+    };
+
+    public type UrlFields = Required and Optional;
 
     public module JSON {
         // `init` constructs a UrlFields from just its required fields,
@@ -40,9 +44,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            url : Text;
-        }) : UrlFields {
+        public func init(required : Required) : UrlFields {
             let ?res = from_candid(to_candid(required)) : ?UrlFields else Runtime.unreachable();
             res
         };
@@ -147,4 +149,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

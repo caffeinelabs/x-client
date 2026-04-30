@@ -10,27 +10,30 @@ import Runtime "mo:core/Runtime";
 // ChatMessageEvent.mo
 
 module {
-    public type ChatMessageEvent = {
-        /// The conversation ID this message belongs to.
-        conversation_id : ?Text;
-        /// The conversation token for this message.
-        conversation_token : ?Text;
-        /// The creation timestamp in milliseconds.
-        created_at_msec : ?Text;
+    /// The required-fields slice of ChatMessageEvent — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// Base64-encoded MessageEvent for client decoding.
         encoded_event : Text;
-        /// The unique identifier for this message event (message_id).
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express ChatMessageEvent as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+        conversation_id : ?Text;
+        conversation_token : ?Text;
+        created_at_msec : ?Text;
         id : ?Text;
-        /// Whether the message is from a trusted source.
         is_trusted : ?Bool;
         message_event_signature : ?ChatMessageEventSignature;
-        /// The sequence ID of the previous message.
         previous_sequence_id : ?Text;
-        /// The user ID of the message sender.
         sender_id : ?Text;
-        /// The sequence identifier for ordering messages.
         sequence_id : ?Text;
     };
+
+    public type ChatMessageEvent = Required and Optional;
 
     public module JSON {
         // `init` constructs a ChatMessageEvent from just its required fields,
@@ -41,9 +44,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            encoded_event : Text;
-        }) : ChatMessageEvent {
+        public func init(required : Required) : ChatMessageEvent {
             let ?res = from_candid(to_candid(required)) : ?ChatMessageEvent else Runtime.unreachable();
             res
         };
@@ -147,4 +148,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

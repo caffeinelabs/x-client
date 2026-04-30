@@ -8,20 +8,28 @@ import Runtime "mo:core/Runtime";
 // PlaidAddress.mo
 
 module {
-    public type PlaidAddress = {
+    /// The required-fields slice of PlaidAddress — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// The city of the address.
         city : Text;
         /// The country of the address (ISO 3166-1 alpha-2 code).
         country : Text;
         /// The first line of the address.
         line1 : Text;
-        /// The second line of the address.
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express PlaidAddress as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
         line2 : ?Text;
-        /// The postal code of the address.
         postalCode : ?Text;
-        /// The region or state of the address.
         region_ : ?Text;
     };
+
+    public type PlaidAddress = Required and Optional;
 
     public module JSON {
         // `init` constructs a PlaidAddress from just its required fields,
@@ -32,11 +40,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            city : Text;
-            country : Text;
-            line1 : Text;
-        }) : PlaidAddress {
+        public func init(required : Required) : PlaidAddress {
             let ?res = from_candid(to_candid(required)) : ?PlaidAddress else Runtime.unreachable();
             res
         };
@@ -94,4 +98,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

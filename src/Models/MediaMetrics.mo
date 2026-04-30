@@ -7,28 +7,29 @@ import Runtime "mo:core/Runtime";
 // MediaMetrics.mo
 
 module {
-    public type MediaMetrics = {
-        /// Tracks the number of clicks on a call-to-action URL
+    /// The required-fields slice of MediaMetrics — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express MediaMetrics as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
         cta_url_clicks : ?Int;
-        /// Tracks the number of clicks to watch a video or media content
         cta_watch_clicks : ?Int;
-        /// Tracks the number of times a video or media is played from a user tap
         play_from_tap : ?Int;
-        /// Tracks the number of times a video reaches 25% of its duration
         playback25 : ?Int;
-        /// Tracks the number of times a video reaches 50% of its duration
         playback50 : ?Int;
-        /// Tracks the number of times a video reaches 75% of its duration
         playback75 : ?Int;
-        /// Tracks the number of times a video is played to completion
         playback_complete : ?Int;
-        /// Tracks the number of times a video playback is initiated
         playback_start : ?Int;
-        /// Tracks the number of times a video is viewed
         video_views : ?Int;
-        /// Tracks the total time spent watching a video, measured in milliseconds
         watch_time_ms : ?Int;
     };
+
+    public type MediaMetrics = Required and Optional;
 
     public module JSON {
         // `init` constructs a MediaMetrics from just its required fields,
@@ -39,8 +40,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-        }) : MediaMetrics {
+        public func init(required : Required) : MediaMetrics {
             let ?res = from_candid(to_candid(required)) : ?MediaMetrics else Runtime.unreachable();
             res
         };
@@ -149,4 +149,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

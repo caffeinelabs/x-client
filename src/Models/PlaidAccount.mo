@@ -10,7 +10,10 @@ import Runtime "mo:core/Runtime";
 // PlaidAccount.mo
 
 module {
-    public type PlaidAccount = {
+    /// The required-fields slice of PlaidAccount — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// The category of the account (e.g., personal, business).
         accountCategory : Text;
         /// The Plaid account ID.
@@ -19,18 +22,23 @@ module {
         accountNumberDisplay : Text;
         /// The type of the account (e.g., checking, savings).
         accountType : Text;
-        /// The available balance of the account.
-        availableBalance : ?Float;
         currency : PlaidCurrency;
-        /// The current balance of the account.
-        currentBalance : ?Float;
-        /// The nickname of the account.
-        nickname : ?Text;
         /// The name of the product associated with the account.
         productName : Text;
         /// The status of the account.
         status : Text;
     };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express PlaidAccount as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+        availableBalance : ?Float;
+        currentBalance : ?Float;
+        nickname : ?Text;
+    };
+
+    public type PlaidAccount = Required and Optional;
 
     public module JSON {
         // `init` constructs a PlaidAccount from just its required fields,
@@ -41,15 +49,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            accountCategory : Text;
-            accountId : Text;
-            accountNumberDisplay : Text;
-            accountType : Text;
-            currency : PlaidCurrency;
-            productName : Text;
-            status : Text;
-        }) : PlaidAccount {
+        public func init(required : Required) : PlaidAccount {
             let ?res = from_candid(to_candid(required)) : ?PlaidAccount else Runtime.unreachable();
             res
         };
@@ -123,4 +123,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

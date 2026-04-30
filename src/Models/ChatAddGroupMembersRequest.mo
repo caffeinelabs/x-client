@@ -11,20 +11,26 @@ import Runtime "mo:core/Runtime";
 // ChatAddGroupMembersRequest.mo
 
 module {
-    public type ChatAddGroupMembersRequest = {
-        /// Cryptographic signatures for the add-members action.
-        action_signatures : ?[ChatActionSignature];
-        /// Version of the new rotated conversation key.
-        conversation_key_version : ?Text;
-        /// Encrypted conversation keys for each new participant after key rotation.
-        conversation_participant_keys : ?[ChatConversationParticipantKey];
-        /// Re-encrypted group avatar URL with new conversation key.
-        encrypted_avatar_url : ?Text;
-        /// Re-encrypted group title with new conversation key.
-        encrypted_title : ?Text;
+    /// The required-fields slice of ChatAddGroupMembersRequest — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// List of user IDs to add to the group conversation.
         user_ids : [Text];
     };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express ChatAddGroupMembersRequest as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+        action_signatures : ?[ChatActionSignature];
+        conversation_key_version : ?Text;
+        conversation_participant_keys : ?[ChatConversationParticipantKey];
+        encrypted_avatar_url : ?Text;
+        encrypted_title : ?Text;
+    };
+
+    public type ChatAddGroupMembersRequest = Required and Optional;
 
     public module JSON {
         // `init` constructs a ChatAddGroupMembersRequest from just its required fields,
@@ -35,9 +41,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            user_ids : [Text];
-        }) : ChatAddGroupMembersRequest {
+        public func init(required : Required) : ChatAddGroupMembersRequest {
             let ?res = from_candid(to_candid(required)) : ?ChatAddGroupMembersRequest else Runtime.unreachable();
             res
         };
@@ -135,4 +139,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

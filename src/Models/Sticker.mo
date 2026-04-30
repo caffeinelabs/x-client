@@ -7,28 +7,29 @@ import Runtime "mo:core/Runtime";
 // Sticker.mo
 
 module {
-    public type Sticker = {
-        /// width-to-height ratio of the media
+    /// The required-fields slice of Sticker — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express Sticker as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
         aspect_ratio : ?Float;
-        /// A unique identifier for the group of annotations associated with the media
         group_annotation_id : ?Float;
-        /// Unique identifier for sticker
         id : ?Text;
-        /// A unique identifier for the sticker set associated with the media
         sticker_set_annotation_id : ?Float;
-        /// Scale or rotate the media on the x-axis
         transform_a : ?Float;
-        /// Skew the media on the x-axis
         transform_b : ?Float;
-        /// Skew the media on the y-axis
         transform_c : ?Float;
-        /// Scale or rotate the media on the y-axis
         transform_d : ?Float;
-        /// Scale or rotate the media on the x-axis
         transform_tx : ?Float;
-        /// The vertical translation (shift) value for the media
         transform_ty : ?Float;
     };
+
+    public type Sticker = Required and Optional;
 
     public module JSON {
         // `init` constructs a Sticker from just its required fields,
@@ -39,8 +40,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-        }) : Sticker {
+        public func init(required : Required) : Sticker {
             let ?res = from_candid(to_candid(required)) : ?Sticker else Runtime.unreachable();
             res
         };
@@ -149,4 +149,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

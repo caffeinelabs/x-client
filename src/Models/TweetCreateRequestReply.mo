@@ -8,14 +8,23 @@ import Runtime "mo:core/Runtime";
 // TweetCreateRequestReply.mo
 
 module {
-    public type TweetCreateRequestReply = {
-        /// If set to true, reply metadata will be automatically populated.
-        auto_populate_reply_metadata : ?Bool;
-        /// A list of User Ids to be excluded from the reply Tweet.
-        exclude_reply_user_ids : ?[Text];
+    /// The required-fields slice of TweetCreateRequestReply — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// Unique identifier of this Tweet. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
         in_reply_to_tweet_id : Text;
     };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express TweetCreateRequestReply as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+        auto_populate_reply_metadata : ?Bool;
+        exclude_reply_user_ids : ?[Text];
+    };
+
+    public type TweetCreateRequestReply = Required and Optional;
 
     public module JSON {
         // `init` constructs a TweetCreateRequestReply from just its required fields,
@@ -26,9 +35,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            in_reply_to_tweet_id : Text;
-        }) : TweetCreateRequestReply {
+        public func init(required : Required) : TweetCreateRequestReply {
             let ?res = from_candid(to_candid(required)) : ?TweetCreateRequestReply else Runtime.unreachable();
             res
         };
@@ -79,4 +86,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

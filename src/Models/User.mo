@@ -22,44 +22,43 @@ import Runtime "mo:core/Runtime";
 // User.mo
 
 module {
-    public type User = {
-        affiliation : ?UserAffiliation;
-        /// Returns detailed information about the relationship between two users.
-        connection_status : ?[UserConnectionStatusInner];
-        /// Creation time of this User.
-        created_at : ?Text;
-        /// The text of this User's profile description (also known as bio), if the User provided one.
-        description : ?Text;
-        entities : ?UserEntities;
+    /// The required-fields slice of User — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// Unique identifier of this User. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
         id : Text;
-        /// The location specified in the User's profile, if the User provided one. As this is a freeform value, it may not indicate a valid location, but it may be fuzzily evaluated when performing searches with location queries.
-        location : ?Text;
-        /// Unique identifier of this Tweet. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
-        most_recent_tweet_id : ?Text;
         /// The friendly name of this User, as shown on their profile.
         name : Text;
-        /// Unique identifier of this Tweet. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
-        pinned_tweet_id : ?Text;
-        /// The URL to the profile banner for this User.
-        profile_banner_url : ?Text;
-        /// The URL to the profile image for this User.
-        profile_image_url : ?Text;
-        /// Indicates if this User has chosen to protect their Posts (in other words, if this User's Posts are private).
-        protected : ?Bool;
-        public_metrics : ?UserPublicMetrics;
-        /// Indicates if you can send a DM to this User
-        receives_your_dm : ?Bool;
-        subscription_type : ?UserSubscriptionType;
-        /// The URL specified in the User's profile.
-        url : ?Text;
         /// The X handle (screen name) of this user.
         username : Text;
-        /// Indicate if this User is a verified X User.
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express User as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+        affiliation : ?UserAffiliation;
+        connection_status : ?[UserConnectionStatusInner];
+        created_at : ?Text;
+        description : ?Text;
+        entities : ?UserEntities;
+        location : ?Text;
+        most_recent_tweet_id : ?Text;
+        pinned_tweet_id : ?Text;
+        profile_banner_url : ?Text;
+        profile_image_url : ?Text;
+        protected : ?Bool;
+        public_metrics : ?UserPublicMetrics;
+        receives_your_dm : ?Bool;
+        subscription_type : ?UserSubscriptionType;
+        url : ?Text;
         verified : ?Bool;
         verified_type : ?UserVerifiedType;
         withheld : ?UserWithheld;
     };
+
+    public type User = Required and Optional;
 
     public module JSON {
         // `init` constructs a User from just its required fields,
@@ -70,11 +69,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            id : Text;
-            name : Text;
-            username : Text;
-        }) : User {
+        public func init(required : Required) : User {
             let ?res = from_candid(to_candid(required)) : ?User else Runtime.unreachable();
             res
         };
@@ -277,4 +272,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

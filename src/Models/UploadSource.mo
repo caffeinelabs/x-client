@@ -7,10 +7,21 @@ import Runtime "mo:core/Runtime";
 // UploadSource.mo
 
 module {
-    public type UploadSource = {
+    /// The required-fields slice of UploadSource — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// Records the source (e.g., app, device) from which the media was uploaded
         upload_source : Text;
     };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express UploadSource as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+    };
+
+    public type UploadSource = Required and Optional;
 
     public module JSON {
         // `init` constructs a UploadSource from just its required fields,
@@ -21,9 +32,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            upload_source : Text;
-        }) : UploadSource {
+        public func init(required : Required) : UploadSource {
             let ?res = from_candid(to_candid(required)) : ?UploadSource else Runtime.unreachable();
             res
         };
@@ -46,4 +55,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

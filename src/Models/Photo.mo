@@ -10,17 +10,25 @@ import Int "mo:core/Int";
 // Photo.mo
 
 module {
-    public type Photo = {
-        /// The height of the media in pixels.
-        height : ?Nat;
-        /// The Media Key identifier for this attachment.
-        media_key : ?Text;
+    /// The required-fields slice of Photo — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         type_ : Text;
-        /// The width of the media in pixels.
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express Photo as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+        height : ?Nat;
+        media_key : ?Text;
         width : ?Nat;
         alt_text : ?Text;
         url : ?Text;
     };
+
+    public type Photo = Required and Optional;
 
     public module JSON {
         // `init` constructs a Photo from just its required fields,
@@ -31,9 +39,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            type_ : Text;
-        }) : Photo {
+        public func init(required : Required) : Photo {
             let ?res = from_candid(to_candid(required)) : ?Photo else Runtime.unreachable();
             res
         };
@@ -101,4 +107,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

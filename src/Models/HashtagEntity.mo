@@ -8,7 +8,10 @@ import Int "mo:core/Int";
 // HashtagEntity.mo
 
 module {
-    public type HashtagEntity = {
+    /// The required-fields slice of HashtagEntity — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// Index (zero-based) at which position this entity ends.  The index is exclusive.
         end : Nat;
         /// Index (zero-based) at which position this entity starts.  The index is inclusive.
@@ -16,6 +19,14 @@ module {
         /// The text of the Hashtag.
         tag : Text;
     };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express HashtagEntity as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+    };
+
+    public type HashtagEntity = Required and Optional;
 
     public module JSON {
         // `init` constructs a HashtagEntity from just its required fields,
@@ -26,11 +37,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            end : Nat;
-            start : Nat;
-            tag : Text;
-        }) : HashtagEntity {
+        public func init(required : Required) : HashtagEntity {
             let ?res = from_candid(to_candid(required)) : ?HashtagEntity else Runtime.unreachable();
             res
         };
@@ -61,4 +68,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

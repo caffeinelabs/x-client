@@ -19,26 +19,33 @@ import Runtime "mo:core/Runtime";
 // DmEvent.mo
 
 module {
-    public type DmEvent = {
+    /// The required-fields slice of DmEvent — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
+        event_type : Text;
+        /// Unique identifier of a DM Event.
+        id : Text;
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express DmEvent as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
         attachments : ?DmEventAttachments;
         cashtags : ?[CashtagEntity];
         created_at : ?Text;
-        /// Unique identifier of a DM conversation. This can either be a numeric string, or a pair of numeric strings separated by a '-' character in the case of one-on-one DM Conversations.
         dm_conversation_id : ?Text;
-        event_type : Text;
         hashtags : ?[HashtagEntity];
-        /// Unique identifier of a DM Event.
-        id : Text;
         mentions : ?[MentionEntity];
-        /// A list of participants for a ParticipantsJoin or ParticipantsLeave event_type.
         participant_ids : ?[Text];
-        /// A list of Posts this DM refers to.
         referenced_tweets : ?[DmEventReferencedTweetsInner];
-        /// Unique identifier of this User. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
         sender_id : ?Text;
         text_ : ?Text;
         urls : ?[UrlEntityDm];
     };
+
+    public type DmEvent = Required and Optional;
 
     public module JSON {
         // `init` constructs a DmEvent from just its required fields,
@@ -49,10 +56,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            event_type : Text;
-            id : Text;
-        }) : DmEvent {
+        public func init(required : Required) : DmEvent {
             let ?res = from_candid(to_candid(required)) : ?DmEvent else Runtime.unreachable();
             res
         };
@@ -238,4 +242,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

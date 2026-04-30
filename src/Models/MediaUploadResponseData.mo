@@ -9,17 +9,24 @@ import Runtime "mo:core/Runtime";
 // MediaUploadResponseData.mo
 
 module {
-    public type MediaUploadResponseData = {
-        /// Number of seconds after which upload session expires.
+    /// The required-fields slice of MediaUploadResponseData — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express MediaUploadResponseData as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
         expires_after_secs : ?Int;
-        /// The unique identifier of this Media.
         id : ?Text;
-        /// The Media Key identifier for this attachment.
         media_key : ?Text;
         processing_info : ?ProcessingInfo;
-        /// Size of the upload
         size : ?Int;
     };
+
+    public type MediaUploadResponseData = Required and Optional;
 
     public module JSON {
         // `init` constructs a MediaUploadResponseData from just its required fields,
@@ -30,8 +37,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-        }) : MediaUploadResponseData {
+        public func init(required : Required) : MediaUploadResponseData {
             let ?res = from_candid(to_candid(required)) : ?MediaUploadResponseData else Runtime.unreachable();
             res
         };
@@ -95,4 +101,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

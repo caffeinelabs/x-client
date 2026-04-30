@@ -7,7 +7,10 @@ import Runtime "mo:core/Runtime";
 // WebhookReplayCreateRequest.mo
 
 module {
-    public type WebhookReplayCreateRequest = {
+    /// The required-fields slice of WebhookReplayCreateRequest — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// The oldest (starting) UTC timestamp (inclusive) from which events will be provided, in yyyymmddhhmm format.
         from_date : Text;
         /// The oldest (starting) UTC timestamp (inclusive) from which events will be provided, in yyyymmddhhmm format.
@@ -15,6 +18,14 @@ module {
         /// The unique identifier of this webhook config.
         webhook_id : Text;
     };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express WebhookReplayCreateRequest as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+    };
+
+    public type WebhookReplayCreateRequest = Required and Optional;
 
     public module JSON {
         // `init` constructs a WebhookReplayCreateRequest from just its required fields,
@@ -25,11 +36,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            from_date : Text;
-            to_date : Text;
-            webhook_id : Text;
-        }) : WebhookReplayCreateRequest {
+        public func init(required : Required) : WebhookReplayCreateRequest {
             let ?res = from_candid(to_candid(required)) : ?WebhookReplayCreateRequest else Runtime.unreachable();
             res
         };
@@ -60,4 +67,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

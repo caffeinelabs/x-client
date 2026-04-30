@@ -20,13 +20,19 @@ import Int "mo:core/Int";
 // Video.mo
 
 module {
-    public type Video = {
-        /// The height of the media in pixels.
-        height : ?Nat;
-        /// The Media Key identifier for this attachment.
-        media_key : ?Text;
+    /// The required-fields slice of Video — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         type_ : Text;
-        /// The width of the media in pixels.
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express Video as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+        height : ?Nat;
+        media_key : ?Text;
         width : ?Nat;
         duration_ms : ?Int;
         non_public_metrics : ?VideoAllOfNonPublicMetrics;
@@ -34,9 +40,10 @@ module {
         preview_image_url : ?Text;
         promoted_metrics : ?VideoAllOfPromotedMetrics;
         public_metrics : ?VideoAllOfPublicMetrics;
-        /// An array of all available variants of the media.
         variants : ?[Variant];
     };
+
+    public type Video = Required and Optional;
 
     public module JSON {
         // `init` constructs a Video from just its required fields,
@@ -47,9 +54,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            type_ : Text;
-        }) : Video {
+        public func init(required : Required) : Video {
             let ?res = from_candid(to_candid(required)) : ?Video else Runtime.unreachable();
             res
         };
@@ -172,4 +177,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

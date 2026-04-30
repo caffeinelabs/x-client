@@ -14,15 +14,26 @@ import Runtime "mo:core/Runtime";
 // DisallowedResourceProblem.mo
 
 module {
-    public type DisallowedResourceProblem = {
-        detail : ?Text;
-        status : ?Int;
+    /// The required-fields slice of DisallowedResourceProblem — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         title : Text;
         type_ : Text;
         resource_id : Text;
         resource_type : DisallowedResourceProblemAllOfResourceType;
         section : DisallowedResourceProblemAllOfSection;
     };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express DisallowedResourceProblem as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+        detail : ?Text;
+        status : ?Int;
+    };
+
+    public type DisallowedResourceProblem = Required and Optional;
 
     public module JSON {
         // `init` constructs a DisallowedResourceProblem from just its required fields,
@@ -33,13 +44,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            title : Text;
-            type_ : Text;
-            resource_id : Text;
-            resource_type : DisallowedResourceProblemAllOfResourceType;
-            section : DisallowedResourceProblemAllOfSection;
-        }) : DisallowedResourceProblem {
+        public func init(required : Required) : DisallowedResourceProblem {
             let ?res = from_candid(to_candid(required)) : ?DisallowedResourceProblem else Runtime.unreachable();
             res
         };
@@ -96,4 +101,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

@@ -10,13 +10,24 @@ import Runtime "mo:core/Runtime";
 // TweetWithheld.mo
 
 module {
-    public type TweetWithheld = {
+    /// The required-fields slice of TweetWithheld — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// Indicates if the content is being withheld for on the basis of copyright infringement.
         copyright : Bool;
         /// Provides a list of countries where this content is not available.
         country_codes : [Text];
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express TweetWithheld as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
         scope : ?TweetWithheldScope;
     };
+
+    public type TweetWithheld = Required and Optional;
 
     public module JSON {
         // `init` constructs a TweetWithheld from just its required fields,
@@ -27,10 +38,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            copyright : Bool;
-            country_codes : [Text];
-        }) : TweetWithheld {
+        public func init(required : Required) : TweetWithheld {
             let ?res = from_candid(to_candid(required)) : ?TweetWithheld else Runtime.unreachable();
             res
         };
@@ -76,4 +84,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

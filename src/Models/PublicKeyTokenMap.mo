@@ -10,14 +10,22 @@ import Runtime "mo:core/Runtime";
 // PublicKeyTokenMap.mo
 
 module {
-    public type PublicKeyTokenMap = {
-        /// Raw JSON for Juicebox SDK.
+    /// The required-fields slice of PublicKeyTokenMap — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express PublicKeyTokenMap as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
         key_store_token_map_json : ?Text;
-        /// Maximum guess count for Juicebox.
         max_guess_count : ?Int;
-        /// List of Juicebox realms.
         realms : ?[PublicKeyTokenMapRealmsInner];
     };
+
+    public type PublicKeyTokenMap = Required and Optional;
 
     public module JSON {
         // `init` constructs a PublicKeyTokenMap from just its required fields,
@@ -28,8 +36,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-        }) : PublicKeyTokenMap {
+        public func init(required : Required) : PublicKeyTokenMap {
             let ?res = from_candid(to_candid(required)) : ?PublicKeyTokenMap else Runtime.unreachable();
             res
         };
@@ -85,4 +92,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

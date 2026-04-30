@@ -7,12 +7,23 @@ import Runtime "mo:core/Runtime";
 // TweetComplianceSchemaTweet.mo
 
 module {
-    public type TweetComplianceSchemaTweet = {
+    /// The required-fields slice of TweetComplianceSchemaTweet — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// Unique identifier of this User. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
         author_id : Text;
         /// Unique identifier of this Tweet. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers.
         id : Text;
     };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express TweetComplianceSchemaTweet as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+    };
+
+    public type TweetComplianceSchemaTweet = Required and Optional;
 
     public module JSON {
         // `init` constructs a TweetComplianceSchemaTweet from just its required fields,
@@ -23,10 +34,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            author_id : Text;
-            id : Text;
-        }) : TweetComplianceSchemaTweet {
+        public func init(required : Required) : TweetComplianceSchemaTweet {
             let ?res = from_candid(to_candid(required)) : ?TweetComplianceSchemaTweet else Runtime.unreachable();
             res
         };
@@ -53,4 +61,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

@@ -7,46 +7,38 @@ import Runtime "mo:core/Runtime";
 // Metrics.mo
 
 module {
-    public type Metrics = {
-        /// Tracks number of App Install Attempts
+    /// The required-fields slice of Metrics — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
+    };
+
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express Metrics as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
         app_install_attempts : ?Int;
-        /// Tracks number of App opens
         app_opens : ?Int;
-        /// Tracks number of Detail expands
         detail_expands : ?Int;
-        /// Tracks number of Email Tweet actions
         email_tweet : ?Int;
-        /// Tracks total Engagements
         engagements : ?Int;
-        /// Tracks number of Follows
         follows : ?Int;
-        /// Tracks number of Hashtag clicks
         hashtag_clicks : ?Int;
-        /// Tracks number of Impressions
         impressions : ?Int;
-        /// Tracks number of Likes
         likes : ?Int;
-        /// Tracks number of Link clicks
         link_clicks : ?Int;
-        /// Tracks number of Media engagements
         media_engagements : ?Int;
-        /// Tracks number of Media views
         media_views : ?Int;
-        /// Tracks number of Permalink clicks
         permalink_clicks : ?Int;
-        /// Tracks number of Profile visits
         profile_visits : ?Int;
-        /// Tracks number of Quote Tweets
         quote_tweets : ?Int;
-        /// Tracks number of Replies
         replies : ?Int;
-        /// Tracks number of Retweets
         retweets : ?Int;
-        /// Tracks number of URL clicks
         url_clicks : ?Int;
-        /// Tracks number of User Profile clicks
         user_profile_clicks : ?Int;
     };
+
+    public type Metrics = Required and Optional;
 
     public module JSON {
         // `init` constructs a Metrics from just its required fields,
@@ -57,8 +49,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-        }) : Metrics {
+        public func init(required : Required) : Metrics {
             let ?res = from_candid(to_candid(required)) : ?Metrics else Runtime.unreachable();
             res
         };
@@ -248,4 +239,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };

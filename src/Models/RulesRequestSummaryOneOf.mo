@@ -8,7 +8,10 @@ import Runtime "mo:core/Runtime";
 // RulesRequestSummaryOneOf.mo
 
 module {
-    public type RulesRequestSummaryOneOf = {
+    /// The required-fields slice of RulesRequestSummaryOneOf — what `init` consumes.
+    /// Exposed so callers can write `let req : Required = {...}` if they want
+    /// to manipulate the required-only payload independently of the full record.
+    public type Required = {
         /// Number of user-specified stream filtering rules that were created.
         created : Int;
         /// Number of invalid user-specified stream filtering rules.
@@ -19,6 +22,14 @@ module {
         valid : Int;
     };
 
+    // Optional-fields slice. Private — not part of the consumer surface;
+    // it's an internal scaffold so we can express RulesRequestSummaryOneOf as an
+    // `and`-intersection and keep `init` from listing every optional explicitly.
+    type Optional = {
+    };
+
+    public type RulesRequestSummaryOneOf = Required and Optional;
+
     public module JSON {
         // `init` constructs a RulesRequestSummaryOneOf from just its required fields,
         // defaulting all optional fields to `null`. Pair with record-update
@@ -28,12 +39,7 @@ module {
         // absent optional fields with null. Costs a few cycles per call (init is
         // not on a hot path) but keeps generated code compact regardless of how
         // many optional fields the model has.
-        public func init(required : {
-            created : Int;
-            invalid : Int;
-            not_created : Int;
-            valid : Int;
-        }) : RulesRequestSummaryOneOf {
+        public func init(required : Required) : RulesRequestSummaryOneOf {
             let ?res = from_candid(to_candid(required)) : ?RulesRequestSummaryOneOf else Runtime.unreachable();
             res
         };
@@ -68,4 +74,10 @@ module {
                 case _ null;
             };
     };
+
+    /// Re-export of `JSON.init` at the outer module level so callers using the
+    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
+    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
+    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    public let init = JSON.init;
 };
