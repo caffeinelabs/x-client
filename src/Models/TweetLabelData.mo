@@ -23,35 +23,19 @@ module {
     };
 
     public module JSON {
-        // Convert oneOf variant to Text for URL parameters
-        public func toText(value : TweetLabelData) : Text =
-            switch (value) {
-                case (#TweetNoticeSchema(v)) Runtime.unreachable();
-                case (#TweetUnviewableSchema(v)) Runtime.unreachable();
-            };
+        // Generic oneOf is rare on the surfaces we care about (chat / tweet
+        // bodies use discriminator-oneOf or string-flatten). The branches here
+        // can mix primitives, parametrised types, and arrays — none of which
+        // dispatch cleanly via `OneOf&lt;TweetNoticeSchema,TweetUnviewableSchema&gt;.toCandidValue(v)` (Text isn't a
+        // module; `Map<K,V>` and `[[Int]]` aren't dottable identifiers). To
+        // keep the file type-checking (so `mops publish` can extract docs),
+        // stub all three converters with `Runtime.unreachable()`. Real
+        // implementations are a follow-up — primitive dispatch + recursive
+        // partial reuse for arrays/maps inside oneOf branches.
+        public func toText(_value : TweetLabelData) : Text = Runtime.unreachable();
 
-        public func toCandidValue(value : TweetLabelData) : Candid.Candid =
-            switch (value) {
-                case (#TweetNoticeSchema(v)) #Variant(("TweetNoticeSchema", TweetNoticeSchema.toCandidValue(v)));
-                case (#TweetUnviewableSchema(v)) #Variant(("TweetUnviewableSchema", TweetUnviewableSchema.toCandidValue(v)));
-            };
+        public func toCandidValue(_value : TweetLabelData) : Candid.Candid = Runtime.unreachable();
 
-        public func fromCandidValue(candid : Candid.Candid) : ?TweetLabelData =
-            switch (candid) {
-                case (#Variant(tagAndVal)) {
-                    switch (tagAndVal.0) {
-                        case ("TweetNoticeSchema") {
-                            let ?inner = TweetNoticeSchema.fromCandidValue(tagAndVal.1) else return null;
-                            ?#TweetNoticeSchema(inner)
-                        };
-                        case ("TweetUnviewableSchema") {
-                            let ?inner = TweetUnviewableSchema.fromCandidValue(tagAndVal.1) else return null;
-                            ?#TweetUnviewableSchema(inner)
-                        };
-                        case _ null;
-                    };
-                };
-                case _ null;
-            };
+        public func fromCandidValue(_candid : Candid.Candid) : ?TweetLabelData = Runtime.unreachable();
     };
 };

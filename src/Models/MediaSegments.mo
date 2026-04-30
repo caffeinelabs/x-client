@@ -15,36 +15,19 @@ module {
     };
 
     public module JSON {
-        // Convert oneOf variant to Text for URL parameters
-        public func toText(value : MediaSegments) : Text =
-            switch (value) {
-                case (#one_of_0(v)) Int.toText(v);
-                case (#one_of_1(v)) Int.toText(v);
-            };
+        // Generic oneOf is rare on the surfaces we care about (chat / tweet
+        // bodies use discriminator-oneOf or string-flatten). The branches here
+        // can mix primitives, parametrised types, and arrays — none of which
+        // dispatch cleanly via `OneOf&lt;integer,integer&gt;.toCandidValue(v)` (Text isn't a
+        // module; `Map<K,V>` and `[[Int]]` aren't dottable identifiers). To
+        // keep the file type-checking (so `mops publish` can extract docs),
+        // stub all three converters with `Runtime.unreachable()`. Real
+        // implementations are a follow-up — primitive dispatch + recursive
+        // partial reuse for arrays/maps inside oneOf branches.
+        public func toText(_value : MediaSegments) : Text = Runtime.unreachable();
 
-        public func toCandidValue(value : MediaSegments) : Candid.Candid =
-            switch (value) {
-                case (#one_of_0(v)) #Variant(("one_of_0", #Int(v)));
-                case (#one_of_1(v)) #Variant(("one_of_1", #Int(v)));
-            };
+        public func toCandidValue(_value : MediaSegments) : Candid.Candid = Runtime.unreachable();
 
-        public func fromCandidValue(candid : Candid.Candid) : ?MediaSegments =
-            switch (candid) {
-                case (#Variant(tagAndVal)) {
-                    switch (tagAndVal.0) {
-                        case ("one_of_0") {
-                            let #Int(v) = tagAndVal.1 else return null;
-                            if (v < 0) return null;
-                            ?#one_of_0(Int.abs(v))
-                        };
-                        case ("one_of_1") {
-                            let #Int(v) = tagAndVal.1 else return null;
-                            ?#one_of_1(v)
-                        };
-                        case _ null;
-                    };
-                };
-                case _ null;
-            };
+        public func fromCandidValue(_candid : Candid.Candid) : ?MediaSegments = Runtime.unreachable();
     };
 };

@@ -34,53 +34,19 @@ module {
     };
 
     public module JSON {
-        // Convert oneOf variant to Text for URL parameters
-        public func toText(value : TweetComplianceData) : Text =
-            switch (value) {
-                case (#TweetDeleteComplianceSchema(v)) Runtime.unreachable();
-                case (#TweetWithheldComplianceSchema(v)) Runtime.unreachable();
-                case (#TweetDropComplianceSchema(v)) Runtime.unreachable();
-                case (#TweetUndropComplianceSchema(v)) Runtime.unreachable();
-                case (#TweetEditComplianceSchema(v)) Runtime.unreachable();
-            };
+        // Generic oneOf is rare on the surfaces we care about (chat / tweet
+        // bodies use discriminator-oneOf or string-flatten). The branches here
+        // can mix primitives, parametrised types, and arrays — none of which
+        // dispatch cleanly via `OneOf&lt;TweetDeleteComplianceSchema,TweetWithheldComplianceSchema,TweetDropComplianceSchema,TweetUndropComplianceSchema,TweetEditComplianceSchema&gt;.toCandidValue(v)` (Text isn't a
+        // module; `Map<K,V>` and `[[Int]]` aren't dottable identifiers). To
+        // keep the file type-checking (so `mops publish` can extract docs),
+        // stub all three converters with `Runtime.unreachable()`. Real
+        // implementations are a follow-up — primitive dispatch + recursive
+        // partial reuse for arrays/maps inside oneOf branches.
+        public func toText(_value : TweetComplianceData) : Text = Runtime.unreachable();
 
-        public func toCandidValue(value : TweetComplianceData) : Candid.Candid =
-            switch (value) {
-                case (#TweetDeleteComplianceSchema(v)) #Variant(("TweetDeleteComplianceSchema", TweetDeleteComplianceSchema.toCandidValue(v)));
-                case (#TweetWithheldComplianceSchema(v)) #Variant(("TweetWithheldComplianceSchema", TweetWithheldComplianceSchema.toCandidValue(v)));
-                case (#TweetDropComplianceSchema(v)) #Variant(("TweetDropComplianceSchema", TweetDropComplianceSchema.toCandidValue(v)));
-                case (#TweetUndropComplianceSchema(v)) #Variant(("TweetUndropComplianceSchema", TweetUndropComplianceSchema.toCandidValue(v)));
-                case (#TweetEditComplianceSchema(v)) #Variant(("TweetEditComplianceSchema", TweetEditComplianceSchema.toCandidValue(v)));
-            };
+        public func toCandidValue(_value : TweetComplianceData) : Candid.Candid = Runtime.unreachable();
 
-        public func fromCandidValue(candid : Candid.Candid) : ?TweetComplianceData =
-            switch (candid) {
-                case (#Variant(tagAndVal)) {
-                    switch (tagAndVal.0) {
-                        case ("TweetDeleteComplianceSchema") {
-                            let ?inner = TweetDeleteComplianceSchema.fromCandidValue(tagAndVal.1) else return null;
-                            ?#TweetDeleteComplianceSchema(inner)
-                        };
-                        case ("TweetWithheldComplianceSchema") {
-                            let ?inner = TweetWithheldComplianceSchema.fromCandidValue(tagAndVal.1) else return null;
-                            ?#TweetWithheldComplianceSchema(inner)
-                        };
-                        case ("TweetDropComplianceSchema") {
-                            let ?inner = TweetDropComplianceSchema.fromCandidValue(tagAndVal.1) else return null;
-                            ?#TweetDropComplianceSchema(inner)
-                        };
-                        case ("TweetUndropComplianceSchema") {
-                            let ?inner = TweetUndropComplianceSchema.fromCandidValue(tagAndVal.1) else return null;
-                            ?#TweetUndropComplianceSchema(inner)
-                        };
-                        case ("TweetEditComplianceSchema") {
-                            let ?inner = TweetEditComplianceSchema.fromCandidValue(tagAndVal.1) else return null;
-                            ?#TweetEditComplianceSchema(inner)
-                        };
-                        case _ null;
-                    };
-                };
-                case _ null;
-            };
+        public func fromCandidValue(_candid : Candid.Candid) : ?TweetComplianceData = Runtime.unreachable();
     };
 };

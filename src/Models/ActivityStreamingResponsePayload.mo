@@ -13,7 +13,7 @@ import Float "mo:core/Float";
 import Runtime "mo:core/Runtime";
 
 // ActivityStreamingResponsePayload.mo
-// Discriminator-oneOf — wire is a flat object whose `_../event_type`
+// Discriminator-oneOf — wire is a flat object whose `___event_type`
 // field selects the schema. Branches' `toCandidValue` already include that field, so dispatch
 // is just a forward call (no re-wrapping).
 
@@ -42,7 +42,7 @@ module {
         public func fromCandidValue(candid : Candid.Candid) : ?ActivityStreamingResponsePayload =
             switch (candid) {
                 case (#Record(fields)) {
-                    let ?discPair = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "_../event_type") else return null;
+                    let ?discPair = Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "___event_type") else return null;
                     switch (discPair.1) {
                         case (#Text(disc)) {
                             switch (disc) {

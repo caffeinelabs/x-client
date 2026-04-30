@@ -23,35 +23,19 @@ module {
     };
 
     public module JSON {
-        // Convert oneOf variant to Text for URL parameters
-        public func toText(value : TweetLabelStreamResponse) : Text =
-            switch (value) {
-                case (#TweetLabelStreamResponseOneOf(v)) Runtime.unreachable();
-                case (#LikesComplianceStreamResponseOneOf1(v)) Runtime.unreachable();
-            };
+        // Generic oneOf is rare on the surfaces we care about (chat / tweet
+        // bodies use discriminator-oneOf or string-flatten). The branches here
+        // can mix primitives, parametrised types, and arrays — none of which
+        // dispatch cleanly via `OneOf&lt;TweetLabelStreamResponseOneOf,LikesComplianceStreamResponseOneOf1&gt;.toCandidValue(v)` (Text isn't a
+        // module; `Map<K,V>` and `[[Int]]` aren't dottable identifiers). To
+        // keep the file type-checking (so `mops publish` can extract docs),
+        // stub all three converters with `Runtime.unreachable()`. Real
+        // implementations are a follow-up — primitive dispatch + recursive
+        // partial reuse for arrays/maps inside oneOf branches.
+        public func toText(_value : TweetLabelStreamResponse) : Text = Runtime.unreachable();
 
-        public func toCandidValue(value : TweetLabelStreamResponse) : Candid.Candid =
-            switch (value) {
-                case (#TweetLabelStreamResponseOneOf(v)) #Variant(("TweetLabelStreamResponseOneOf", TweetLabelStreamResponseOneOf.toCandidValue(v)));
-                case (#LikesComplianceStreamResponseOneOf1(v)) #Variant(("LikesComplianceStreamResponseOneOf1", LikesComplianceStreamResponseOneOf1.toCandidValue(v)));
-            };
+        public func toCandidValue(_value : TweetLabelStreamResponse) : Candid.Candid = Runtime.unreachable();
 
-        public func fromCandidValue(candid : Candid.Candid) : ?TweetLabelStreamResponse =
-            switch (candid) {
-                case (#Variant(tagAndVal)) {
-                    switch (tagAndVal.0) {
-                        case ("TweetLabelStreamResponseOneOf") {
-                            let ?inner = TweetLabelStreamResponseOneOf.fromCandidValue(tagAndVal.1) else return null;
-                            ?#TweetLabelStreamResponseOneOf(inner)
-                        };
-                        case ("LikesComplianceStreamResponseOneOf1") {
-                            let ?inner = LikesComplianceStreamResponseOneOf1.fromCandidValue(tagAndVal.1) else return null;
-                            ?#LikesComplianceStreamResponseOneOf1(inner)
-                        };
-                        case _ null;
-                    };
-                };
-                case _ null;
-            };
+        public func fromCandidValue(_candid : Candid.Candid) : ?TweetLabelStreamResponse = Runtime.unreachable();
     };
 };

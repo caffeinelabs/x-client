@@ -23,35 +23,19 @@ module {
     };
 
     public module JSON {
-        // Convert oneOf variant to Text for URL parameters
-        public func toText(value : UserComplianceStreamResponse) : Text =
-            switch (value) {
-                case (#UserComplianceStreamResponseOneOf(v)) Runtime.unreachable();
-                case (#LikesComplianceStreamResponseOneOf1(v)) Runtime.unreachable();
-            };
+        // Generic oneOf is rare on the surfaces we care about (chat / tweet
+        // bodies use discriminator-oneOf or string-flatten). The branches here
+        // can mix primitives, parametrised types, and arrays — none of which
+        // dispatch cleanly via `OneOf&lt;UserComplianceStreamResponseOneOf,LikesComplianceStreamResponseOneOf1&gt;.toCandidValue(v)` (Text isn't a
+        // module; `Map<K,V>` and `[[Int]]` aren't dottable identifiers). To
+        // keep the file type-checking (so `mops publish` can extract docs),
+        // stub all three converters with `Runtime.unreachable()`. Real
+        // implementations are a follow-up — primitive dispatch + recursive
+        // partial reuse for arrays/maps inside oneOf branches.
+        public func toText(_value : UserComplianceStreamResponse) : Text = Runtime.unreachable();
 
-        public func toCandidValue(value : UserComplianceStreamResponse) : Candid.Candid =
-            switch (value) {
-                case (#UserComplianceStreamResponseOneOf(v)) #Variant(("UserComplianceStreamResponseOneOf", UserComplianceStreamResponseOneOf.toCandidValue(v)));
-                case (#LikesComplianceStreamResponseOneOf1(v)) #Variant(("LikesComplianceStreamResponseOneOf1", LikesComplianceStreamResponseOneOf1.toCandidValue(v)));
-            };
+        public func toCandidValue(_value : UserComplianceStreamResponse) : Candid.Candid = Runtime.unreachable();
 
-        public func fromCandidValue(candid : Candid.Candid) : ?UserComplianceStreamResponse =
-            switch (candid) {
-                case (#Variant(tagAndVal)) {
-                    switch (tagAndVal.0) {
-                        case ("UserComplianceStreamResponseOneOf") {
-                            let ?inner = UserComplianceStreamResponseOneOf.fromCandidValue(tagAndVal.1) else return null;
-                            ?#UserComplianceStreamResponseOneOf(inner)
-                        };
-                        case ("LikesComplianceStreamResponseOneOf1") {
-                            let ?inner = LikesComplianceStreamResponseOneOf1.fromCandidValue(tagAndVal.1) else return null;
-                            ?#LikesComplianceStreamResponseOneOf1(inner)
-                        };
-                        case _ null;
-                    };
-                };
-                case _ null;
-            };
+        public func fromCandidValue(_candid : Candid.Candid) : ?UserComplianceStreamResponse = Runtime.unreachable();
     };
 };

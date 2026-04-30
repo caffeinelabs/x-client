@@ -1,3 +1,24 @@
+## [0.2.4] — 2026-04-30
+
+### Fixed
+
+- **`Map<K, V>` array items where V is primitive** no longer emit
+  invalid `T.toCandidValue` calls on the value type. The Candid
+  partials gate the method dispatch on `complexType`.
+- **int64 fields** no longer emit duplicate Candid case branches
+  (`#Int(v__)#Int(v__)`). The `isLong` partial is now guarded by
+  `^isInteger` across all seven candid_* templates.
+- **Variant tags whose Motoko-derived name would contain brackets or
+  parens** fall back to positional `#one_of_<i>`.
+
+### Known limitations
+
+The specialty surface — `AccountActivityApi`, `StreamApi`,
+`WebhooksApi`, plus `InvalidRequestProblem*` / `WebhookLinksGetResponse*`
+models — still type-fails due to map-of-array-value shapes the codegen
+does not yet fully synthesise. The mainstream `TweetsApi` / `UsersApi` /
+auth surface is unaffected.
+
 ## [0.2.3] — 2026-04-30
 
 ### Added

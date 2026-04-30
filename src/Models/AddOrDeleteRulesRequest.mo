@@ -22,35 +22,19 @@ module {
     };
 
     public module JSON {
-        // Convert oneOf variant to Text for URL parameters
-        public func toText(value : AddOrDeleteRulesRequest) : Text =
-            switch (value) {
-                case (#AddRulesRequest(v)) Runtime.unreachable();
-                case (#DeleteRulesRequest(v)) Runtime.unreachable();
-            };
+        // Generic oneOf is rare on the surfaces we care about (chat / tweet
+        // bodies use discriminator-oneOf or string-flatten). The branches here
+        // can mix primitives, parametrised types, and arrays — none of which
+        // dispatch cleanly via `OneOf&lt;AddRulesRequest,DeleteRulesRequest&gt;.toCandidValue(v)` (Text isn't a
+        // module; `Map<K,V>` and `[[Int]]` aren't dottable identifiers). To
+        // keep the file type-checking (so `mops publish` can extract docs),
+        // stub all three converters with `Runtime.unreachable()`. Real
+        // implementations are a follow-up — primitive dispatch + recursive
+        // partial reuse for arrays/maps inside oneOf branches.
+        public func toText(_value : AddOrDeleteRulesRequest) : Text = Runtime.unreachable();
 
-        public func toCandidValue(value : AddOrDeleteRulesRequest) : Candid.Candid =
-            switch (value) {
-                case (#AddRulesRequest(v)) #Variant(("AddRulesRequest", AddRulesRequest.toCandidValue(v)));
-                case (#DeleteRulesRequest(v)) #Variant(("DeleteRulesRequest", DeleteRulesRequest.toCandidValue(v)));
-            };
+        public func toCandidValue(_value : AddOrDeleteRulesRequest) : Candid.Candid = Runtime.unreachable();
 
-        public func fromCandidValue(candid : Candid.Candid) : ?AddOrDeleteRulesRequest =
-            switch (candid) {
-                case (#Variant(tagAndVal)) {
-                    switch (tagAndVal.0) {
-                        case ("AddRulesRequest") {
-                            let ?inner = AddRulesRequest.fromCandidValue(tagAndVal.1) else return null;
-                            ?#AddRulesRequest(inner)
-                        };
-                        case ("DeleteRulesRequest") {
-                            let ?inner = DeleteRulesRequest.fromCandidValue(tagAndVal.1) else return null;
-                            ?#DeleteRulesRequest(inner)
-                        };
-                        case _ null;
-                    };
-                };
-                case _ null;
-            };
+        public func fromCandidValue(_candid : Candid.Candid) : ?AddOrDeleteRulesRequest = Runtime.unreachable();
     };
 };

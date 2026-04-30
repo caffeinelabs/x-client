@@ -39,7 +39,7 @@ module {
         public func toCandidValue(value : MediaUploadAppendResponseData) : Candid.Candid {
             let buf = List.empty<(Text, Candid.Candid)>();
             switch (value.expires_at) {
-                case (?v__) List.add(buf, ("expires_at", #Int(v__)#Int(v__)));
+                case (?v__) List.add(buf, ("expires_at", #Int(v__)));
                 case null ();
             };
             #Record(List.toArray(buf));
@@ -49,7 +49,7 @@ module {
             switch (candid) {
                 case (#Record(fields)) {
                     let expires_at : ?Int = switch (Array.find<(Text, Candid.Candid)>(fields, func((k, _) : (Text, Candid.Candid)) : Bool = k == "expires_at")) {
-                        case (?expires_at_field) ((switch (expires_at_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null })(switch (expires_at_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
+                        case (?expires_at_field) ((switch (expires_at_field.1) { case (#Int(i)) ?i; case (#Nat(n)) ?n; case _ null }));
                         case null null;
                     };
                     ?{
@@ -60,9 +60,14 @@ module {
             };
     };
 
-    /// Re-export of `JSON.init` at the outer module level so callers using the
-    /// whole-module import pattern (`import T "...";`) can write `T.init {…}`
-    /// directly, mirroring the destructure-pattern (`{ type T; JSON = T }`)
-    /// shorthand `T.init {…}` that resolves through the JSON alias.
+    /// Re-export of `JSON.init` at the outer module level. Three import shapes
+    /// all reach the same function:
+    ///
+    ///   - `import T "...";                                     T.init {…}`     // whole-module
+    ///   - `import { type T; JSON = T } "...";                  T.init {…}`     // JSON-alias
+    ///   - `import { type T; JSON = T; init = myInit } "...";   myInit {…}`     // explicit rename
+    ///
+    /// The third form is handy when several models would all be reachable
+    /// as `T.init` and you want each bound to a distinct local name.
     public let init = JSON.init;
 };

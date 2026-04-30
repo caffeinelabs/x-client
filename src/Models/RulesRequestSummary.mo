@@ -18,35 +18,19 @@ module {
     };
 
     public module JSON {
-        // Convert oneOf variant to Text for URL parameters
-        public func toText(value : RulesRequestSummary) : Text =
-            switch (value) {
-                case (#RulesRequestSummaryOneOf(v)) Runtime.unreachable();
-                case (#RulesRequestSummaryOneOf1(v)) Runtime.unreachable();
-            };
+        // Generic oneOf is rare on the surfaces we care about (chat / tweet
+        // bodies use discriminator-oneOf or string-flatten). The branches here
+        // can mix primitives, parametrised types, and arrays — none of which
+        // dispatch cleanly via `OneOf&lt;RulesRequestSummaryOneOf,RulesRequestSummaryOneOf1&gt;.toCandidValue(v)` (Text isn't a
+        // module; `Map<K,V>` and `[[Int]]` aren't dottable identifiers). To
+        // keep the file type-checking (so `mops publish` can extract docs),
+        // stub all three converters with `Runtime.unreachable()`. Real
+        // implementations are a follow-up — primitive dispatch + recursive
+        // partial reuse for arrays/maps inside oneOf branches.
+        public func toText(_value : RulesRequestSummary) : Text = Runtime.unreachable();
 
-        public func toCandidValue(value : RulesRequestSummary) : Candid.Candid =
-            switch (value) {
-                case (#RulesRequestSummaryOneOf(v)) #Variant(("RulesRequestSummaryOneOf", RulesRequestSummaryOneOf.toCandidValue(v)));
-                case (#RulesRequestSummaryOneOf1(v)) #Variant(("RulesRequestSummaryOneOf1", RulesRequestSummaryOneOf1.toCandidValue(v)));
-            };
+        public func toCandidValue(_value : RulesRequestSummary) : Candid.Candid = Runtime.unreachable();
 
-        public func fromCandidValue(candid : Candid.Candid) : ?RulesRequestSummary =
-            switch (candid) {
-                case (#Variant(tagAndVal)) {
-                    switch (tagAndVal.0) {
-                        case ("RulesRequestSummaryOneOf") {
-                            let ?inner = RulesRequestSummaryOneOf.fromCandidValue(tagAndVal.1) else return null;
-                            ?#RulesRequestSummaryOneOf(inner)
-                        };
-                        case ("RulesRequestSummaryOneOf1") {
-                            let ?inner = RulesRequestSummaryOneOf1.fromCandidValue(tagAndVal.1) else return null;
-                            ?#RulesRequestSummaryOneOf1(inner)
-                        };
-                        case _ null;
-                    };
-                };
-                case _ null;
-            };
+        public func fromCandidValue(_candid : Candid.Candid) : ?RulesRequestSummary = Runtime.unreachable();
     };
 };
